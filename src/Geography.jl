@@ -1,5 +1,12 @@
 module Geography
 
-greet() = print("Hello World!")
+using Base: Float64
+using JuMP
+using EnergyModelsBase; const EMB = EnergyModelsBase
+using TimeStructures
+
+include("datastructures.jl")
+include("model.jl")
+include("user_interface.jl")
 
 end # module
