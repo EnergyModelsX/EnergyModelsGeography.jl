@@ -35,16 +35,10 @@ trans = Dict((l.id, p.id) => [value.(m[:trans_out])[l, t, p] - value.(m[:trans_i
 
 using PlotlyJS, DataFrames, CSV
 function maps1()
-    marker = attr(size=[20, 30, 15, 10],
-                  color=[10, 20, 40, 50],
-                  cmin=0,
-                  cmax=50,
-                  colorscale="Greens",
-                  colorbar=attr(title="Some rate",
-                                ticksuffix="%",
-                                showticksuffix="last"),
+    marker = attr(size=20,
+                  color=10,
                   line_color="black")
-    trace = scattergeo(;mode="markers+lines", lat=[i.lat for i in data[:areas]], lon=[i.lon for i in data[:areas]],
+    trace = scattergeo(;mode="markers+lines", lat=[i.lon for i in data[:areas]], lon=[i.lat for i in data[:areas]],
                         marker=marker, name="Europe Data")
     layout = Layout(geo_scope="europe", geo_resolution=50, width=500, height=550,
                     margin=attr(l=0, r=0, t=10, b=0))
