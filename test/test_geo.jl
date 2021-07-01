@@ -1,113 +1,53 @@
+using Revise
+import EnergyModelsBase; const EMB = EnergyModelsBase
+using TimeStructures
+using JuMP
+using GLPK
 
-using CSV
-using DataFrames
-using Plots
-using Shapefile
-using ZipFile
+## Run with several areas and Geography package
+import Geography; const GEO = Geography
 
-##
+m, data = GEO.run_model("", GLPK.Optimizer)
 
-for dir in ["data", "downloads", "shapefiles", "output"]
-    path = joinpath(pwd(), dir)
-    if ~ispath(path)
-        mkpath(path)
-    end
+𝒯ᴵⁿᵛ = strategic_periods(data[:T])
+𝒯 = data[:T]
+𝒩 = data[:nodes]
+𝒩ⁿᵒᵗ = EMB.node_not_av(𝒩)
+av = 𝒩[findall(x -> isa(x,EMB.Availability), 𝒩)]
+areas = data[:areas]
+ℒᵗʳᵃⁿˢ = data[:transmission]
+𝒫 = data[:products]
+
+CH4 = data[:products][1]
+CO2 = data[:products][4]
+
+emissions_CO2 = [value.(m[:emissions_strategic])[t_inv, CO2] for t_inv ∈ 𝒯ᴵⁿᵛ]
+
+# Flow in to availability nodes in each area
+flow_in = [[value.(m[:flow_in])[a.an, t, 𝒫[1]] for t ∈ 𝒯] for a ∈ areas]
+
+# Flow out from availability nodes in each area
+flow_out = [[value.(m[:flow_out])[a.an, t, 𝒫[1]] for t ∈ 𝒯] for a ∈ areas]
+
+trans = Dict((l.id, p.id) => [value.(m[:trans_out])[l, t, p] - value.(m[:trans_in])[l, t, p] for t ∈ 𝒯] for l ∈ ℒᵗʳᵃⁿˢ, p ∈ 𝒫)
+
+## Plot map - not finished
+
+using PlotlyJS, DataFrames, CSV
+function maps1()
+    marker = attr(size=[20, 30, 15, 10],
+                  color=[10, 20, 40, 50],
+                  cmin=0,
+                  cmax=50,
+                  colorscale="Greens",
+                  colorbar=attr(title="Some rate",
+                                ticksuffix="%",
+                                showticksuffix="last"),
+                  line_color="black")
+    trace = scattergeo(;mode="markers+lines", lat=[i.lat for i in data[:areas]], lon=[i.lon for i in data[:areas]],
+                        marker=marker, name="Europe Data")
+    layout = Layout(geo_scope="europe", geo_resolution=50, width=500, height=550,
+                    margin=attr(l=0, r=0, t=10, b=0))
+    plot(trace, layout)
 end
-
-##
-
-normalize(vec) = [(x - minimum(vec))/(maximum(vec) - minimum(vec)) for x in vec]
-
-##
-
-url = "https://www.cbs.nl/-/media/cbs/dossiers/" *
-      "nederland-regionaal/wijk-en-buurtstatistieken/wijkbuurtkaart_2020_v1.zip"
-name_zipfile = split(url, "/")[end]
-path_zipfile = joinpath(pwd(), "downloads", name_zipfile)
-if ~isfile(path_zipfile)
-    download(url, path_zipfile)
-end
-
-##
-
-path_shapefile = joinpath(pwd(), "shapefiles", "gemeente_2020_v1.shp")
-if ~isfile(path_shapefile)
-    r = ZipFile.Reader(path_zipfile)
-    for file in r.files
-        open(joinpath(pwd(), "shapefiles", file.name), "w") do io
-            write(io, read(file))
-        end
-    end
-end
-
-
-##
-
-
-# read shapefile
-table = Shapefile.Table(path_shapefile)
-
-# create dataframe
-df = table |> DataFrame
-df.Shape = Shapefile.shapes(table)
-
-# filter for land (i.e. not water)
-row_filter = df.H2O .== "NEE"
-
-# apply filter
-municipality = df[row_filter, :]
-
-
-##
-
-url = "https://data.rivm.nl/covid-19/COVID-19_aantallen_gemeente_per_dag.csv"
-file_path = joinpath(pwd(), "data", split(url, "/")[end])
-download(url, joinpath(pwd(), "data", file_path))
-
-##
-
-covid = CSV.File(file_path) |> DataFrame
-
-##
-
-# select most recent data
-actuals = covid[
-    .&(.~ismissing.(covid.Municipality_name),
-        covid.Date_of_publication .== maximum(covid.Date_of_publication)
-        ),
-    [:Municipality_name, :Total_reported, :Hospital_admission, :Deceased]
-]
-
-##
-
-actuals = combine(
-    groupby(actuals, :Municipality_name),
-    names(actuals)[2:end] .=> sum .=> names(actuals)[2:end]
-)
-
-##
-
-covid = leftjoin(municipality, actuals, on="GM_NAAM"=>"Municipality_name")
-
-##
-
-covid.Total_reported_per_100000 = covid.Total_reported .* (100_000 ./ covid.AANT_INW)
-covid = covid[completecases(covid),:]
-
-##
-
-# values to plot
-values = covid[:, :Total_reported_per_100000]
-normalized_values = normalize(values)
-
-# colors to plot
-colormap = :heat
-colors = Array([cgrad(colormap)[value] for value in normalized_values])
-
-plot(size=(500, 600), axis=false, ticks=false)
-
-for i = 1:nrow(covid)
-    plot!(covid[i, :Shape], color=colors[i])
-end
-
-savefig(joinpath(pwd(), "output", "thematic_map.svg"))
+maps1()
