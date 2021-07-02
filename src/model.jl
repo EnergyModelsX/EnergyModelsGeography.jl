@@ -27,10 +27,6 @@ function variables_area(m, 𝒩, 𝒯, 𝒫, ℒ, modeltype)
 
 end
 
-function trans_res(l::Transmission)
-    return intersect(keys(l.to.an.input), keys(l.from.an.output))
-end
-
 function variables_transmission(m, 𝒜, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, modeltype)
     @variable(m, trans_in[l ∈ ℒᵗʳᵃⁿˢ,  𝒯, trans_res(l)] >= 0)
     @variable(m, trans_out[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, trans_res(l)] >= 0)
@@ -40,11 +36,6 @@ end
 function constraints_area(m, 𝒩, 𝒯, 𝒫, ℒ, modeltype)
 
 
-end
-
-function trans_sub(ℒ, a::Area)
-    return [ℒ[findall(x -> x.from == a, ℒ)],
-            ℒ[findall(x -> x.to   == a, ℒ)]]
 end
 
 function constraints_transmission(m, 𝒜, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, modeltype)
@@ -60,5 +51,14 @@ function constraints_transmission(m, 𝒜, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, modelty
         #create_node(m, n, 𝒯, 𝒫)
     end
 
+    for l in ℒᵗʳᵃⁿˢ
+        create_trans(m, 𝒯, 𝒫, l, l.formulation)
+    end
+
 end
 
+function create_trans(m, 𝒯, 𝒫, l, formulation)
+	# Generic trans in which each output corresponds to the input
+    @constraint(m, [t ∈ 𝒯, p ∈ trans_res(l)],
+        m[:trans_out][l, t, p] == m[:trans_in][l, t, p])
+end

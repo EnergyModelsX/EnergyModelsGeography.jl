@@ -29,7 +29,7 @@ flow_in = [[value.(m[:flow_in])[a.an, t, 𝒫[1]] for t ∈ 𝒯] for a ∈ area
 # Flow out from availability nodes in each area
 flow_out = [[value.(m[:flow_out])[a.an, t, 𝒫[1]] for t ∈ 𝒯] for a ∈ areas]
 
-trans = Dict((l.id, p.id) => [value.(m[:trans_out])[l, t, p] - value.(m[:trans_in])[l, t, p] for t ∈ 𝒯] for l ∈ ℒᵗʳᵃⁿˢ, p ∈ 𝒫)
+trans = Dict((l.id, p.id) => [value.(m[:trans_out])[l, t, p] for t ∈ 𝒯] for l ∈ ℒᵗʳᵃⁿˢ, p ∈ 𝒫)
 
 ## Plot map - not finished
 

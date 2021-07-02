@@ -31,7 +31,7 @@ function read_data(area_data::Dict, transmission_data::Dict)
     𝒫₀, 𝒫ᵉᵐ₀, products = get_resources()
 
     #
-    d_scale = Dict(1=>2.0, 2=>1.5, 3=>1.0, 4=>0.5)
+    d_scale = Dict(1=>3.0, 2=>1.5, 3=>1.0, 4=>0.5)
     mc_scale = Dict(1=>2.0, 2=>2.0, 3=>1.5, 4=>0.5)
 
     # Create identical areas with index accoriding to input array
