@@ -11,11 +11,11 @@ function create_model(data, modeltype)
     # Add geo elements
 
     # Declaration of variables for the problem
-    variables_area(m, nodes, T, products, links, modeltype)
+    variables_area(m, 𝒜, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, modeltype)
     variables_transmission(m, 𝒜, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, modeltype)
 
     # Construction of constraints for the problem
-    constraints_area(m, nodes, T, products, links, modeltype)
+    constraints_area(m, 𝒜, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, modeltype)
     constraints_transmission(m, 𝒜, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, modeltype)
 
     return m
