@@ -11,54 +11,67 @@ function create_model(data, modeltype)
     # Add geo elements
 
     # Declaration of variables for the problem
-    variables_area(m, 𝒜, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, modeltype)
-    variables_transmission(m, 𝒜, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, modeltype)
+    variables_area(m, 𝒜, 𝒯, 𝒫, modeltype)
+    variables_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
 
     # Construction of constraints for the problem
-    constraints_area(m, 𝒜, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, modeltype)
-    constraints_transmission(m, 𝒜, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, modeltype)
+    constraints_area(m, 𝒜, 𝒯, 𝒫, modeltype)
+    constraints_transmission(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
 
     return m
 end
 
 
-function variables_area(m, 𝒩, 𝒯, 𝒫, ℒ, modeltype)
+function variables_area(m, 𝒜, 𝒯, 𝒫, modeltype)
 
-
-end
-
-function variables_transmission(m, 𝒜, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, modeltype)
-    @variable(m, trans_in[l ∈ ℒᵗʳᵃⁿˢ,  𝒯, trans_res(l)] >= 0)
-    @variable(m, trans_out[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, trans_res(l)] >= 0)
+    @variable(m, area_import[a ∈ 𝒜, 𝒯, 𝒫] >= 0)
+    @variable(m, area_export[a ∈ 𝒜, 𝒯, 𝒫] >= 0)
 
 end
 
-function constraints_area(m, 𝒩, 𝒯, 𝒫, ℒ, modeltype)
+function variables_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+    @variable(m, trans_in[l ∈ ℒᵗʳᵃⁿˢ,  𝒯, corridor_modes(l)] >= 0)
+    @variable(m, trans_out[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, corridor_modes(l)] >= 0)
+    @variable(m, trans_cap[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, corridor_modes(l)] >= 0)
+    @variable(m, trans_loss[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, corridor_modes(l)] >= 0)
+    @variable(m, trans_max[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, corridor_modes(l)] >= 0)
 
-
+    for l ∈ ℒᵗʳᵃⁿˢ, t ∈ 𝒯, cm ∈ corridor_modes(l)
+        @constraint(m, trans_max[l, t, cm] == cm.capacity)
+    end
 end
 
-function constraints_transmission(m, 𝒜, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, modeltype)
+function constraints_area(m, 𝒜, 𝒯, 𝒫, modeltype)
 
     for a ∈ 𝒜
         n = a.an
-        ℒᶠʳᵒᵐ, ℒᵗᵒ = trans_sub(ℒᵗʳᵃⁿˢ, a)
-        @constraint(m, [t ∈ 𝒯, p ∈ keys(n.output)], 
-            m[:flow_out][n, t, p] == sum(m[:trans_in][l,t,p] for l in ℒᶠʳᵒᵐ if p ∈ keys(l.to.an.input)))
-        @constraint(m, [t ∈ 𝒯, p ∈ keys(n.input)], 
-            m[:flow_in][n, t, p] == sum(m[:trans_out][l,t,p] for l in ℒᵗᵒ if p ∈ keys(l.from.an.output)))
-
-        #create_node(m, n, 𝒯, 𝒫)
-    end
-
-    for l in ℒᵗʳᵃⁿˢ
-        create_trans(m, 𝒯, 𝒫, l, l.formulation)
+        @constraint(m, [t ∈ 𝒯, p ∈ 𝒫],
+            m[:flow_in][n, t, p] + m[:area_import][a, t, p] == m[:flow_out][n, t, p] +  m[:area_export][a, t, p])
     end
 
 end
 
-function create_trans(m, 𝒯, 𝒫, l, formulation)
+function constraints_transmission(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+
+    for a ∈ 𝒜
+        ℒᶠʳᵒᵐ, ℒᵗᵒ = trans_sub(ℒᵗʳᵃⁿˢ, a)
+        @constraint(m, [t ∈ 𝒯, p ∈ export_resources(ℒᵗʳᵃⁿˢ, a)], 
+            m[:area_export][a, t, p] == sum(sum(m[:trans_in][l, t, cm] for cm in l.modes if cm.resource == p) for l in ℒᶠʳᵒᵐ))
+        @constraint(m, [t ∈ 𝒯, p ∈ import_resources(ℒᵗʳᵃⁿˢ, a)], 
+            m[:area_import][a, t, p] == sum(sum(m[:trans_out][l, t, cm] for cm in l.modes if cm.resource == p) for l in ℒᵗᵒ ))
+    end
+
+    for l in ℒᵗʳᵃⁿˢ
+        create_trans(m, 𝒯, l)
+    end
+
+end
+
+function create_trans(m, 𝒯, l)
 	# Generic trans in which each output corresponds to the input
-    @constraint(m, [t ∈ 𝒯, p ∈ trans_res(l)],
-        m[:trans_out][l, t, p] == m[:trans_in][l, t, p])
+    @constraint(m, [t ∈ 𝒯, cm ∈ corridor_modes(l)],
+        m[:trans_out][l, t, cm] == m[:trans_in][l, t, cm] + m[:trans_loss][l, t, cm])
+
+    @constraint(m, [t ∈ 𝒯, cm ∈ corridor_modes(l)],
+        m[:trans_out][l, t, cm] <= m[:trans_max][l, t, cm])
 end

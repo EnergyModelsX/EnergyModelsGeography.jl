@@ -1,16 +1,9 @@
 function run_model(fn, optimizer=nothing)
    @debug "Run model" fn optimizer
-    
-    areas = Dict(1=>Dict(:name=> "Oslo", :lat=> 59.921, :lon=> 10.751),
-                 2=>Dict(:name=> "Bergen", :lat=> 60.389, :lon=> 5.334),
-                 3=>Dict(:name=> "Trondheim", :lat=> 63.4366, :lon=> 10.398),
-                 4=>Dict(:name=> "Tromsø", :lat=> 69.669, :lon=> 18.953))
-    transmission = Dict(1 => [2, 3],
-                        2 => [4])
 
-    data = read_data(areas, transmission)
+    data = read_data()
     case = EMB.OperationalCase(StrategicFixedProfile([450, 400, 350, 300]))
-    model = EMB.OperationalModel(case)
+    model = EMB.GeographyModel(case)
     m = create_model(data, model)
 
     if !isnothing(optimizer)
@@ -24,40 +17,49 @@ function run_model(fn, optimizer=nothing)
     return m, data
 end
 
-function read_data(area_data::Dict, transmission_data::Dict)
+function read_data()
     @debug "Read data"
     @info "Hard coded dummy model for now"
 
     𝒫₀, 𝒫ᵉᵐ₀, products = get_resources()
 
     #
+    area_ids = [1, 2, 3, 4]
     d_scale = Dict(1=>3.0, 2=>1.5, 3=>1.0, 4=>0.5)
     mc_scale = Dict(1=>2.0, 2=>2.0, 3=>1.5, 4=>0.5)
 
+
     # Create identical areas with index accoriding to input array
-    areas = []
+    an = Dict()
     transmission = []
     nodes = []
     links = []
-    for (a_id, a_attr) in area_data
+    for a_id in area_ids
         n, l = get_sub_system_data(a_id, 𝒫₀, 𝒫ᵉᵐ₀, products, mc_scale = mc_scale[a_id], d_scale = d_scale[a_id])
         append!(nodes, n)
         append!(links, l)
 
         # Add area node for each subsystem
-        area = Area(a_attr[:name], a_attr[:lat], a_attr[:lon], n[1])
-        append!(areas, [area])
+        an[a_id] = n[1]
     end
 
+    areas = [Area(1, "Oslo", 10.751, 59.921, an[1]),
+             Area(2, "Bergen", 5.334, 60.389, an[2]),
+             Area(3, "Trondheim", 10.398, 63.4366, an[3]),
+             Area(4, "Tromsø", 18.953, 69.669, an[4])]
+
+    NG = products[2]
+    Power = products[3]
+
+    OverheadLine_50MW = RefStatic("PowerLine_50", Power, 50.0, 0.05)#, EMB.Linear)
+    LNG_Ship_100MW = RefDynamic("LNG_100", NG, 100.0, 0.05)#, EMB.Linear)
+
     # Create transmission between areas
-    for (t_from, to_list) in transmission_data
-        from_name = area_data[t_from][:name]
-        for t_to in to_list
-            to_name = area_data[t_to][:name]
-            id = join([from_name, "-", to_name])
-            append!(transmission, [Transmission(id, areas[t_from], areas[t_to], EMB.Linear())])
-        end
-    end
+    transmission = [Transmission(areas[1], areas[2], [OverheadLine_50MW]),
+                    Transmission(areas[1], areas[3], [OverheadLine_50MW]),
+                    Transmission(areas[2], areas[3], [OverheadLine_50MW]),
+                    Transmission(areas[3], areas[4], [OverheadLine_50MW]),
+                    Transmission(areas[4], areas[2], [LNG_Ship_100MW])]
 
     T = UniformTwoLevel(1, 4, 1, UniformTimes(1, 24, 1))
     # WIP data structure
@@ -106,7 +108,7 @@ function get_sub_system_data(i,𝒫₀, 𝒫ᵉᵐ₀, products; mc_scale::Float
             EMB.RefSource(j+3, FixedProfile(1e12), FixedProfile(9*mc_scale), Dict(Coal => 1), 𝒫ᵉᵐ₀),  
             EMB.RefGeneration(j+4, FixedProfile(25), FixedProfile(5.5*mc_scale), Dict(NG => 2), Dict(Power => 1, CO2 => 1), 𝒫ᵉᵐ₀, 0.9),  
             EMB.RefGeneration(j+5, FixedProfile(25), FixedProfile(6*mc_scale),  Dict(Coal => 2.5), Dict(Power => 1, CO2 => 1), 𝒫ᵉᵐ₀, 0),  
-            EMB.RefStorage(j+6, FixedProfile(600), FixedProfile(9.1),  Dict(CO2 => 1, Power => 0.02), Dict(CO2 => 1)),
+            EMB.RefStorage(j+6, FixedProfile(20), 600, FixedProfile(9.1),  Dict(CO2 => 1, Power => 0.02), Dict(CO2 => 1)),
             EMB.RefSink(j+7, DynamicProfile(demand),
                     Dict(:surplus => 0, :deficit => 1e6), Dict(Power => 1), 𝒫ᵉᵐ₀),
             ]
