@@ -4,8 +4,10 @@ import EnergyModelsBase; const EMB = EnergyModelsBase
 using TimeStructures
 using JuMP
 using GLPK
+using PlotlyJS, DataFrames, CSV
+import Statistics
 
-## Run with several areas and Geography package
+## Run with Geography package and several areas
 import Geography; const GEO = Geography
 
 m, data = GEO.run_model("", GLPK.Optimizer)
@@ -14,7 +16,7 @@ m, data = GEO.run_model("", GLPK.Optimizer)
 𝒯 = data[:T]
 𝒩 = data[:nodes]
 𝒩ⁿᵒᵗ = EMB.node_not_av(𝒩)
-av = 𝒩[findall(x -> isa(x,EMB.Availability), 𝒩)]
+av = 𝒩[findall(x -> isa(x, EMB.Availability), 𝒩)]
 areas = data[:areas]
 ℒᵗʳᵃⁿˢ = data[:transmission]
 𝒫 = data[:products]
@@ -47,14 +49,14 @@ println(trans)
 
 ## Plot map - areas and transmission
 
-using PlotlyJS, DataFrames, CSV
 function system_map()
     marker = attr(size=20,
                   color=10)
-    layout = Layout(geo_scope="europe", geo_resolution=50, width=500, height=550,
-                    margin=attr(l=0, r=0, t=10, b=0))
+    layout = Layout(geo=attr(scope="europe", resolution=50, fitbounds="locations",
+                             showland=true, landcolor="lightgrey", showocean=true, oceancolor="lightblue"),
+                    width=500, height=550, margin=attr(l=0, r=0, t=10, b=0))
 
-    nodes = scattergeo(;mode="markers", lat=[i.lat for i in data[:areas]], lon=[i.lon for i in data[:areas]],
+    nodes = scattergeo(mode="markers", lat=[i.lat for i in data[:areas]], lon=[i.lon for i in data[:areas]],
                         marker=marker, name="Areas", text = [i.name for i in data[:areas]])
 
     linestyle = attr(line= attr(width = 2.0, dash="dash"))
@@ -70,12 +72,13 @@ end
 system_map()
 
 ## Plot map with sizing for resource
-import Statistics
 
 function resource_map_avg(m, resource, times, lines; line_scale = 10, node_scale = 20)
 
-    layout = Layout(geo_scope="europe", geo_resolution=50, width=500, height=550,
-                    margin=attr(l=0, r=0, t=10, b=0), title=attr(text=resource.id, y=0.9))
+    layout = Layout(geo=attr(scope="europe", resolution=50, fitbounds="locations",
+                            showland=true, landcolor="lightgrey", showocean=true, oceancolor="lightblue"),
+                    width=500, height=550, margin=attr(l=0, r=0, t=10, b=0),
+                    title=attr(text=resource.id, y=0.9))
     # Production data
     time_values = Dict(a.name => [value.(m[:flow_in])[a.an, t, 𝒫[3]] for t ∈ 𝒯] for a ∈ areas)
     mean_values = Dict(k=> round(Statistics.mean(v), digits=2) for (k, v) in time_values)
