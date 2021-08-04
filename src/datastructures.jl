@@ -1,8 +1,8 @@
 
-struct GeoAvailability <: Availability
+struct GeoAvailability <: EMB.Availability
     id
-    input::Dict{Resource, Real}
-    output::Dict{Resource, Real}
+    input::Dict{EMB.Resource, Real}
+    output::Dict{EMB.Resource, Real}
 end
 
 # Nodes

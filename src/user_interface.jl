@@ -103,7 +103,7 @@ function get_sub_system_data(i,𝒫₀, 𝒫ᵉᵐ₀, products; mc_scale::Float
 
     j=(i-1)*100
     nodes = [
-            EMB.GeoAvailability(j+1, 𝒫₀, 𝒫₀),
+            GeoAvailability(j+1, 𝒫₀, 𝒫₀),
             EMB.RefSource(j+2, FixedProfile(1e12), FixedProfile(30*mc_scale), Dict(NG => 1), 𝒫ᵉᵐ₀),  
             EMB.RefSource(j+3, FixedProfile(1e12), FixedProfile(9*mc_scale), Dict(Coal => 1), 𝒫ᵉᵐ₀),  
             EMB.RefGeneration(j+4, FixedProfile(25), FixedProfile(5.5*mc_scale), Dict(NG => 2), Dict(Power => 1, CO2 => 1), 𝒫ᵉᵐ₀, 0.9),  

@@ -67,7 +67,7 @@ function constraints_transmission(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
 
 end
 
-function create_node(m, n::GeoAvailability, 𝒯, 𝒫)
+function EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫)
 
     # The constratint for balance in an availability node is replaced
     # by an alternative formulation in the geography package 
