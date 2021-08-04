@@ -67,6 +67,12 @@ function constraints_transmission(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
 
 end
 
+function create_node(m, n::GeoAvailability, 𝒯, 𝒫)
+
+    # The constratint for balance in an availability node is replaced
+    # by an alternative formulation in the geography package 
+end
+
 function create_trans(m, 𝒯, l)
 	# Generic trans in which each output corresponds to the input
     @constraint(m, [t ∈ 𝒯, cm ∈ corridor_modes(l)],

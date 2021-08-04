@@ -1,4 +1,10 @@
 
+struct GeoAvailability <: Availability
+    id
+    input::Dict{Resource, Real}
+    output::Dict{Resource, Real}
+end
+
 # Nodes
 struct Area
 	id
