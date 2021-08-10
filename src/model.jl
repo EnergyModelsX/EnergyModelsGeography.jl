@@ -76,8 +76,11 @@ end
 function create_trans(m, 𝒯, l)
 	# Generic trans in which each output corresponds to the input
     @constraint(m, [t ∈ 𝒯, cm ∈ corridor_modes(l)],
-        m[:trans_out][l, t, cm] == m[:trans_in][l, t, cm] + m[:trans_loss][l, t, cm])
-
+        m[:trans_out][l, t, cm] == m[:trans_in][l, t, cm] - m[:trans_loss][l, t, cm])
+    
+    @constraint(m, [t ∈ 𝒯, cm ∈ corridor_modes(l)],
+        m[:trans_loss][l, t, cm] == cm.loss * m[:trans_in][l, t, cm])
+    
     @constraint(m, [t ∈ 𝒯, cm ∈ corridor_modes(l)],
         m[:trans_out][l, t, cm] <= m[:trans_max][l, t, cm])
 end
