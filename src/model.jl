@@ -32,12 +32,11 @@ end
 function variables_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
     @variable(m, trans_in[l ∈ ℒᵗʳᵃⁿˢ,  𝒯, corridor_modes(l)] >= 0)
     @variable(m, trans_out[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, corridor_modes(l)] >= 0)
-    @variable(m, trans_cap[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, corridor_modes(l)] >= 0)
     @variable(m, trans_loss[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, corridor_modes(l)] >= 0)
-    @variable(m, trans_max[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, corridor_modes(l)] >= 0)
+    @variable(m, trans_cap[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, corridor_modes(l)] >= 0)
 
     for l ∈ ℒᵗʳᵃⁿˢ, t ∈ 𝒯, cm ∈ corridor_modes(l)
-        @constraint(m, trans_max[l, t, cm] == cm.capacity)
+        @constraint(m, trans_cap[l, t, cm] == cm.capacity)
     end
 end
 
@@ -82,5 +81,5 @@ function create_trans(m, 𝒯, l)
         m[:trans_loss][l, t, cm] == cm.loss * m[:trans_in][l, t, cm])
     
     @constraint(m, [t ∈ 𝒯, cm ∈ corridor_modes(l)],
-        m[:trans_out][l, t, cm] <= m[:trans_max][l, t, cm])
+        m[:trans_out][l, t, cm] <= m[:trans_cap][l, t, cm])
 end
