@@ -104,11 +104,11 @@ function get_sub_system_data(i,𝒫₀, 𝒫ᵉᵐ₀, products; mc_scale::Float
     j=(i-1)*100
     nodes = [
             GeoAvailability(j+1, 𝒫₀, 𝒫₀),
-            EMB.RefSource(j+2, FixedProfile(1e12), FixedProfile(30*mc_scale), Dict(NG => 1), 𝒫ᵉᵐ₀),  
-            EMB.RefSource(j+3, FixedProfile(1e12), FixedProfile(9*mc_scale), Dict(Coal => 1), 𝒫ᵉᵐ₀),  
-            EMB.RefGeneration(j+4, FixedProfile(25), FixedProfile(5.5*mc_scale), Dict(NG => 2), Dict(Power => 1, CO2 => 1), 𝒫ᵉᵐ₀, 0.9),  
-            EMB.RefGeneration(j+5, FixedProfile(25), FixedProfile(6*mc_scale),  Dict(Coal => 2.5), Dict(Power => 1, CO2 => 1), 𝒫ᵉᵐ₀, 0),  
-            EMB.RefStorage(j+6, FixedProfile(20), 600, FixedProfile(9.1),  Dict(CO2 => 1, Power => 0.02), Dict(CO2 => 1)),
+            EMB.RefSource(j+2, FixedProfile(1e12), FixedProfile(30*mc_scale), FixedProfile(10), Dict(NG => 1), 𝒫ᵉᵐ₀, Dict(""=>EMB.EmptyData())),  
+            EMB.RefSource(j+3, FixedProfile(1e12), FixedProfile(9*mc_scale), FixedProfile(10), Dict(Coal => 1), 𝒫ᵉᵐ₀, Dict(""=>EMB.EmptyData())),
+            EMB.RefGeneration(j+4, FixedProfile(25), FixedProfile(5.5*mc_scale), FixedProfile(10), Dict(NG => 2), Dict(Power => 1, CO2 => 1), 𝒫ᵉᵐ₀, 0.9, Dict(""=>EMB.EmptyData())),  
+            EMB.RefGeneration(j+5, FixedProfile(25), FixedProfile(6*mc_scale), FixedProfile(10), Dict(Coal => 2.5), Dict(Power => 1, CO2 => 1), 𝒫ᵉᵐ₀, 0, Dict(""=>EMB.EmptyData())),  
+            EMB.RefStorage(j+6, FixedProfile(20), 600, FixedProfile(9.1), FixedProfile(1), Dict(CO2 => 1, Power => 0.02), Dict(CO2 => 1), Dict(""=>EMB.EmptyData())),
             EMB.RefSink(j+7, DynamicProfile(demand),
                     Dict(:surplus => 0, :deficit => 1e6), Dict(Power => 1), 𝒫ᵉᵐ₀),
             ]
