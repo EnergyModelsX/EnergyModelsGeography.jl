@@ -1,10 +1,9 @@
-function run_model(fn, optimizer=nothing)
+function run_model(fn, modeltype, optimizer=nothing)
    @debug "Run model" fn optimizer
 
-    data = read_data()
-    case = EMB.OperationalCase(StrategicFixedProfile([450, 400, 350, 300]))
-    model = EMB.OperationalModel(case)
-    m = create_model(data, model)
+    data = read_data(modeltype)
+
+    m = create_model(data, modeltype)
 
     if !isnothing(optimizer)
         set_optimizer(m, optimizer)
@@ -17,7 +16,7 @@ function run_model(fn, optimizer=nothing)
     return m, data
 end
 
-function read_data()
+function read_data(modeltype)
     @debug "Read data"
     @info "Hard coded dummy model for now"
 
@@ -35,7 +34,7 @@ function read_data()
     nodes = []
     links = []
     for a_id in area_ids
-        n, l = get_sub_system_data(a_id, 𝒫₀, 𝒫ᵉᵐ₀, products, mc_scale = mc_scale[a_id], d_scale = d_scale[a_id])
+        n, l = get_sub_system_data(a_id, 𝒫₀, 𝒫ᵉᵐ₀, products; mc_scale = mc_scale[a_id], d_scale = d_scale[a_id], modeltype)
         append!(nodes, n)
         append!(links, l)
 
@@ -91,7 +90,7 @@ function get_resources()
 end
 
 # Subsystem test data for geography package
-function get_sub_system_data(i,𝒫₀, 𝒫ᵉᵐ₀, products; mc_scale::Float64=1.0, d_scale::Float64=1.0)
+function get_sub_system_data(i,𝒫₀, 𝒫ᵉᵐ₀, products; mc_scale::Float64=1.0, d_scale::Float64=1.0, modeltype)
 
     NG, Coal, Power, CO2 = products
 
@@ -104,11 +103,11 @@ function get_sub_system_data(i,𝒫₀, 𝒫ᵉᵐ₀, products; mc_scale::Float
     j=(i-1)*100
     nodes = [
             GeoAvailability(j+1, 𝒫₀, 𝒫₀),
-            EMB.RefSource(j+2, FixedProfile(1e12), FixedProfile(30*mc_scale), FixedProfile(10), Dict(NG => 1), 𝒫ᵉᵐ₀, Dict(""=>EMB.EmptyData())),  
-            EMB.RefSource(j+3, FixedProfile(1e12), FixedProfile(9*mc_scale), FixedProfile(10), Dict(Coal => 1), 𝒫ᵉᵐ₀, Dict(""=>EMB.EmptyData())),
-            EMB.RefGeneration(j+4, FixedProfile(25), FixedProfile(5.5*mc_scale), FixedProfile(10), Dict(NG => 2), Dict(Power => 1, CO2 => 1), 𝒫ᵉᵐ₀, 0.9, Dict(""=>EMB.EmptyData())),  
-            EMB.RefGeneration(j+5, FixedProfile(25), FixedProfile(6*mc_scale), FixedProfile(10), Dict(Coal => 2.5), Dict(Power => 1, CO2 => 1), 𝒫ᵉᵐ₀, 0, Dict(""=>EMB.EmptyData())),  
-            EMB.RefStorage(j+6, FixedProfile(20), 600, FixedProfile(9.1), FixedProfile(1), Dict(CO2 => 1, Power => 0.02), Dict(CO2 => 1), Dict(""=>EMB.EmptyData())),
+            EMB.RefSource(j+2, FixedProfile(1e12), FixedProfile(30*mc_scale), FixedProfile(0), Dict(NG => 1), 𝒫ᵉᵐ₀, Dict("" => EMB.EmptyData())),  
+            EMB.RefSource(j+3, FixedProfile(1e12), FixedProfile(9*mc_scale), FixedProfile(0), Dict(Coal => 1), 𝒫ᵉᵐ₀, Dict("" => EMB.EmptyData())),  
+            EMB.RefGeneration(j+4, FixedProfile(25), FixedProfile(5.5*mc_scale), FixedProfile(0), Dict(NG => 2), Dict(Power => 1, CO2 => 1), 𝒫ᵉᵐ₀, 0.9, Dict("" => EMB.EmptyData())),  
+            EMB.RefGeneration(j+5, FixedProfile(25), FixedProfile(6*mc_scale), FixedProfile(0),  Dict(Coal => 2.5), Dict(Power => 1, CO2 => 1), 𝒫ᵉᵐ₀, 0, Dict("" => EMB.EmptyData())),  
+            EMB.RefStorage(j+6, FixedProfile(20), FixedProfile(600), FixedProfile(9.1), FixedProfile(0),  Dict(CO2 => 1, Power => 0.02), Dict(CO2 => 1), Dict("" => EMB.EmptyData())),
             EMB.RefSink(j+7, DynamicProfile(demand),
                     Dict(:surplus => 0, :deficit => 1e6), Dict(Power => 1), 𝒫ᵉᵐ₀),
             ]

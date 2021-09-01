@@ -10,7 +10,10 @@ import Statistics
 ## Run with Geography package and several areas
 import Geography; const GEO = Geography
 
-m, data = GEO.run_model("", GLPK.Optimizer)
+case = EMB.OperationalCase(StrategicFixedProfile([450, 400, 350, 300]))
+model = EMB.OperationalModel(case)
+
+m, data = GEO.run_model("", model, GLPK.Optimizer)
 
 𝒯ᴵⁿᵛ = strategic_periods(data[:T])
 𝒯 = data[:T]
