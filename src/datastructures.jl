@@ -23,6 +23,7 @@ struct RefDynamic <: TransmissionMode # E.g. Trucks, ships etc.
     resource::EMB.Resource
     capacity::Real
     loss:: Real
+    directions::Int # 1: Unidirectional or 2: Bidirectional
     #formulation::EMB.Formulation # linear/non-linear etc.
 end
 struct RefStatic <: TransmissionMode # E.g. overhead power lines, pipelines etc.
@@ -30,6 +31,7 @@ struct RefStatic <: TransmissionMode # E.g. overhead power lines, pipelines etc.
     resource::EMB.Resource
     capacity::Real
     loss::Real
+    directions::Int
     #formulation::EMB.Formulation
 end
 
@@ -68,8 +70,14 @@ function export_resources(ℒ, a::Area)
     return trans_resources(l_to)
 end
 
+function exchange_resources(ℒ, a::Area)
+    l_exch = vcat(import_resources(ℒ, a), export_resources(ℒ, a))
+    return unique(l_exch)
+end
 
-
+function modes_of_dir(l, dir::Int)
+    return l.modes[findall(x -> x.directions == dir, l.modes)]
+end
 #function trans_res(l::Transmission)
 #    return intersect(keys(l.to.an.input), keys(l.from.an.output))
 #end

@@ -42,8 +42,49 @@ for l ∈ ℒᵗʳᵃⁿˢ
         trans[l, cm.name] =  [value.(m[:trans_out])[l, t, cm] for t ∈ 𝒯]
     end
 end
-println("Power flow")
-println(trans)
+
+trans_in = Dict()
+for l ∈ ℒᵗʳᵃⁿˢ
+    for cm ∈ l.modes
+        trans_in[l, cm.name] =  [value.(m[:trans_in])[l, t, cm] for t ∈ 𝒯]
+    end
+end
+
+trans_loss = Dict()
+for l ∈ ℒᵗʳᵃⁿˢ
+    for cm ∈ l.modes
+        trans_loss[l, cm.name] =  [value.(m[:trans_loss])[l, t, cm] for t ∈ 𝒯]
+    end
+end
+
+trace=[]
+for (k, v) in trans
+    print(string(k[1]))
+    tr = scatter(; y=v, mode="lines", name=join([string(k[1]), "<br>", k[2], " transmission"]))
+    trace = vcat(trace, tr)
+    tr = scatter(; y=trans_loss[k], mode="lines", name=join([string(k[1]), "<br>", k[2], " loss"]))
+    trace = vcat(trace, tr)
+end
+plot(Array{GenericTrace}(trace))
+
+trace=[]
+k = collect(keys(trans))[1]
+tr = scatter(; y=trans[k], mode="lines", name=join([string(k[1]), "<br>", k[2], " trans out"]))
+trace = vcat(trace, tr)
+tr = scatter(; y=trans_in[k], mode="lines", name=join([string(k[1]), "<br>", k[2], " trans in"]))
+trace = vcat(trace, tr)
+tr = scatter(; y=trans_loss[k], mode="lines", name=join([string(k[1]), "<br>", k[2], " loss"]))
+trace = vcat(trace, tr)
+plot(Array{GenericTrace}(trace))
+
+exch = Dict()
+for a ∈ areas
+    for cm ∈ GEO.exchange_resources(ℒᵗʳᵃⁿˢ, a)
+        exch[a, cm] =  [value.(m[:area_exchange])[a, t, cm] for t ∈ 𝒯]
+    end
+end
+println("Exchange")
+println(exch)
 
 #trans = Dict((l, cm.name) => [value.(m[:trans_out])[l, t, cm] for t ∈ 𝒯] for l ∈ ℒᵗʳᵃⁿˢ, cm ∈ l.modes)
 
@@ -81,7 +122,7 @@ function resource_map_avg(m, resource, times, lines; line_scale = 10, node_scale
                     title=attr(text=resource.id, y=0.9))
     # Production data
     time_values = Dict(a.name => [value.(m[:flow_in])[a.an, t, 𝒫[3]] for t ∈ 𝒯] for a ∈ areas)
-    mean_values = Dict(k=> round(Statistics.mean(v), digits=2) for (k, v) in time_values)
+    mean_values = Dict(k => round(Statistics.mean(v), digits=2) for (k, v) in time_values)
     scale = node_scale/maximum(values(mean_values))
     nodes = scattergeo(;lat=[i.lat for i in data[:areas]], lon=[i.lon for i in data[:areas]],
                        mode="markers", marker=attr(size=[mean_values[i.name]*scale for i in data[:areas]], color=10),
