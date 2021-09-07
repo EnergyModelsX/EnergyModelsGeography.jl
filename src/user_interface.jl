@@ -128,7 +128,7 @@ function get_sub_system_data(i,𝒫₀, 𝒫ᵉᵐ₀, products;
             EMB.RefGeneration(j+5, FixedProfile(25*gen_scale), FixedProfile(6*mc_scale), FixedProfile(10), Dict(Coal => 2.5), Dict(Power => 1, CO2 => 1), 𝒫ᵉᵐ₀, 0, Dict(""=>EMB.EmptyData())),  
             EMB.RefStorage(j+6, FixedProfile(20), FixedProfile(600), FixedProfile(9.1), FixedProfile(1), Dict(CO2 => 1, Power => 0.02), Dict(CO2 => 1), Dict(""=>EMB.EmptyData())),
             EMB.RefSink(j+7, DynamicProfile(demand),
-                    Dict(:surplus => 0, :deficit => 1e6), Dict(Power => 1), 𝒫ᵉᵐ₀),
+                    Dict(:Surplus => 0, :Deficit => 1e6), Dict(Power => 1), 𝒫ᵉᵐ₀),
             ]
 
     links = [

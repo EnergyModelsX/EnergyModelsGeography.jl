@@ -1,58 +1,58 @@
 
 struct GeoAvailability <: EMB.Availability
     id
-    input::Dict{EMB.Resource, Real}
-    output::Dict{EMB.Resource, Real}
+    Input::Dict{EMB.Resource, Real}
+    Output::Dict{EMB.Resource, Real}
 end
 
 # Nodes
 struct Area
 	id
-    name
-	lon::Real
-	lat::Real
-	an::EMB.Availability
+    Name
+	Lon::Real
+	Lat::Real
+	An::EMB.Availability
 end
-Base.show(io::IO, a::Area) = print(io, "$(a.name)")
+Base.show(io::IO, a::Area) = print(io, "$(a.Name)")
 
 abstract type TransmissionMode end 
-Base.show(io::IO, t::TransmissionMode) = print(io, "$(t.name)")
+Base.show(io::IO, t::TransmissionMode) = print(io, "$(t.Name)")
 
 struct RefDynamic <: TransmissionMode # E.g. Trucks, ships etc.
-    name::String
-    resource::EMB.Resource
-    capacity::Real
-    loss:: Real
-    directions::Int # 1: Unidirectional or 2: Bidirectional
+    Name::String
+    Resource::EMB.Resource
+    Trans_cap::Real
+    Trans_loss:: Real
+    Directions::Int # 1: Unidirectional or 2: Bidirectional
     #formulation::EMB.Formulation # linear/non-linear etc.
 end
 struct RefStatic <: TransmissionMode # E.g. overhead power lines, pipelines etc.
-    name::String
-    resource::EMB.Resource
-    capacity::Real
-    loss::Real
-    directions::Int
+    Name::String
+    Resource::EMB.Resource
+    Trans_cap::Real
+    Trans_loss::Real
+    Directions::Int
     #formulation::EMB.Formulation
 end
 
 # Transmission
 struct Transmission
-    from::Area
-    to::Area
-    modes::Array{TransmissionMode}
+    From::Area
+    To::Area
+    Modes::Array{TransmissionMode}
     #distance::Float
 end
-Base.show(io::IO, t::Transmission) = print(io, "$(t.from)-$(t.to)")
+Base.show(io::IO, t::Transmission) = print(io, "$(t.From)-$(t.To)")
 
 function trans_sub(ℒ, a::Area)
-    return [ℒ[findall(x -> x.from == a, ℒ)],
-            ℒ[findall(x -> x.to   == a, ℒ)]]
+    return [ℒ[findall(x -> x.From == a, ℒ)],
+            ℒ[findall(x -> x.To   == a, ℒ)]]
 end
 function corridor_modes(l)
-    return [m for m in l.modes]
+    return [m for m in l.Modes]
 end
 function mode_resources(l)
-    return unique([m.resource for m in l.modes])
+    return unique([m.Resource for m in l.Modes])
 end
 function trans_resources(ℒ)
     res = []
@@ -62,11 +62,11 @@ function trans_resources(ℒ)
     return unique(res)
 end
 function import_resources(ℒ, a::Area)
-    l_from = ℒ[findall(x -> x.from == a, ℒ)]
+    l_from = ℒ[findall(x -> x.From == a, ℒ)]
     return trans_resources(l_from)
 end
 function export_resources(ℒ, a::Area)
-    l_to = ℒ[findall(x -> x.to == a, ℒ)]
+    l_to = ℒ[findall(x -> x.To == a, ℒ)]
     return trans_resources(l_to)
 end
 
@@ -76,10 +76,10 @@ function exchange_resources(ℒ, a::Area)
 end
 
 function modes_of_dir(l, dir::Int)
-    return l.modes[findall(x -> x.directions == dir, l.modes)]
+    return l.Modes[findall(x -> x.Directions == dir, l.Modes)]
 end
 #function trans_res(l::Transmission)
-#    return intersect(keys(l.to.an.input), keys(l.from.an.output))
+#    return intersect(keys(l.To.An.Input), keys(l.From.An.Output))
 #end
 
 # Map example (go.Scattermapbox at bottom of page)

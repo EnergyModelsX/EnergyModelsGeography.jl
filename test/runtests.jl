@@ -26,7 +26,7 @@ function small_graph(source=nothing, sink=nothing)
     end
 
     if isnothing(sink)
-        sink = EMB.RefSink("-snk", FixedProfile(20), Dict(:surplus => 0, :deficit => 1e6), Dict(Power => 1), 𝒫ᵉᵐ₀)
+        sink = EMB.RefSink("-snk", FixedProfile(20), Dict(:Surplus => 0, :Deficit => 1e6), Dict(Power => 1), 𝒫ᵉᵐ₀)
     end
 
     nodes = [GEO.GeoAvailability(1, 𝒫₀, 𝒫₀), GEO.GeoAvailability(1, 𝒫₀, 𝒫₀), source, sink]
@@ -88,7 +88,7 @@ end
     𝒯 = data[:T]
 
     tr_osl_trd, tr_trd_osl = data[:transmission]
-    trans_mode = data[:transmission][1].modes[1]
+    trans_mode = data[:transmission][1].Modes[1]
 
     general_tests(m)
     
@@ -97,8 +97,8 @@ end
         loss = trans_mode.loss
         if sum(value.(m[:cap_max][source, t]) ≥ value.(m[:cap_max][sink, t]) for t ∈ 𝒯) == length(𝒯)
             # If the source has the needed capacity, it should cover the usage in the sink exactly.
-            @test sum(round(value.(m[:cap_usage][source, t]) * (1 - loss), digits = ROUND_DIGITS) 
-                == round(value.(m[:cap_usage][sink, t]), digits = ROUND_DIGITS) for t ∈ 𝒯) == length(𝒯)
+            @test sum(round(value.(m[:cap_use][source, t]) * (1 - loss), digits = ROUND_DIGITS) 
+                == round(value.(m[:cap_use][sink, t]), digits = ROUND_DIGITS) for t ∈ 𝒯) == length(𝒯)
    
             # TODO: check that the correct amount is transmitted.
         end
