@@ -18,7 +18,7 @@ end
 
 function read_data(modeltype)
     @debug "Read data"
-    @info "Hard coded dummy model for now"
+    @info "Hard coded dummy model for now."
 
     𝒫₀, 𝒫ᵉᵐ₀, products = get_resources()
 
@@ -54,11 +54,11 @@ function read_data(modeltype)
     LNG_Ship_100MW = RefDynamic("LNG_100", NG, 100.0, 0.05)#, EMB.Linear)
 
     # Create transmission between areas
-    transmission = [Transmission(areas[1], areas[2], [OverheadLine_50MW]),
-                    Transmission(areas[1], areas[3], [OverheadLine_50MW]),
-                    Transmission(areas[2], areas[3], [OverheadLine_50MW]),
-                    Transmission(areas[3], areas[4], [OverheadLine_50MW]),
-                    Transmission(areas[4], areas[2], [LNG_Ship_100MW])]
+    transmission = [Transmission(areas[1], areas[2], [OverheadLine_50MW],[Dict(""=> EMB.EmptyData())]),
+                    Transmission(areas[1], areas[3], [OverheadLine_50MW],[Dict(""=> EMB.EmptyData())]),
+                    Transmission(areas[2], areas[3], [OverheadLine_50MW],[Dict(""=> EMB.EmptyData())]),
+                    Transmission(areas[3], areas[4], [OverheadLine_50MW],[Dict(""=> EMB.EmptyData())]),
+                    Transmission(areas[4], areas[2], [LNG_Ship_100MW],[Dict(""=> EMB.EmptyData())])]
 
     T = UniformTwoLevel(1, 4, 1, UniformTimes(1, 24, 1))
     # WIP data structure
@@ -91,7 +91,7 @@ end
 
 # Subsystem test data for geography package
 function get_sub_system_data(i,𝒫₀, 𝒫ᵉᵐ₀, products; mc_scale::Float64=1.0, d_scale::Float64=1.0, modeltype)
-
+    
     NG, Coal, Power, CO2 = products
 
     demand = [20 20 20 20 25 30 35 35 40 40 40 40 40 35 35 30 25 30 35 30 25 20 20 20;

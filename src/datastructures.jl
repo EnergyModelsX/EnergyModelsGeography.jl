@@ -38,6 +38,7 @@ struct Transmission
     from::Area
     to::Area
     modes::Array{TransmissionMode}
+    data::Array{Dict{String, EMB.Data}}
     #distance::Float
 end
 Base.show(io::IO, t::Transmission) = print(io, "$(t.from)-$(t.to)")
