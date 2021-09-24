@@ -37,7 +37,7 @@ function small_graph(source=nothing, sink=nothing)
     areas = [GEO.Area(1, "Oslo", 10.751, 59.921, nodes[1]), 
              GEO.Area(2, "Trondheim", 10.398, 63.4366, nodes[2])]        
 
-    transmission_line = GEO.RefStatic("transline", Power, 100, 0.1)
+    transmission_line = GEO.RefStatic("transline", Power, 100, 0.1, 1)
     transmissions = [GEO.Transmission(areas[1], areas[2], [transmission_line]),
                     GEO.Transmission(areas[2], areas[1], [transmission_line])]
 
@@ -94,8 +94,8 @@ end
     
     @testset "Test transmission" begin
         
-        loss = trans_mode.loss
-        if sum(value.(m[:cap_max][source, t]) ≥ value.(m[:cap_max][sink, t]) for t ∈ 𝒯) == length(𝒯)
+        loss = trans_mode.Trans_loss
+        if sum(value.(m[:cap_inst][source, t]) ≥ value.(m[:cap_inst][sink, t]) for t ∈ 𝒯) == length(𝒯)
             # If the source has the needed capacity, it should cover the usage in the sink exactly.
             @test sum(round(value.(m[:cap_use][source, t]) * (1 - loss), digits = ROUND_DIGITS) 
                 == round(value.(m[:cap_use][sink, t]), digits = ROUND_DIGITS) for t ∈ 𝒯) == length(𝒯)
