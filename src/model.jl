@@ -13,11 +13,13 @@ function create_model(data, modeltype)
     # Declaration of variables for the problem
     variables_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype)
     variables_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+    variables_capex_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
 
     # Construction of constraints for the problem
     constraints_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype)
     constraints_transmission(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
 
+    update_objective(m, 𝒩, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, modeltype)
     return m
 end
 
@@ -38,6 +40,10 @@ function variables_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
     for l ∈ ℒᵗʳᵃⁿˢ, t ∈ 𝒯, cm ∈ corridor_modes(l)
         @constraint(m, trans_cap[l, t, cm] == cm.Trans_cap)
     end
+end
+
+function variables_capex_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+
 end
 
 function constraints_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype)
@@ -69,6 +75,9 @@ function constraints_transmission(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
         create_trans(m, 𝒯, l)
     end
 
+end
+
+function update_objective(m, 𝒩, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, modeltype)
 end
 
 function EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫)
