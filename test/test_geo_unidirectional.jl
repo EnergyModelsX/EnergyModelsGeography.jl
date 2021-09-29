@@ -1,8 +1,4 @@
-# uklart om transmissions fungerer. Sett en source og en sink med en transmission mellom for å se.
-
-GEO = Geography
-EMB = EnergyModelsBase
-
+# Definition of the individual resources used in the simple system
 NG = ResourceEmit("NG", 0.2)
 CO2 = ResourceEmit("CO2", 1.)
 Power = ResourceCarrier("Power", 0.)
@@ -38,8 +34,8 @@ function small_graph(source=nothing, sink=nothing)
              GEO.Area(2, "Trondheim", 10.398, 63.4366, nodes[2])]        
 
     transmission_line = GEO.RefStatic("transline", Power, 100, 0.1, 1)
-    transmissions = [GEO.Transmission(areas[1], areas[2], [transmission_line]),
-                    GEO.Transmission(areas[2], areas[1], [transmission_line])]
+    transmissions = [GEO.Transmission(areas[1], areas[2], [transmission_line],[Dict(""=> EMB.EmptyData())]),
+                    GEO.Transmission(areas[2], areas[1], [transmission_line],[Dict(""=> EMB.EmptyData())])]
 
 
     T = UniformTwoLevel(1, 4, 1, UniformTimes(1, 4, 1))
@@ -76,7 +72,7 @@ function general_tests(m)
     end
 end
 
-@testset "Geography tests" begin
+@testset "Unidirectional transmission" begin
     
     data = small_graph()
     case = EMB.OperationalCase(EMB.StrategicFixedProfile([450, 400, 350, 300]))    # 
@@ -86,9 +82,11 @@ end
     source = data[:nodes][3]
     sink = data[:nodes][4]
     𝒯 = data[:T]
+    Power = data[:products][2]
 
     tr_osl_trd, tr_trd_osl = data[:transmission]
     trans_mode = data[:transmission][1].Modes[1]
+    areas = data[:areas]
 
     general_tests(m)
     
@@ -106,6 +104,11 @@ end
         # Check that the transmission loss is computed correctly.
         @test sum(round(value.(m[:trans_loss][tr_osl_trd, t, trans_mode]), digits = ROUND_DIGITS) 
             == round(loss * value.(m[:trans_in][tr_osl_trd, t, trans_mode]), digits = ROUND_DIGITS) for t ∈ 𝒯) == length(𝒯)
+
+        for t ∈ 𝒯
+            @test value.(m[:trans_in][tr_osl_trd, t, trans_mode]) >= 0
+            @test value.(m[:trans_in][tr_trd_osl, t, data[:transmission][2].Modes[1]]) == 0
+        end
     end
 
 end

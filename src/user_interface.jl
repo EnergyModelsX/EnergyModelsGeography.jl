@@ -40,9 +40,9 @@ function read_data(modeltype)
     nodes = []
     links = []
     for a_id in area_ids
-        n, l = get_sub_system_data(a_id, 𝒫₀, 𝒫ᵉᵐ₀, products;
+        n, l = get_sub_system_data(a_id, 𝒫₀, 𝒫ᵉᵐ₀, products, modeltype;
                                    gen_scale = gen_scale[a_id], mc_scale = mc_scale[a_id],
-                                   d_scale = d_scale[a_id], demand=demand[a_id], modeltype)
+                                   d_scale = d_scale[a_id], demand=demand[a_id])
         append!(nodes, n)
         append!(links, l)
 
@@ -105,8 +105,8 @@ function get_resources()
 end
 
 # Subsystem test data for geography package
-function get_sub_system_data(i,𝒫₀, 𝒫ᵉᵐ₀, products;
-                            gen_scale::Float64=1.0, mc_scale::Float64=1.0, d_scale::Float64=1.0, demand=false, modeltype)
+function get_sub_system_data(i,𝒫₀, 𝒫ᵉᵐ₀, products, modeltype;
+                            gen_scale::Float64=1.0, mc_scale::Float64=1.0, d_scale::Float64=1.0, demand=false)
     
     NG, Coal, Power, CO2 = products
 
