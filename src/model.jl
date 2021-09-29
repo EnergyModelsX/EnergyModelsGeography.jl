@@ -12,8 +12,8 @@ function create_model(data, modeltype)
 
     # Declaration of variables for the problem
     variables_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype)
-    variables_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
     variables_capex_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+    variables_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
 
     # Construction of constraints for the problem
     constraints_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype)
