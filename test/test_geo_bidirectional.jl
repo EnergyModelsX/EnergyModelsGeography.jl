@@ -3,14 +3,19 @@ NG       = ResourceEmit("NG", 0.2)
 Power    = ResourceCarrier("Power", 0.)
 CO2      = ResourceEmit("CO2",1.)
 products = [NG, Power, CO2]
+
 # Creation of a dictionary with entries of 0. for all resources
 𝒫₀ = Dict(k  => 0 for k ∈ products)
+
 # Creation of a dictionary with entries of 0. for all emission resources
 𝒫ᵉᵐ₀ = Dict(k  => 0. for k ∈ products if typeof(k) == ResourceEmit{Float64})
 𝒫ᵉᵐ₀[CO2] = 0.0
 
-# Definition of the time structure
-T = UniformTwoLevel(1, 1, 1, UniformTimes(1, 2, 1))
+# Creation of the time structure and the used global data
+𝒯 = UniformTwoLevel(1, 1, 1, UniformTimes(1, 2, 1))
+global_data = EMB.EMB_global_data(Dict(CO2 => FixedProfile(1e10),
+                                       NG  => FixedProfile(1e6)
+                                  ))
 
 # Definition of the invidivual nodes
 demand = [40 40]
@@ -42,33 +47,37 @@ links = [
 # Definition of the two areas and the corresponding transmission line between them
 areas = [GEO.Area(1, "Oslo", 10.751, 59.921, nodes[1]),
          GEO.Area(2, "Bergen", 5.334, 60.389, nodes[5])]
+         
+# Definition of the power lines
+OverheadLine_50MW = GEO.RefStatic("PowerLine_50", Power, 30.0, 0.05, 2)
+transmission = [GEO.Transmission(areas[1], areas[2], [OverheadLine_50MW],[Dict(""=> EMB.EmptyData())])]
+
+# Aggregation of the problem data
+data = Dict(
+            :areas          => Array{GEO.Area}(areas),
+            :transmission   => Array{GEO.Transmission}(transmission),
+            :nodes          => Array{EMB.Node}(nodes),
+            :links          => Array{EMB.Link}(links),
+            :products       => products,
+            :T              => 𝒯,
+            :global_data    => global_data,
+            )
 
 @testset "Bidirectional transmission" begin
-    # Definition of the power lines
-    OverheadLine_50MW = GEO.RefStatic("PowerLine_50", Power, 30.0, 0.05, 2)
-    transmission = [GEO.Transmission(areas[1], areas[2], [OverheadLine_50MW],[Dict(""=> EMB.EmptyData())])]
-
-    # Aggregation of the problem data
-    data = Dict(
-        :areas => Array{GEO.Area}(areas),
-        :transmission => Array{GEO.Transmission}(transmission),
-        :nodes => Array{EMB.Node}(nodes),
-        :links => Array{EMB.Link}(links),
-        :products => products,
-        :T => T
-        )
 
     # Create and solve the model
-    case = EMB.OperationalCase(FixedProfile(1e10))
-    model = EMB.OperationalModel(case)
+    model = EMB.OperationalModel()
     m = GEO.create_model(data, model)
     set_optimizer(m, GLPK.Optimizer)
     optimize!(m)
 
-    l = transmission[1]
-    cm = l.Modes[1]
-    for t ∈ T
+    l   = transmission[1]
+    cm  = l.Modes[1]
+
+    for t ∈ 𝒯
+        # The sign should be the same for both directions
         @test sign(value.(m[:trans_in])[l, t, cm]) == sign(value.(m[:trans_out])[l, t, cm])
+        # Depending on the direction, check on the individual flows
         if value.(m[:trans_in])[l, t, cm] <= 0
             @test abs(value.(m[:trans_in])[l, t, cm]) <= abs(value.(m[:trans_out])[l, t, cm])
             @test abs(value.(m[:trans_in])[l, t, cm]) == cm.Trans_cap

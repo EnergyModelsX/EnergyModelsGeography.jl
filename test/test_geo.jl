@@ -10,26 +10,26 @@ import Statistics
 ## Run with Geography package and several areas
 import Geography; const GEO = Geography
 
-case = EMB.OperationalCase(StrategicFixedProfile([450, 400, 350, 300]))
-model = EMB.OperationalModel(case)
+# Create and run the model
+model = EMB.OperationalModel()
+m, case = GEO.run_model("", model, GLPK.Optimizer)
 
-m, data = GEO.run_model("", model, GLPK.Optimizer)
+# Extract the indiviudal data from the model
+𝒯       = case[:T]
+𝒯ᴵⁿᵛ    = strategic_periods(𝒯)
+𝒩       = case[:nodes]
+𝒩ⁿᵒᵗ    = EMB.node_not_av(𝒩)
+av      = 𝒩[findall(x -> isa(x, EMB.Availability), 𝒩)]
+areas   = case[:areas]
+ℒᵗʳᵃⁿˢ  = case[:transmission]
+𝒫       = case[:products]
 
-𝒯ᴵⁿᵛ = strategic_periods(data[:T])
-𝒯 = data[:T]
-𝒩 = data[:nodes]
-𝒩ⁿᵒᵗ = EMB.node_not_av(𝒩)
-av = 𝒩[findall(x -> isa(x, EMB.Availability), 𝒩)]
-areas = data[:areas]
-ℒᵗʳᵃⁿˢ = data[:transmission]
-𝒫 = data[:products]
+CH4     = 𝒫[1]
+Power   = 𝒫[3]
+CO2     = 𝒫[4]
 
-CH4 = data[:products][1]
-CO2 = data[:products][4]
-
+# Calculatie the CO2 emissions
 emissions_CO2 = [value.(m[:emissions_strategic])[t_inv, CO2] for t_inv ∈ 𝒯ᴵⁿᵛ]
-
-Power = 𝒫[3]
 
 # Flow in to availability nodes in each area
 flow_in = Dict(a => [value.(m[:flow_in])[a.An, t, Power] for t ∈ 𝒯] for a ∈ areas)
@@ -90,8 +90,6 @@ end
 println("Exchange")
 println(exch)
 
-#trans = Dict((l, cm.Name) => [value.(m[:trans_out])[l, t, cm] for t ∈ 𝒯] for l ∈ ℒᵗʳᵃⁿˢ, cm ∈ l.Modes)
-
 ## Plot map - areas and transmission
 
 function system_map()
@@ -101,12 +99,12 @@ function system_map()
                              showland=true, landcolor="lightgrey", showocean=true, oceancolor="lightblue"),
                     width=500, height=550, margin=attr(l=0, r=0, t=10, b=0))
 
-    nodes = scattergeo(mode="markers", lat=[i.Lat for i in data[:areas]], lon=[i.Lon for i in data[:areas]],
-                        marker=marker, name="Areas", text = [i.Name for i in data[:areas]])
+    nodes = scattergeo(mode="markers", lat=[i.Lat for i in case[:areas]], lon=[i.Lon for i in case[:areas]],
+                        marker=marker, name="Areas", text = [i.Name for i in case[:areas]])
 
     linestyle = attr(line= attr(width = 2.0, dash="dash"))
     lines = []
-    for l in data[:transmission]
+    for l in case[:transmission]
         line = scattergeo(;mode="lines", lat=[l.From.Lat, l.To.Lat], lon=[l.From.Lon, l.To.Lon],
                         marker=linestyle, width=2.0,  name=join([cm.Name for cm ∈ l.Modes]))
         lines = vcat(lines, [line])
@@ -124,13 +122,14 @@ function resource_map_avg(m, resource, times, lines; line_scale = 10, node_scale
                             showland=true, landcolor="lightgrey", showocean=true, oceancolor="lightblue"),
                     width=500, height=550, margin=attr(l=0, r=0, t=10, b=0),
                     title=attr(text=resource.id, y=0.9))
+                    
     # Production data
     time_values = Dict(a.Name => [value.(m[:flow_in])[a.An, t, 𝒫[3]] for t ∈ 𝒯] for a ∈ areas)
     mean_values = Dict(k => round(Statistics.mean(v), digits=2) for (k, v) in time_values)
     scale = node_scale/maximum(values(mean_values))
-    nodes = scattergeo(;lat=[i.Lat for i in data[:areas]], lon=[i.Lon for i in data[:areas]],
-                       mode="markers", marker=attr(size=[mean_values[i.Name]*scale for i in data[:areas]], color=10),
-                       name="Areas", text = [join([i.Name, ": ", mean_values[i.Name]]) for i in data[:areas]])
+    nodes = scattergeo(;lat=[i.Lat for i in case[:areas]], lon=[i.Lon for i in case[:areas]],
+                       mode="markers", marker=attr(size=[mean_values[i.Name]*scale for i in case[:areas]], color=10),
+                       name="Areas", text = [join([i.Name, ": ", mean_values[i.Name]]) for i in case[:areas]])
 
     # Transmission data
     trans = Dict()
@@ -146,7 +145,7 @@ function resource_map_avg(m, resource, times, lines; line_scale = 10, node_scale
     mean_values = Dict(k=> round(Statistics.mean(v), digits=2) for (k, v) in trans)
     scale = line_scale/maximum(values(mean_values))
     lines = []
-    for l in data[:transmission]
+    for l in case[:transmission]
         line = scattergeo(;lat=[l.From.Lat, l.To.Lat], lon=[l.From.Lon, l.To.Lon],
                           mode="lines", line = attr(width=mean_values[l]*scale),
                           text =  mean_values[l], name=join([cm.Name for cm ∈ l.Modes]))
