@@ -13,8 +13,8 @@ products = [NG, Power, CO2]
 
 # Creation of the time structure and the used global data
 𝒯 = UniformTwoLevel(1, 1, 1, UniformTimes(1, 2, 1))
-global_data = EMB.EMB_global_data(Dict(CO2 => FixedProfile(1e10),
-                                       NG  => FixedProfile(1e6)
+global_data = EMB.GlobalData(Dict(CO2 => FixedProfile(1e10),
+                                  NG  => FixedProfile(1e6)
                                   ))
 
 # Definition of the invidivual nodes
