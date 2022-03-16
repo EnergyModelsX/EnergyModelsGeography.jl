@@ -1,25 +1,27 @@
-# Construction of the model based on the provided data
-function create_model(data, modeltype)
+# Construction of the model based on the provided case data
+function create_model(case, modeltype)
     @debug "Construct model"
-    m = EMB.create_model(data, modeltype) # Basic model
+    # Call of the basic model
+    m = EMB.create_model(case, modeltype)
 
-    𝒜 = data[:areas]
-    ℒᵗʳᵃⁿˢ = data[:transmission]
-    𝒫 = data[:products]
-    𝒯 = data[:T]
-    𝒩 = data[:nodes]
-    # Add geo elements
+    # WIP Data structure
+    𝒜           = case[:areas]
+    ℒᵗʳᵃⁿˢ      = case[:transmission]
+    𝒫           = case[:products]
+    𝒯           = case[:T]
+    𝒩           = case[:nodes]
+    global_data = case[:global_data]
 
-    # Declaration of variables for the problem
+    # Declaration of variables for the problem involving geography
     variables_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype)
-    variables_capex_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+    variables_capex_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, global_data, modeltype)
     variables_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
 
-    # Construction of constraints for the problem
+    # Construction of constraints for the problem involving geography
     constraints_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype)
     constraints_transmission(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
 
-    update_objective(m, 𝒩, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, modeltype)
+    update_objective(m, 𝒩, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, global_data, modeltype)
     return m
 end
 
@@ -60,7 +62,7 @@ Create variables for the capital costs for the investments in transmission.
 
 Empty function to allow for multipled dispatch in the InvestmentModels package
 """
-function variables_capex_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+function variables_capex_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, global_data, modeltype)
 
 end
 
@@ -106,7 +108,7 @@ function constraints_transmission(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
 
 end
 
-function update_objective(m, 𝒩, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, modeltype)
+function update_objective(m, 𝒩, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, global_data, modeltype)
 end
 
 function EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫)
