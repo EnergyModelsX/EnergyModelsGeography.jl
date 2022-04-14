@@ -25,6 +25,7 @@ function create_model(case, modeltype)
     return m
 end
 
+
 """
     variables_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype)
 
@@ -36,6 +37,7 @@ function variables_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype)
 
 end
 
+
 """
     variables_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
 
@@ -43,7 +45,7 @@ Create variables to track how much of installed transmision capacity is used for
 time periods `t ∈ 𝒯` and how much energy is lossed.
 """
 function variables_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
-    @variable(m, trans_in[l ∈ ℒᵗʳᵃⁿˢ,  𝒯, corridor_modes(l)])
+    @variable(m, trans_in[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, corridor_modes(l)])
     @variable(m, trans_out[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, corridor_modes(l)])
     @variable(m, trans_loss[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, corridor_modes(l)] >= 0)
     @variable(m, trans_cap[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, corridor_modes(l)] >= 0)
@@ -55,6 +57,7 @@ function variables_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
     end
 end
 
+
 """
     variables_capex_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ,, modeltype)
 
@@ -65,6 +68,7 @@ Empty function to allow for multipled dispatch in the InvestmentModels package
 function variables_capex_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, global_data, modeltype)
 
 end
+
 
 """
     constraints_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype)
@@ -87,6 +91,7 @@ function constraints_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype)
     end
 end
 
+
 """
     constraints_transmission(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
 
@@ -98,18 +103,34 @@ function constraints_transmission(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
     for a ∈ 𝒜
         ℒᶠʳᵒᵐ, ℒᵗᵒ = trans_sub(ℒᵗʳᵃⁿˢ, a)
         @constraint(m, [t ∈ 𝒯, p ∈ exchange_resources(ℒᵗʳᵃⁿˢ, a)], 
-            m[:area_exchange][a, t, p] == sum(sum(m[:trans_in][l, t, cm] for cm in l.Modes if cm.Resource == p) for l in ℒᶠʳᵒᵐ)
-                                          - sum(sum(m[:trans_out][l, t, cm] for cm in l.Modes if cm.Resource == p) for l in ℒᵗᵒ ))
+            m[:area_exchange][a, t, p] == 
+                sum(sum(compute_trans_in(m, l, t, p, cm) for cm in l.Modes) for l in ℒᶠʳᵒᵐ)
+                - sum(sum(compute_trans_out(m, l, t, p, cm) for cm in l.Modes) for l in ℒᵗᵒ ))
     end
 
     for l in ℒᵗʳᵃⁿˢ
         create_trans(m, 𝒯, l)
     end
-
 end
+
+
+function compute_trans_in(m, l, t, p, cm::TransmissionMode)
+    if cm.Resource == p
+        return m[:trans_in][l, t, cm]
+    end
+end
+
+
+function compute_trans_out(m, l, t, p, cm::TransmissionMode)
+    if cm.Resource == p
+        return m[:trans_out][l, t, cm]
+    end
+end
+
 
 function update_objective(m, 𝒩, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, global_data, modeltype)
 end
+
 
 function EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫)
 
@@ -117,39 +138,46 @@ function EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫)
     # by an alternative formulation in the geography package 
 end
 
+
 function create_trans(m, 𝒯, l)
-	# Generic trans in which each output corresponds to the input
-    @constraint(m, [t ∈ 𝒯, cm ∈ corridor_modes(l)],
+    for cm in l.Modes
+        create_transmission_mode(m, 𝒯, l, cm)
+    end
+end
+
+
+function create_transmission_mode(m, 𝒯, l, cm)
+
+    # Generic trans in which each output corresponds to the input
+    @constraint(m, [t ∈ 𝒯],
         m[:trans_out][l, t, cm] == m[:trans_in][l, t, cm] - m[:trans_loss][l, t, cm])
     
-    @constraint(m, [t ∈ 𝒯, cm ∈ corridor_modes(l)],
+    @constraint(m, [t ∈ 𝒯],
         m[:trans_out][l, t, cm] <= m[:trans_cap][l, t, cm])
 
-    for cm in corridor_modes(l)
-        # Constraints for unidirectional energy transmission
-        if cm.Directions == 1
-            @constraint(m, [t ∈ 𝒯],
-                m[:trans_loss][l, t, cm] == cm.Trans_loss*m[:trans_in][l, t, cm])
+    # Constraints for unidirectional energy transmission
+    if cm.Directions == 1
+        @constraint(m, [t ∈ 𝒯],
+            m[:trans_loss][l, t, cm] == cm.Trans_loss * m[:trans_in][l, t, cm])
 
-            @constraint(m, [t ∈ 𝒯], m[:trans_out][l, t, cm] >= 0)
+        @constraint(m, [t ∈ 𝒯], m[:trans_out][l, t, cm] >= 0)
 
-        # Constraints for bidirectional energy transmission
-        elseif cm.Directions == 2
-            # The total loss equals the negative and positive loss
-            @constraint(m, [t ∈ 𝒯],
-                m[:trans_loss][l, t, cm] == m[:trans_loss_pos][l, t, cm] + m[:trans_loss_neg][l, t, cm])
+    # Constraints for bidirectional energy transmission
+    elseif cm.Directions == 2
+        # The total loss equals the negative and positive loss
+        @constraint(m, [t ∈ 𝒯],
+            m[:trans_loss][l, t, cm] == m[:trans_loss_pos][l, t, cm] + m[:trans_loss_neg][l, t, cm])
 
-            @constraint(m, [t ∈ 𝒯],
-                m[:trans_loss_pos][l, t, cm] - m[:trans_loss_neg][l, t, cm] == cm.Trans_loss*0.5*(m[:trans_in][l, t, cm] + m[:trans_out][l, t, cm]))
-                    
-            # @constraint(m, [t ∈ 𝒯],
-            #     m[:trans_in][l, t, cm] <= m[:trans_cap][l, t, cm])
+        @constraint(m, [t ∈ 𝒯],
+            m[:trans_loss_pos][l, t, cm] - m[:trans_loss_neg][l, t, cm] == cm.Trans_loss * 0.5 * (m[:trans_in][l, t, cm] + m[:trans_out][l, t, cm]))
 
-            # @constraint(m, [t ∈ 𝒯],
-            #     m[:trans_out][l, t, cm] >= -1*m[:trans_cap][l, t, cm])
+        # @constraint(m, [t ∈ 𝒯],
+        #     m[:trans_in][l, t, cm] <= m[:trans_cap][l, t, cm])
 
-            @constraint(m, [t ∈ 𝒯],
-                m[:trans_in][l, t, cm] >= -1*m[:trans_cap][l, t, cm])
-        end
+        # @constraint(m, [t ∈ 𝒯],
+        #     m[:trans_out][l, t, cm] >= -1*m[:trans_cap][l, t, cm])
+
+        @constraint(m, [t ∈ 𝒯],
+            m[:trans_in][l, t, cm] >= -1 * m[:trans_cap][l, t, cm])
     end
 end
