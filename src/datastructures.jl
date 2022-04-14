@@ -26,6 +26,7 @@ struct RefDynamic <: TransmissionMode # E.g. Trucks, ships etc.
     Directions::Int # 1: Unidirectional or 2: Bidirectional
     #formulation::EMB.Formulation # linear/non-linear etc.
 end
+
 struct RefStatic <: TransmissionMode # E.g. overhead power lines, pipelines etc.
     Name::String
     Resource::EMB.Resource
@@ -34,6 +35,31 @@ struct RefStatic <: TransmissionMode # E.g. overhead power lines, pipelines etc.
     Directions::Int
     #formulation::EMB.Formulation
 end
+
+
+"""
+This TransmissionMode allows for altering the transported Resource. A usage of this could
+be by defining a subtype struct of Resource with the field 'pressure'. This PipelineMode
+can then take SomeSubtype<:Resource with pressure p1 at the inlet, and pressure p2 at 
+the outlet.
+
+This type also supports consuming resources proportionally to the volume of transported 
+Resource (at the inlet). This could be used for modeling the Power needed for operating 
+the pipeline.
+"""
+Base.@kwdef struct PipelineMode <: TransmissionMode
+    Name::String
+
+    Inlet::EMB.Resource     # the resource accepted at the inlet
+    Outlet::EMB.Resource    # the resource at the outlet
+    Consuming::EMB.Resource # the Resource consumed by operating the pipeline
+    Consumption_rate::Real  # consumed volume / inlet volume (per operatioanl period)
+
+    Trans_cap::Real
+    Trans_loss::Real
+    Directions::Int = 1     # 1: Unidirectional or 2: Bidirectional
+end
+
 
 # Transmission
 struct Transmission
@@ -45,16 +71,20 @@ struct Transmission
 end
 Base.show(io::IO, t::Transmission) = print(io, "$(t.From)-$(t.To)")
 
+
 function trans_sub(ℒ, a::Area)
     return [ℒ[findall(x -> x.From == a, ℒ)],
             ℒ[findall(x -> x.To   == a, ℒ)]]
 end
+
 function corridor_modes(l)
     return [m for m in l.Modes]
 end
+
 function mode_resources(l)
     return unique([m.Resource for m in l.Modes])
 end
+
 function trans_resources(ℒ)
     res = []
     for l in ℒ
@@ -62,10 +92,12 @@ function trans_resources(ℒ)
     end
     return unique(res)
 end
+
 function import_resources(ℒ, a::Area)
     l_from = ℒ[findall(x -> x.From == a, ℒ)]
     return trans_resources(l_from)
 end
+
 function export_resources(ℒ, a::Area)
     l_to = ℒ[findall(x -> x.To == a, ℒ)]
     return trans_resources(l_to)
