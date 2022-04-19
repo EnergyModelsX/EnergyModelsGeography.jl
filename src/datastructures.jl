@@ -57,7 +57,10 @@ Base.@kwdef struct PipelineMode <: TransmissionMode
 
     Trans_cap::Real
     Trans_loss::Real
+
+    # TODO remove below field? Should not be relevant for fluid pipeline.
     Directions::Int = 1     # 1: Unidirectional or 2: Bidirectional
+
 end
 
 
@@ -81,36 +84,48 @@ function corridor_modes(l)
     return [m for m in l.Modes]
 end
 
-function mode_resources(l)
-    return unique([m.Resource for m in l.Modes])
+
+trans_mode_import(tm::TransmissionMode) = tm.Resource
+trans_mode_import(tm::PipelineMode) = tm.Outlet
+
+trans_mode_export(tm::TransmissionMode) = tm.Resource
+trans_mode_export(tm::PipelineMode) = tm.Inlet
+
+
+function filter_transmission_modes(ℒ, a::Area, filter_method)
+    resources = []
+    for l in ℒ
+        for transmission_mode in l.Modes
+            append!(resources, [filter_method(transmission_mode)])
+        end
+    end
+    return unique(resources)
 end
 
-function trans_resources(ℒ)
-    res = []
-    for l in ℒ
-        append!(res, mode_resources(l))
-    end
-    return unique(res)
-end
 
 function import_resources(ℒ, a::Area)
-    l_from = ℒ[findall(x -> x.From == a, ℒ)]
-    return trans_resources(l_from)
+    ℒᶠʳᵒᵐ = ℒ[findall(x -> x.From == a, ℒ)]
+    return filter_transmission_modes(ℒᶠʳᵒᵐ, a, trans_mode_import)
 end
 
+
 function export_resources(ℒ, a::Area)
-    l_to = ℒ[findall(x -> x.To == a, ℒ)]
-    return trans_resources(l_to)
+    ℒᵗᵒ = ℒ[findall(x -> x.To == a, ℒ)]
+    return filter_transmission_modes(ℒᵗᵒ, a, trans_mode_export)
 end
+
 
 function exchange_resources(ℒ, a::Area)
     l_exch = vcat(import_resources(ℒ, a), export_resources(ℒ, a))
     return unique(l_exch)
 end
 
+
 function modes_of_dir(l, dir::Int)
     return l.Modes[findall(x -> x.Directions == dir, l.Modes)]
 end
+
+
 #function trans_res(l::Transmission)
 #    return intersect(keys(l.To.An.Input), keys(l.From.An.Output))
 #end

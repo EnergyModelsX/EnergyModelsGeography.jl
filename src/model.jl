@@ -195,3 +195,22 @@ function create_transmission_mode(m, 𝒯, l, cm)
             m[:trans_in][l, t, cm] >= -1 * m[:trans_cap][l, t, cm])
     end
 end
+
+
+function create_transmission_mode(m, 𝒯, l, cm::PipelineMode)
+
+    # Generic trans in which each output corresponds to the input
+    @constraint(m, [t ∈ 𝒯],
+        m[:trans_out][l, t, cm] == m[:trans_in][l, t, cm] - m[:trans_loss][l, t, cm])
+    
+    @constraint(m, [t ∈ 𝒯],
+        m[:trans_out][l, t, cm] <= m[:trans_cap][l, t, cm])
+
+    # Constraints for unidirectional energy transmission
+    if cm.Directions == 1
+        @constraint(m, [t ∈ 𝒯],
+            m[:trans_loss][l, t, cm] == cm.Trans_loss * m[:trans_in][l, t, cm])
+
+        @constraint(m, [t ∈ 𝒯], m[:trans_out][l, t, cm] >= 0)
+    end
+end
