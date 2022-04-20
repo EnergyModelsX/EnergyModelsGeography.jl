@@ -124,6 +124,16 @@ end
         @test CO2_200 ∈ GEO.exchange_resources(ℒ, area_to)
         @test length(GEO.exchange_resources(ℒ, area_from)) == 1
         @test length(GEO.exchange_resources(ℒ, area_to)) == 1
+        
+        # The exported quantity should be negative and equal in absolute value to the 
+        # trans_in (of the inlet resource).
+        @test sum(value.(m[:area_exchange][area_from, t, CO2_150]) 
+            == -value.(m[:trans_in][transmission, t, pipeline]) for t ∈ 𝒯) == length(𝒯)
+        
+        # The imported quantity should be positive and equal to trans_out of the pipeline
+        # outlet resource.
+        @test sum(value.(m[:area_exchange][area_to, t, CO2_200]) 
+        == value.(m[:trans_out][transmission, t, pipeline]) for t ∈ 𝒯) == length(𝒯)
     end
 
     # Test that the loss in transported volume is computed in the expected way.

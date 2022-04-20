@@ -18,7 +18,7 @@ end
 
 function general_tests(m)
     # Check if the solution is optimal.
-    @testset "optimal solution" begin
+    @testset "Optimal solution" begin
         @test termination_status(m) == MOI.OPTIMAL
 
         if termination_status(m) != MOI.OPTIMAL

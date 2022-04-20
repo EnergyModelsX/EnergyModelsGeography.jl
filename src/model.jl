@@ -82,7 +82,7 @@ function constraints_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype)
         for p ∈ 𝒫
             if p in ex_p
                 @constraint(m, [t ∈ 𝒯],
-                            m[:flow_in][n, t, p] == m[:flow_out][n, t, p] + m[:area_exchange][a, t, p])
+                            m[:flow_in][n, t, p] == m[:flow_out][n, t, p] - m[:area_exchange][a, t, p])
             else
                 @constraint(m, [t ∈ 𝒯],
                             m[:flow_in][n, t, p] == m[:flow_out][n, t, p])
@@ -103,9 +103,9 @@ function constraints_transmission(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
     for a ∈ 𝒜
         ℒᶠʳᵒᵐ, ℒᵗᵒ = trans_sub(ℒᵗʳᵃⁿˢ, a)
         @constraint(m, [t ∈ 𝒯, p ∈ exchange_resources(ℒᵗʳᵃⁿˢ, a)], 
-            m[:area_exchange][a, t, p] == 
+            m[:area_exchange][a, t, p] + 
                 sum(sum(compute_trans_in(m, l, t, p, cm) for cm in l.Modes) for l in ℒᶠʳᵒᵐ)
-                - sum(sum(compute_trans_out(m, l, t, p, cm) for cm in l.Modes) for l in ℒᵗᵒ ))
+                == sum(sum(compute_trans_out(m, l, t, p, cm) for cm in l.Modes) for l in ℒᵗᵒ ))
     end
 
     for l in ℒᵗʳᵃⁿˢ
