@@ -103,15 +103,19 @@ function filter_transmission_modes(ℒ, a::Area, filter_method)
 end
 
 
+""" The resources imported into the area.
+"""
 function import_resources(ℒ, a::Area)
-    ℒᶠʳᵒᵐ = ℒ[findall(x -> x.From == a, ℒ)]
-    return filter_transmission_modes(ℒᶠʳᵒᵐ, a, trans_mode_import)
+    ℒᵗᵒ = ℒ[findall(x -> x.To == a, ℒ)]
+    return filter_transmission_modes(ℒᵗᵒ, a, trans_mode_import)
 end
 
 
+""" The resources exported from the area.
+"""
 function export_resources(ℒ, a::Area)
-    ℒᵗᵒ = ℒ[findall(x -> x.To == a, ℒ)]
-    return filter_transmission_modes(ℒᵗᵒ, a, trans_mode_export)
+    ℒᶠʳᵒᵐ = ℒ[findall(x -> x.From == a, ℒ)]
+    return filter_transmission_modes(ℒᶠʳᵒᵐ , a, trans_mode_export)
 end
 
 
