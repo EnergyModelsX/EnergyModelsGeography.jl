@@ -115,38 +115,38 @@ end
 
 
 function compute_trans_in(m, l, t, p, cm::TransmissionMode)
+    exp = 0
     if cm.Resource == p
-        return m[:trans_in][l, t, cm]
-    else
-        return 0
+        exp += m[:trans_in][l, t, cm]
     end
+    return exp
 end
 
 function compute_trans_in(m, l, t, p, cm::PipelineMode)
+    exp = 0
     if cm.Inlet == p
-        return m[:trans_in][l, t, cm]
+        exp += m[:trans_in][l, t, cm]
     end
     if cm.Consuming == p
-        return m[:trans_in][l, t, cm] * cm.Consumption_rate
-    else
-        return 0
+        exp += m[:trans_in][l, t, cm] * cm.Consumption_rate
     end
+    return exp
 end
 
 function compute_trans_out(m, l, t, p, cm::TransmissionMode)
+    exp = 0
     if cm.Resource == p
-        return m[:trans_out][l, t, cm]
-    else
-        return 0
+        exp += m[:trans_out][l, t, cm]
     end
+    return exp
 end
 
 function compute_trans_out(m, l, t, p, cm::PipelineMode)
+    exp = 0
     if cm.Outlet == p
-        return m[:trans_out][l, t, cm]
-    else
-        return 0
+        exp += m[:trans_out][l, t, cm]
     end
+    return exp
 end
 
 
