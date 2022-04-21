@@ -87,10 +87,8 @@ function transmission_tests(m, case)
         @test sum(round(value.(m[:trans_loss][tr_osl_trd, t, trans_mode]), digits = ROUND_DIGITS) 
             == round(loss * value.(m[:trans_in][tr_osl_trd, t, trans_mode]), digits = ROUND_DIGITS) for t ∈ 𝒯) == length(𝒯)
 
-        for t ∈ 𝒯
-            @test value.(m[:trans_in][tr_osl_trd, t, trans_mode]) >= 0
-            @test value.(m[:trans_in][tr_trd_osl, t, case[:transmission][2].Modes[1]]) == 0
-        end
+        @test sum(value.(m[:trans_in][tr_osl_trd, t, trans_mode]) >= 0 for t ∈ 𝒯) == length(𝒯)
+        @test sum(value.(m[:trans_in][tr_trd_osl, t, case[:transmission][2].Modes[1]]) == 0 for t ∈ 𝒯) == length(𝒯)
     end
 end
 

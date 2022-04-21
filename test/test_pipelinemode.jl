@@ -121,7 +121,11 @@ end
         @test length(GEO.exchange_resources(ℒ, area_from)) == 2
         @test length(GEO.exchange_resources(ℒ, area_to)) == 1
 
-        # TODO: check directly that optimization variables does not exist for wrong CO2 for :area_exchange
+        # The variable :area_exchange should not have values cor CO2_200 at the Factory 
+        # area, and not for CO2_150 at the receiving area. This should hold for all time 
+        # steps. Trying to access these variables should result in a KeyError.
+        @test_throws KeyError value.(m[:area_exchange][area_from, first(𝒯), CO2_200])
+        @test_throws KeyError value.(m[:area_exchange][area_to, first(𝒯), CO2_150])
         
         # The exported quantity should be negative and equal in absolute value to the 
         # trans_in (of the inlet resource).
