@@ -79,27 +79,21 @@ end
 @testset "PipelineMode test" begin
 
     case = small_graph_co2_1()
-    # println(case)
 
     m = optimize(case)
     general_tests(m)
 
     """
-    Tests:
-    - test that the correct amount of Power is used for operating the pipeline
-    - test that the same amount is transported in and out, even if
-    - test that the inlet resource and outlet resource is actually different and correct,
-      might use :area_exchange for this.
-        - Check that the variable does not exist when it shouldnt, e.g CO2_200 at the inlet area, and CO2_150 at the outlet.
+    TODO:
     - check that transport is above zero.
     - why doesnt it work if we remove the el_sink node?
-
     """
     𝒯 = case[:T]
     𝒫 = case[:products]
     𝒩 = case[:nodes]
     ℒ = case[:transmission]
 
+    Power = 𝒫[2]
     CO2_150 = 𝒫[4]
     CO2_200 = 𝒫[5]
 
@@ -121,9 +115,13 @@ end
         # Check that only CO2_150 is exported from the factory area and that only 
         # CO2_200 is imported into the storage area.
         @test CO2_150 ∈ GEO.exchange_resources(ℒ, area_from)
+        @test pipeline.Consuming ∈ GEO.exchange_resources(ℒ, area_from)
         @test CO2_200 ∈ GEO.exchange_resources(ℒ, area_to)
-        @test length(GEO.exchange_resources(ℒ, area_from)) == 1
+        # Both the transported and the consumed resource is exported from the area.
+        @test length(GEO.exchange_resources(ℒ, area_from)) == 2
         @test length(GEO.exchange_resources(ℒ, area_to)) == 1
+
+        # TODO: check directly that optimization variables does not exist for wrong CO2 for :area_exchange
         
         # The exported quantity should be negative and equal in absolute value to the 
         # trans_in (of the inlet resource).
@@ -136,40 +134,41 @@ end
         == value.(m[:trans_out][transmission, t, pipeline]) for t ∈ 𝒯) == length(𝒯)
     end
 
-    # Test that the loss in transported volume is computed in the expected way.
-    @test sum((1 - pipeline.Trans_loss) * value.(m[:trans_in][transmission, t, pipeline])
-              ==
-              value.(m[:trans_out][transmission, t, pipeline]) for t in 𝒯) == length(𝒯)
+    @testset "Consumed resource" begin
+        # Test that the difference in Power at the availability node corresponds to the
+        # pipeline.Consumption_rate.
+        @test sum(value.(m[:flow_in][a1, t, Power]) * (1 - pipeline.Consumption_rate) 
+                  == value.(m[:flow_out][a1, t, Power]) for t ∈ 𝒯) == length(𝒯)
 
-
-    for t in 𝒯
-        println("trans_in: ", value.(m[:trans_in][transmission, t, pipeline]))
-        println("trans_out: ", value.(m[:trans_out][transmission, t, pipeline]))
+        # Test that the difference in Power in the availability node, is taken up in
+        # the variable :area_exchange.
+        @test sum(round(value.(m[:flow_in][a1, t, Power])
+                  - value.(m[:flow_out][a1, t, Power]), digits=ROUND_DIGITS) == 
+                  - round(value(m[:area_exchange][area_from, t, Power]), digits=ROUND_DIGITS) for t ∈ 𝒯) == length(𝒯)
+        
+        # Check that what the source produces goes into the availability node.
+        @test sum(value.(m[:flow_out][source, t, Power])
+                  == value.(m[:flow_in][a1, t, Power]) for t ∈ 𝒯) == length(𝒯)
+        
+        # Check that what goes out of the availability node goes into the sink.
+        @test sum(value.(m[:flow_out][a1, t, Power])
+                  == value.(m[:flow_in][el_sink, t, Power]) for t ∈ 𝒯) == length(𝒯)
     end
 
-    for t ∈ 𝒯
-        # println("flow_out: ", value.(m[:link_out][source, t, CO2_150]))
+    @testset "Transport accounting" begin
+        # Test that the loss in transported volume is computed in the expected way.
+        @test sum(round((1 - pipeline.Trans_loss) * value.(m[:trans_in][transmission, t, pipeline]), 
+                        digits=ROUND_DIGITS)
+                  ==
+                  round(value.(m[:trans_out][transmission, t, pipeline]), digits=ROUND_DIGITS) 
+                  for t in 𝒯) == length(𝒯)
+
+        # Test that the :area_exchange variables in CO2_150 has the proper loss when transported
+        # to the other area as CO2_200. The exported resource should have a negative sign.
+        @test sum(-round((1 - pipeline.Trans_loss) * value.(m[:area_exchange][area_from, t, CO2_150]), 
+                        digits=ROUND_DIGITS)
+                  ==
+                  round(value.(m[:area_exchange][area_to, t, CO2_200]), digits=ROUND_DIGITS) 
+                  for t in 𝒯) == length(𝒯)
     end
-
-
-    println("\nArea exchange")
-    for t ∈ 𝒯
-        println("from: ", value.(m[:area_exchange][area_from, t, CO2_150]))
-        println("to: ", value.(m[:area_exchange][area_to, t, CO2_200]))
-    end
-    
-    # println("\nSink")
-    # for t ∈ 𝒯
-        # println("cap_use: ", value.(m[:cap_use][sink, t]))
-        # # println("el cap_use: ", value.(m[:cap_use][el_sink, t]))
-    # end
-
-    println("\nAv1")
-    for t ∈ 𝒯
-        println("flow_in: ", value.(m[:flow_in][a1, t, CO2_150]))
-        println("flow_out: ", value.(m[:flow_out][a1, t, CO2_150]))
-        # println("el cap_use: ", value.(m[:cap_use][el_sink, t]))
-    end
-
-
 end

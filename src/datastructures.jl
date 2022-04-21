@@ -85,18 +85,18 @@ function corridor_modes(l)
 end
 
 
-trans_mode_import(tm::TransmissionMode) = tm.Resource
-trans_mode_import(tm::PipelineMode) = tm.Outlet
+trans_mode_import(tm::TransmissionMode) = [tm.Resource]
+trans_mode_import(tm::PipelineMode) = [tm.Outlet]
 
-trans_mode_export(tm::TransmissionMode) = tm.Resource
-trans_mode_export(tm::PipelineMode) = tm.Inlet
+trans_mode_export(tm::TransmissionMode) = [tm.Resource]
+trans_mode_export(tm::PipelineMode) = [tm.Inlet, tm.Consuming]
 
 
 function filter_transmission_modes(ℒ, a::Area, filter_method)
     resources = []
     for l in ℒ
         for transmission_mode in l.Modes
-            append!(resources, [filter_method(transmission_mode)])
+            append!(resources, filter_method(transmission_mode))
         end
     end
     return unique(resources)
