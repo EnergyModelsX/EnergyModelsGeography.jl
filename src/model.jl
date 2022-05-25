@@ -59,7 +59,7 @@ end
 
 
 """
-    variables_capex_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ,, modeltype)
+    variables_capex_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, global_data, modeltype)
 
 Create variables for the capital costs for the investments in transmission.
 

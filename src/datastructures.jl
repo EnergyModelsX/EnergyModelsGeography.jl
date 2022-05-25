@@ -38,14 +38,36 @@ end
 
 
 """
-This TransmissionMode allows for altering the transported Resource. A usage of this could
-be by defining a subtype struct of Resource with the field 'pressure'. This PipelineMode
-can then take SomeSubtype<:Resource with pressure p1 at the inlet, and pressure p2 at 
-the outlet.
+This TransmissionMode allows for altering the transported Resource.
+    
+A usage of this could e.g. be by defining a subtype struct of Resource with the field 
+'pressure'. This PipelineMode can then take SomeSubtype<:Resource with pressure p₁ at the 
+inlet, and pressure p₂ at the outlet.
 
 This type also supports consuming resources proportionally to the volume of transported 
 Resource (at the inlet). This could be used for modeling the Power needed for operating 
 the pipeline.
+
+# Fields
+
+**`Name`** is the identifier used in printed output.
+
+**`Inlet`** is the `Resource` going into transmission.
+
+**`Outlet`** is the `Resource` going out of the outlet of the transmission.
+
+**`Consuming`** is the `Resource` the transmission consumes by operating.
+
+**`Consumption_rate`** the rate of which the resource `Pipeline.Consuming` is consumed, as
+    a ratio of the volume of the resource going into the inlet. I.e.:
+
+        `Consumption_rate` = consumed volume / inlet volume (per operational period)
+
+**`Trans_cap`**
+
+**`Trans_loss`**
+
+**`Directions`** specifies that the pipeline is Unidirectional (1) by default.
 """
 Base.@kwdef struct PipelineMode <: TransmissionMode
     Name::String
@@ -60,7 +82,6 @@ Base.@kwdef struct PipelineMode <: TransmissionMode
 
     # TODO remove below field? Should not be relevant for fluid pipeline.
     Directions::Int = 1     # 1: Unidirectional or 2: Bidirectional
-
 end
 
 
