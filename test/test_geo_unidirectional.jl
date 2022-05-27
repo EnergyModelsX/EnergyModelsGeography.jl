@@ -59,46 +59,19 @@ function small_graph(source=nothing, sink=nothing)
     return case
 end
 
-function optimize(case)
-    model = EMB.OperationalModel()
-    m = GEO.create_model(case, model)
-    optimizer = GLPK.Optimizer
-    set_optimizer(m, optimizer)
-    optimize!(m)
-    return m
-end
 
 
-function general_tests(m)
-    # Check if the solution is optimal.
-    @testset "optimal solution" begin
-        @test termination_status(m) == MOI.OPTIMAL
-
-        if termination_status(m) != MOI.OPTIMAL
-            @show termination_status(m)
-        end
-    end
-end
-
-@testset "Unidirectional transmission" begin
-    
-    # Creation and run of the model
-    case = small_graph()
-    m    = optimize(case)
-
+function transmission_tests(m, case)
     # Extraction of relevant data from the model
     source  = case[:nodes][3]
     sink    = case[:nodes][4]
     𝒯       = case[:T]
     Power   = case[:products][2]
-
+    
     tr_osl_trd, tr_trd_osl  = case[:transmission]
     trans_mode              = case[:transmission][1].Modes[1]
     areas                   = case[:areas]
 
-    # Run of the generalized tests
-    general_tests(m)
-    
     @testset "Test transmission" begin
         
         loss = trans_mode.Trans_loss
@@ -114,10 +87,51 @@ end
         @test sum(round(value.(m[:trans_loss][tr_osl_trd, t, trans_mode]), digits = ROUND_DIGITS) 
             == round(loss * value.(m[:trans_in][tr_osl_trd, t, trans_mode]), digits = ROUND_DIGITS) for t ∈ 𝒯) == length(𝒯)
 
-        for t ∈ 𝒯
-            @test value.(m[:trans_in][tr_osl_trd, t, trans_mode]) >= 0
-            @test value.(m[:trans_in][tr_trd_osl, t, case[:transmission][2].Modes[1]]) == 0
+        @test sum(value.(m[:trans_in][tr_osl_trd, t, trans_mode]) >= 0 for t ∈ 𝒯) == length(𝒯)
+        @test sum(value.(m[:trans_in][tr_trd_osl, t, case[:transmission][2].Modes[1]]) == 0 for t ∈ 𝒯) == length(𝒯)
+    end
+end
+
+
+@testset "Unidirectional transmission" begin
+    
+    # Creation and run of the model
+    case = small_graph()
+    m    = optimize(case)
+
+    # Run of the generalized tests
+    general_tests(m)
+    transmission_tests(m, case)
+end
+
+
+# The PipelineMode should be equivalent to the RefStatic (and RefDynamic) if 
+# * PipelineMode.Consumption_rate = 0
+# * PipelineMode.Inlet == PipelinMode.Outlet
+# This test uses the same tests as the transmission testscase above, but uses 
+# PipelineMode as the TransmissionMode instead.
+@testset "Unidirectional pipeline transmission" begin
+    
+    case = small_graph()
+
+    # Replace each TransmissionMode's with a PipelineMode with identical properties.
+    for transmission in case[:transmission]
+        for (i, prev_tmode) in enumerate(transmission.Modes)
+            pipeline = GEO.PipelineMode(prev_tmode.Name, 
+                                        prev_tmode.Resource,
+                                        prev_tmode.Resource,
+                                        prev_tmode.Resource, # Doesn't matter when Consumption_rate = 0
+                                        0, 
+                                        prev_tmode.Trans_cap,
+                                        prev_tmode.Trans_loss,
+                                        prev_tmode.Directions)
+            @assert prev_tmode.Directions == 1 "The Dircetion mode should be 
+                                                 unidirectional."
+            transmission.Modes[i] = pipeline
         end
     end
 
+    m = optimize(case)
+    general_tests(m)
+    transmission_tests(m, case)
 end

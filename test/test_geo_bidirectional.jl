@@ -73,11 +73,12 @@ data = Dict(
 
     l   = transmission[1]
     cm  = l.Modes[1]
-
+    # The sign should be the same for both directions
+    
+    @test sum(sign(value.(m[:trans_in])[l, t, cm]) 
+              == sign(value.(m[:trans_out])[l, t, cm]) for t ∈ 𝒯) == length(𝒯)
+    # Depending on the direction, check on the individual flows
     for t ∈ 𝒯
-        # The sign should be the same for both directions
-        @test sign(value.(m[:trans_in])[l, t, cm]) == sign(value.(m[:trans_out])[l, t, cm])
-        # Depending on the direction, check on the individual flows
         if value.(m[:trans_in])[l, t, cm] <= 0
             @test abs(value.(m[:trans_in])[l, t, cm]) <= abs(value.(m[:trans_out])[l, t, cm])
             @test abs(value.(m[:trans_in])[l, t, cm]) == cm.Trans_cap

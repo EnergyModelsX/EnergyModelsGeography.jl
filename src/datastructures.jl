@@ -26,6 +26,7 @@ struct RefDynamic <: TransmissionMode # E.g. Trucks, ships etc.
     Directions::Int # 1: Unidirectional or 2: Bidirectional
     #formulation::EMB.Formulation # linear/non-linear etc.
 end
+
 struct RefStatic <: TransmissionMode # E.g. overhead power lines, pipelines etc.
     Name::String
     Resource::EMB.Resource
@@ -34,6 +35,55 @@ struct RefStatic <: TransmissionMode # E.g. overhead power lines, pipelines etc.
     Directions::Int
     #formulation::EMB.Formulation
 end
+
+
+"""
+This TransmissionMode allows for altering the transported Resource.
+    
+A usage of this could e.g. be by defining a subtype struct of Resource with the field 
+'pressure'. This PipelineMode can then take SomeSubtype<:Resource with pressure p₁ at the 
+inlet, and pressure p₂ at the outlet.
+
+This type also supports consuming resources proportionally to the volume of transported 
+Resource (at the inlet). This could be used for modeling the Power needed for operating 
+the pipeline.
+
+# Fields
+
+**`Name`** is the identifier used in printed output.
+
+**`Inlet`** is the `Resource` going into transmission.
+
+**`Outlet`** is the `Resource` going out of the outlet of the transmission.
+
+**`Consuming`** is the `Resource` the transmission consumes by operating.
+
+**`Consumption_rate`** the rate of which the resource `Pipeline.Consuming` is consumed, as
+    a ratio of the volume of the resource going into the inlet. I.e.:
+
+        `Consumption_rate` = consumed volume / inlet volume (per operational period)
+
+**`Trans_cap`**
+
+**`Trans_loss`**
+
+**`Directions`** specifies that the pipeline is Unidirectional (1) by default.
+"""
+Base.@kwdef struct PipelineMode <: TransmissionMode
+    Name::String
+
+    Inlet::EMB.Resource     # the resource accepted at the inlet
+    Outlet::EMB.Resource    # the resource at the outlet
+    Consuming::EMB.Resource # the Resource consumed by operating the pipeline
+    Consumption_rate::Real  # consumed volume / inlet volume (per operatioanl period)
+
+    Trans_cap::Real
+    Trans_loss::Real
+
+    # TODO remove below field? Should not be relevant for fluid pipeline.
+    Directions::Int = 1     # 1: Unidirectional or 2: Bidirectional
+end
+
 
 # Transmission
 struct Transmission
@@ -45,40 +95,62 @@ struct Transmission
 end
 Base.show(io::IO, t::Transmission) = print(io, "$(t.From)-$(t.To)")
 
+
 function trans_sub(ℒ, a::Area)
     return [ℒ[findall(x -> x.From == a, ℒ)],
             ℒ[findall(x -> x.To   == a, ℒ)]]
 end
+
 function corridor_modes(l)
     return [m for m in l.Modes]
 end
-function mode_resources(l)
-    return unique([m.Resource for m in l.Modes])
-end
-function trans_resources(ℒ)
-    res = []
+
+
+trans_mode_import(tm::TransmissionMode) = [tm.Resource]
+trans_mode_import(tm::PipelineMode) = [tm.Outlet]
+
+trans_mode_export(tm::TransmissionMode) = [tm.Resource]
+trans_mode_export(tm::PipelineMode) = [tm.Inlet, tm.Consuming]
+
+
+function filter_transmission_modes(ℒ, a::Area, filter_method)
+    resources = []
     for l in ℒ
-        append!(res, mode_resources(l))
+        for transmission_mode in l.Modes
+            append!(resources, filter_method(transmission_mode))
+        end
     end
-    return unique(res)
+    return unique(resources)
 end
+
+
+""" The resources imported into the area.
+"""
 function import_resources(ℒ, a::Area)
-    l_from = ℒ[findall(x -> x.From == a, ℒ)]
-    return trans_resources(l_from)
+    ℒᵗᵒ = ℒ[findall(x -> x.To == a, ℒ)]
+    return filter_transmission_modes(ℒᵗᵒ, a, trans_mode_import)
 end
+
+
+""" The resources exported from the area.
+"""
 function export_resources(ℒ, a::Area)
-    l_to = ℒ[findall(x -> x.To == a, ℒ)]
-    return trans_resources(l_to)
+    ℒᶠʳᵒᵐ = ℒ[findall(x -> x.From == a, ℒ)]
+    return filter_transmission_modes(ℒᶠʳᵒᵐ , a, trans_mode_export)
 end
+
 
 function exchange_resources(ℒ, a::Area)
     l_exch = vcat(import_resources(ℒ, a), export_resources(ℒ, a))
     return unique(l_exch)
 end
 
+
 function modes_of_dir(l, dir::Int)
     return l.Modes[findall(x -> x.Directions == dir, l.Modes)]
 end
+
+
 #function trans_res(l::Transmission)
 #    return intersect(keys(l.To.An.Input), keys(l.From.An.Output))
 #end
