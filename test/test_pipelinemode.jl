@@ -36,10 +36,12 @@ function small_graph_co2_1()
     source = EMB.RefSource("-src", FixedProfile(25), FixedProfile(10),
         FixedProfile(5), Dict(CO2_150 => 1, Power => 1), 𝒫ᵉᵐ₀, Dict("" => EMB.EmptyData()))
     el_sink = EMB.RefSink("-el-sink", FixedProfile(0),
-        Dict(:Surplus => 0, :Deficit => 1e6), Dict(Power => 1), 𝒫ᵉᵐ₀)
+        Dict(:Surplus => FixedProfile(0), :Deficit => FixedProfile(1e6)), 
+        Dict(Power => 1), 𝒫ᵉᵐ₀)
 
     sink = EMB.RefSink("-sink", FixedProfile(20),
-        Dict(:Surplus => 0, :Deficit => 1e6), Dict(CO2_200 => 1), 𝒫ᵉᵐ₀)
+        Dict(:Surplus => FixedProfile(0), :Deficit => FixedProfile(1e6)), 
+        Dict(CO2_200 => 1), 𝒫ᵉᵐ₀)
 
     nodes = [GEO.GeoAvailability(1, 𝒫₀, 𝒫₀), GEO.GeoAvailability(2, 𝒫₀, 𝒫₀), source, 
         sink, el_sink]
