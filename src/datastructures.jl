@@ -20,9 +20,9 @@ end
 # Fields
 **`id`** is the identifyer of the area.\n
 **`Name`** is the name of the area.\n
-**`Lon`** is the longitudinal position of the area.\n
-**`Lat`** is the latitudinal position of the area.\n
-**`An`** is the availability node routing different resources within an area.
+**`Lon::Real`** is the longitudinal position of the area.\n
+**`Lat::Real`** is the latitudinal position of the area.\n
+**`An::Availability`** is the availability node routing different resources within an area.
 
 """
 struct Area
@@ -45,10 +45,10 @@ Generic representation of dynamic transmission modes, using for example truck, s
 TODO: convert transmission capacity from Real to a time series. Alternatively a transport delay/ cycle/ period (Real).
 
 # Fields
-**`Name`** is the name/identifyer of the transmission mode.\n
-**`Resource`** is the resource that is transported.\n
-**`Trans_cap`** is the capacity of the transmission mode.\n
-**`Trans_loss`** is the loss of the transported resource during transmission.\n
+**`Name::String`** is the name/identifyer of the transmission mode.\n
+**`Resource::Resource`** is the resource that is transported.\n
+**`Trans_cap::Real`** is the capacity of the transmission mode.\n
+**`Trans_loss::Real`** is the loss of the transported resource during transmission.\n
 **`Directions`** is the number of directions the resource can be transported, 1 is unidirectional (A->B) or 2 id bidirectional (A<->B).
 
 """
@@ -66,10 +66,10 @@ end
 Generic representation of static transmission modes, such as overhead power lines or pipelines.
 
 # Fields
-**`Name`** is the name/identifyer of the transmission mode.\n
-**`Resource`** is the resource that is transported.\n
-**`Trans_cap`** is the capacity of the transmission mode.\n
-**`Trans_loss`** is the loss of the transported resource during transmission.\n
+**`Name::String`** is the name/identifyer of the transmission mode.\n
+**`Resource::Resource`** is the resource that is transported.\n
+**`Trans_capReal`** is the capacity of the transmission mode.\n
+**`Trans_loss::Real`** is the loss of the transported resource during transmission.\n
 **`Directions`** is the number of directions the resource can be transported, 1 is unidirectional (A->B) or 2 id bidirectional (A<->B).
 
 """
@@ -84,34 +84,34 @@ end
 
 
 """
-This TransmissionMode allows for altering the transported Resource.
+This `TransmissionMode` allows for altering the transported `Resource`.
     
 A usage of this could e.g. be by defining a subtype struct of Resource with the field 
-'pressure'. This PipelineMode can then take SomeSubtype<:Resource with pressure p₁ at the 
+'pressure'. This PipelineMode can then take `SomeSubtype<:Resource` with pressure p₁ at the 
 inlet, and pressure p₂ at the outlet.
 
 This type also supports consuming resources proportionally to the volume of transported 
-Resource (at the inlet). This could be used for modeling the Power needed for operating 
+`Resource` (at the inlet). This could be used for modeling the power needed for operating 
 the pipeline.
 
 # Fields
 
-**`Name`** is the identifier used in printed output.
+**`Name::String`** is the identifier used in printed output.
 
-**`Inlet`** is the `Resource` going into transmission.
+**`Inlet::Resource`** is the `Resource` going into transmission.
 
-**`Outlet`** is the `Resource` going out of the outlet of the transmission.
+**`Outlet::Resource`** is the `Resource` going out of the outlet of the transmission.
 
-**`Consuming`** is the `Resource` the transmission consumes by operating.
+**`Consuming::Resource`** is the `Resource` the transmission consumes by operating.
 
-**`Consumption_rate`** the rate of which the resource `Pipeline.Consuming` is consumed, as
+**`Consumption_rate::Real`** the rate of which the resource `Pipeline.Consuming` is consumed, as
     a ratio of the volume of the resource going into the inlet. I.e.:
 
         `Consumption_rate` = consumed volume / inlet volume (per operational period)
 
-**`Trans_cap`**
+**`Trans_cap::Real`**
 
-**`Trans_loss`**
+**`Trans_loss::Real`**
 
 **`Directions`** specifies that the pipeline is Unidirectional (1) by default.
 """
@@ -136,10 +136,10 @@ end
 A geographic corridor where TransmissionModes are used to transport resources.
 
 # Fields
-**`From`** is the area resources are trasported from.\n
-**`To`** is the area resources are trasported to.\n
-**`Modes:Array{TransmissionMode}`** is the transmission modes that are available.\n
-**`Data`** is the additional data (e.g. for investments).
+**`From::Area`** is the area resources are trasported from.\n
+**`To::Area`** is the area resources are trasported to.\n
+**`Modes::Array{TransmissionMode}`** is the transmission modes that are available.\n
+**`Data::Array{Dict{String, Data}}`** is the additional data (e.g. for investments).
 
 """
 struct Transmission
