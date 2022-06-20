@@ -40,7 +40,7 @@ struct Transmission
     From::Area
     To::Area
     Modes::Array{TransmissionMode}
-    Data::Dict{String, Union{EMB.Data,Dict(TransmissionMode,EMB.Data)}}
+    Data::Dict{String, Union{EMB.Data,Dict{TransmissionMode,EMB.Data}}}
     #distance::Float
 end
 Base.show(io::IO, t::Transmission) = print(io, "$(t.From)-$(t.To)")
