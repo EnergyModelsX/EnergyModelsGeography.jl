@@ -1,3 +1,9 @@
+"""
+Main module for `Geography.jl`.
+
+# Exports:
+ - `Area`, `Transmission`, `RefStatic`, `RefDynamic`, `PipelineMode`.
+"""
 module Geography
 
 using Base: Float64
@@ -8,5 +14,8 @@ using TimeStructures
 include("datastructures.jl")
 include("model.jl")
 include("user_interface.jl")
+
+export Area, Transmission
+export RefStatic, RefDynamic, PipelineMode
 
 end # module
