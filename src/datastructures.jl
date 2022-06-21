@@ -48,9 +48,8 @@ TODO: convert transmission capacity from Real to a time series. Alternatively a 
 **`Name::String`** is the name/identifyer of the transmission mode.\n
 **`Resource::Resource`** is the resource that is transported.\n
 **`Trans_cap::Real`** is the capacity of the transmission mode.\n
-**`Trans_loss::Real`** is the loss of the transported resource during transmissio in \%n.\n
+**`Trans_loss::Real`** is the loss of the transported resource during transmission, modelled as a ratio.\n
 **`Directions`** is the number of directions the resource can be transported, 1 is unidirectional (A->B) or 2 id bidirectional (A<->B).
-
 """
 struct RefDynamic <: TransmissionMode # E.g. Trucks, ships etc.
     Name::String
@@ -69,9 +68,8 @@ Generic representation of static transmission modes, such as overhead power line
 **`Name::String`** is the name/identifyer of the transmission mode.\n
 **`Resource::Resource`** is the resource that is transported.\n
 **`Trans_cap::Real`** is the capacity of the transmission mode.\n
-**`Trans_loss::Real`** is the loss of the transported resource during transmission in \%.\n
+**`Trans_loss::Real`** is the loss of the transported resource during transmission, modelled as a ratio.\n
 **`Directions`** is the number of directions the resource can be transported, 1 is unidirectional (A->B) or 2 id bidirectional (A<->B).
-
 """
 struct RefStatic <: TransmissionMode # E.g. overhead power lines, pipelines etc.
     Name::String
@@ -104,7 +102,7 @@ the pipeline.
 
         `Consumption_rate` = consumed volume / inlet volume (per operational period)\n
 **`Trans_cap::Real`** is the capacity of the transmission mode.\n
-**`Trans_loss::Real`** is the loss of the transported resource during transmission in \%.\n
+**`Trans_loss::Real`** is the loss of the transported resource during transmission, modelled as a ratio.\n
 **`Directions`** specifies that the pipeline is Unidirectional (1) by default.\n
 """
 Base.@kwdef struct PipelineMode <: TransmissionMode
@@ -130,7 +128,6 @@ A geographic corridor where `TransmissionModes` are used to transport resources.
 **`To::Area`** is the area resources are trasported to.\n
 **`Modes::Array{TransmissionMode}`** is the transmission modes that are available.\n
 **`Data::Array{Dict{String, Data}}`** is the additional data (e.g. for investments).
-
 """
 struct Transmission
     From::Area
