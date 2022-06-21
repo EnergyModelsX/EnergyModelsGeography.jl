@@ -28,6 +28,7 @@ function create_model(case, modeltype)
 
     # Updates the objective function
     update_objective(m, 𝒩, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, global_data, modeltype)
+
     return m
 end
 
@@ -88,7 +89,7 @@ function constraints_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype)
         n = a.An
         ex_p = exchange_resources(ℒᵗʳᵃⁿˢ, a)
         for p ∈ 𝒫
-            if p in ex_p
+            if p ∈ ex_p
                 @constraint(m, [t ∈ 𝒯],
                             m[:flow_in][n, t, p] == m[:flow_out][n, t, p] - m[:area_exchange][a, t, p])
             else
@@ -114,7 +115,7 @@ Create transmission constraints on all transmission corridors.
 """
 function constraints_transmission(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
 
-    for l in ℒᵗʳᵃⁿˢ
+    for l ∈ ℒᵗʳᵃⁿˢ
         create_trans(m, 𝒯, l)
     end
 end
@@ -185,7 +186,7 @@ end
 """
     EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫)
 
-Repaces constratints for availability nodes of type GeoAvailability.
+Repaces constraints for availability nodes of type GeoAvailability.
 The resource balances are set by the area constraints instead.
 """
 function EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫)
@@ -233,14 +234,16 @@ function create_transmission_mode(m, 𝒯, l, cm)
         @constraint(m, [t ∈ 𝒯],
             m[:trans_loss_pos][l, t, cm] - m[:trans_loss_neg][l, t, cm] == cm.Trans_loss * 0.5 * (m[:trans_in][l, t, cm] + m[:trans_out][l, t, cm]))
 
+        @constraint(m, [t ∈ 𝒯],
+            m[:trans_in][l, t, cm] >= -1 * m[:trans_cap][l, t, cm])
+
+        """Alternative constraints in the case of defining the capacity via the inlet.
+        To be switched in the case of a different definition"""
         # @constraint(m, [t ∈ 𝒯],
         #     m[:trans_in][l, t, cm] <= m[:trans_cap][l, t, cm])
 
         # @constraint(m, [t ∈ 𝒯],
         #     m[:trans_out][l, t, cm] >= -1*m[:trans_cap][l, t, cm])
-
-        @constraint(m, [t ∈ 𝒯],
-            m[:trans_in][l, t, cm] >= -1 * m[:trans_cap][l, t, cm])
     end
 end
 

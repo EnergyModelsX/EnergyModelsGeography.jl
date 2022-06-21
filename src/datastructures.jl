@@ -1,5 +1,5 @@
 
-""" A geography `Availability` node.
+""" A geography `Availability` node. for substituion of the general `Availability` node.
 
 # Fields
 **`id`** is the name/identifyer of the node.\n
@@ -15,14 +15,14 @@ struct GeoAvailability <: EMB.Availability
     Output::Dict{EMB.Resource, Real}
 end
 
-""" An reference `Area`.
+""" A reference `Area`.
 
 # Fields
 **`id`** is the identifyer of the area.\n
 **`Name`** is the name of the area.\n
 **`Lon::Real`** is the longitudinal position of the area.\n
 **`Lat::Real`** is the latitudinal position of the area.\n
-**`An::Availability`** is the availability node routing different resources within an area.
+**`An::Availability`** is the `Availability` node routing different resources within an area.
 
 """
 struct Area
@@ -48,7 +48,7 @@ TODO: convert transmission capacity from Real to a time series. Alternatively a 
 **`Name::String`** is the name/identifyer of the transmission mode.\n
 **`Resource::Resource`** is the resource that is transported.\n
 **`Trans_cap::Real`** is the capacity of the transmission mode.\n
-**`Trans_loss::Real`** is the loss of the transported resource during transmission.\n
+**`Trans_loss::Real`** is the loss of the transported resource during transmissio in \%n.\n
 **`Directions`** is the number of directions the resource can be transported, 1 is unidirectional (A->B) or 2 id bidirectional (A<->B).
 
 """
@@ -68,8 +68,8 @@ Generic representation of static transmission modes, such as overhead power line
 # Fields
 **`Name::String`** is the name/identifyer of the transmission mode.\n
 **`Resource::Resource`** is the resource that is transported.\n
-**`Trans_capReal`** is the capacity of the transmission mode.\n
-**`Trans_loss::Real`** is the loss of the transported resource during transmission.\n
+**`Trans_cap::Real`** is the capacity of the transmission mode.\n
+**`Trans_loss::Real`** is the loss of the transported resource during transmission in \%.\n
 **`Directions`** is the number of directions the resource can be transported, 1 is unidirectional (A->B) or 2 id bidirectional (A<->B).
 
 """
@@ -95,37 +95,27 @@ This type also supports consuming resources proportionally to the volume of tran
 the pipeline.
 
 # Fields
-
-**`Name::String`** is the identifier used in printed output.
-
-**`Inlet::Resource`** is the `Resource` going into transmission.
-
-**`Outlet::Resource`** is the `Resource` going out of the outlet of the transmission.
-
-**`Consuming::Resource`** is the `Resource` the transmission consumes by operating.
-
+**`Name::String`** is the identifier used in printed output.\n
+**`Inlet::Resource`** is the `Resource` going into transmission.\n
+**`Outlet::Resource`** is the `Resource` going out of the outlet of the transmission.\n
+**`Consuming::Resource`** is the `Resource` the transmission consumes by operating.\n
 **`Consumption_rate::Real`** the rate of which the resource `Pipeline.Consuming` is consumed, as
     a ratio of the volume of the resource going into the inlet. I.e.:
 
-        `Consumption_rate` = consumed volume / inlet volume (per operational period)
-
-**`Trans_cap::Real`**
-
-**`Trans_loss::Real`**
-
-**`Directions`** specifies that the pipeline is Unidirectional (1) by default.
+        `Consumption_rate` = consumed volume / inlet volume (per operational period)\n
+**`Trans_cap::Real`** is the capacity of the transmission mode.\n
+**`Trans_loss::Real`** is the loss of the transported resource during transmission in \%.\n
+**`Directions`** specifies that the pipeline is Unidirectional (1) by default.\n
 """
 Base.@kwdef struct PipelineMode <: TransmissionMode
     Name::String
 
-    Inlet::EMB.Resource     # the resource accepted at the inlet
-    Outlet::EMB.Resource    # the resource at the outlet
-    Consuming::EMB.Resource # the Resource consumed by operating the pipeline
-    Consumption_rate::Real  # consumed volume / inlet volume (per operatioanl period)
-
+    Inlet::EMB.Resource
+    Outlet::EMB.Resource
+    Consuming::EMB.Resource
+    Consumption_rate::Real
     Trans_cap::Real
     Trans_loss::Real
-
     # TODO remove below field? Should not be relevant for fluid pipeline.
     Directions::Int = 1     # 1: Unidirectional or 2: Bidirectional
 end
@@ -133,7 +123,7 @@ end
 
 """ A `Transmission` corridor.
 
-A geographic corridor where TransmissionModes are used to transport resources.
+A geographic corridor where `TransmissionModes` are used to transport resources.
 
 # Fields
 **`From::Area`** is the area resources are trasported from.\n
@@ -164,7 +154,7 @@ end
 """
     corridor_modes(l)
 
-Return a array of the transmission modes for a transmission corriodor l.
+Return an array of the transmission modes for a transmission corridor l.
 """
 function corridor_modes(l)
     return [m for m in l.Modes]
@@ -180,7 +170,7 @@ trans_mode_export(tm::PipelineMode) = [tm.Inlet, tm.Consuming]
 """
     filter_transmission_modes(ℒ, filter_method)
 
-Return the resources transported/ consumed by the transmission corridors in ℒ.
+Return the resources transported/consumed by the transmission corridors in ℒ.
 """
 function filter_transmission_modes(ℒ, filter_method)
     resources = []
