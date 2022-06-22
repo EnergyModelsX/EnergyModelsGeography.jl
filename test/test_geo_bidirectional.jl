@@ -23,12 +23,16 @@ nodes = [
         GEO.GeoAvailability(1, 𝒫₀, 𝒫₀),
         EMB.RefSource(2, FixedProfile(1e12), OperationalFixedProfile([10 100]), FixedProfile(0), Dict(NG => 1), 𝒫ᵉᵐ₀, Dict("" => EMB.EmptyData())),  
         EMB.RefGeneration(3, FixedProfile(100), FixedProfile(5.5), FixedProfile(0), Dict(NG => 2), Dict(Power => 1, CO2 => 1), 𝒫ᵉᵐ₀, 0, Dict("" => EMB.EmptyData())),  
-        EMB.RefSink(4, DynamicProfile(demand), Dict(:Surplus => 0, :Deficit => 1e6), Dict(Power => 1), 𝒫ᵉᵐ₀),
+        EMB.RefSink(4, DynamicProfile(demand), 
+            Dict(:Surplus => FixedProfile(0), :Deficit => FixedProfile(1e6)), 
+            Dict(Power => 1), 𝒫ᵉᵐ₀),
         
         GEO.GeoAvailability(5, 𝒫₀, 𝒫₀),
         EMB.RefSource(6, FixedProfile(1e12), OperationalFixedProfile([100 10]), FixedProfile(0), Dict(NG => 1), 𝒫ᵉᵐ₀, Dict("" => EMB.EmptyData())),  
         EMB.RefGeneration(7, FixedProfile(100), FixedProfile(5.5), FixedProfile(0), Dict(NG => 2), Dict(Power => 1, CO2 => 1), 𝒫ᵉᵐ₀, 0, Dict("" => EMB.EmptyData())),  
-        EMB.RefSink(8, DynamicProfile(demand), Dict(:Surplus => 0, :Deficit => 1e6), Dict(Power => 1), 𝒫ᵉᵐ₀),
+        EMB.RefSink(8, DynamicProfile(demand), 
+            Dict(:Surplus => FixedProfile(0), :Deficit => FixedProfile(1e6)), 
+            Dict(Power => 1), 𝒫ᵉᵐ₀),
         ]
 
 # Definition of the links between the nodes in an area
@@ -73,11 +77,12 @@ data = Dict(
 
     l   = transmission[1]
     cm  = l.Modes[1]
-
+    # The sign should be the same for both directions
+    
+    @test sum(sign(value.(m[:trans_in])[l, t, cm]) 
+              == sign(value.(m[:trans_out])[l, t, cm]) for t ∈ 𝒯) == length(𝒯)
+    # Depending on the direction, check on the individual flows
     for t ∈ 𝒯
-        # The sign should be the same for both directions
-        @test sign(value.(m[:trans_in])[l, t, cm]) == sign(value.(m[:trans_out])[l, t, cm])
-        # Depending on the direction, check on the individual flows
         if value.(m[:trans_in])[l, t, cm] <= 0
             @test abs(value.(m[:trans_in])[l, t, cm]) <= abs(value.(m[:trans_out])[l, t, cm])
             @test abs(value.(m[:trans_in])[l, t, cm]) == cm.Trans_cap
