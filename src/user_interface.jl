@@ -66,15 +66,15 @@ function read_data(modeltype)
     LNG_Ship_100MW      = RefDynamic("LNG_100", NG, 100.0, 0.05, 1)#, EMB.Linear)
 
     # Create transmission between areas
-    transmission = [Transmission(areas[1], areas[2], [OverheadLine_50MW],[Dict(""=> EMB.EmptyData())]),
-                    Transmission(areas[3], areas[1], [OverheadLine_50MW],[Dict(""=> EMB.EmptyData())]),
-                    Transmission(areas[2], areas[3], [OverheadLine_50MW],[Dict(""=> EMB.EmptyData())]),
-                    Transmission(areas[3], areas[4], [OverheadLine_50MW],[Dict(""=> EMB.EmptyData())]),
-                    Transmission(areas[1], areas[5], [OverheadLine_50MW],[Dict(""=> EMB.EmptyData())]),
-                    Transmission(areas[2], areas[5], [OverheadLine_50MW],[Dict(""=> EMB.EmptyData())]),
-                    Transmission(areas[5], areas[6], [OverheadLine_50MW],[Dict(""=> EMB.EmptyData())]),
-                    Transmission(areas[6], areas[7], [OverheadLine_50MW],[Dict(""=> EMB.EmptyData())]),
-                    Transmission(areas[4], areas[2], [LNG_Ship_100MW],[Dict(""=> EMB.EmptyData())])]
+    transmission = [Transmission(areas[1], areas[2], [OverheadLine_50MW],Dict(""=> EMB.EmptyData())),
+                    Transmission(areas[3], areas[1], [OverheadLine_50MW],Dict(""=> EMB.EmptyData())),
+                    Transmission(areas[2], areas[3], [OverheadLine_50MW],Dict(""=> EMB.EmptyData())),
+                    Transmission(areas[3], areas[4], [OverheadLine_50MW],Dict(""=> EMB.EmptyData())),
+                    Transmission(areas[1], areas[5], [OverheadLine_50MW],Dict(""=> EMB.EmptyData())),
+                    Transmission(areas[2], areas[5], [OverheadLine_50MW],Dict(""=> EMB.EmptyData())),
+                    Transmission(areas[5], areas[6], [OverheadLine_50MW],Dict(""=> EMB.EmptyData())),
+                    Transmission(areas[6], areas[7], [OverheadLine_50MW],Dict(""=> EMB.EmptyData())),
+                    Transmission(areas[4], areas[2], [LNG_Ship_100MW],Dict(""=> EMB.EmptyData()))]
 
     # Creation of the time structure and global data
     T = UniformTwoLevel(1, 4, 1, UniformTimes(1, 24, 1))

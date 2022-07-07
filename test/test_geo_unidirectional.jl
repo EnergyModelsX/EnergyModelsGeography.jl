@@ -39,8 +39,8 @@ function small_graph(source=nothing, sink=nothing)
              GEO.Area(2, "Trondheim", 10.398, 63.4366, nodes[2])]        
 
     transmission_line = GEO.RefStatic("transline", Power, 100, 0.1, 1)
-    transmissions = [GEO.Transmission(areas[1], areas[2], [transmission_line],[Dict(""=> EMB.EmptyData())]),
-                     GEO.Transmission(areas[2], areas[1], [transmission_line],[Dict(""=> EMB.EmptyData())])]
+    transmissions = [GEO.Transmission(areas[1], areas[2], [transmission_line],Dict(""=> EMB.EmptyData())),
+                     GEO.Transmission(areas[2], areas[1], [transmission_line],Dict(""=> EMB.EmptyData()))]
 
     # Creation of the time structure and the used global data
     T = UniformTwoLevel(1, 4, 1, UniformTimes(1, 4, 1))
