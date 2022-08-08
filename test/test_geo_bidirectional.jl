@@ -54,7 +54,7 @@ areas = [GEO.Area(1, "Oslo", 10.751, 59.921, nodes[1]),
          
 # Definition of the power lines
 OverheadLine_50MW = GEO.RefStatic("PowerLine_50", Power, 30.0, 0.05, 2)
-transmission = [GEO.Transmission(areas[1], areas[2], [OverheadLine_50MW],[Dict(""=> EMB.EmptyData())])]
+transmission = [GEO.Transmission(areas[1], areas[2], [OverheadLine_50MW],Dict(""=> EMB.EmptyData()))]
 
 # Aggregation of the problem data
 data = Dict(

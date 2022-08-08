@@ -56,7 +56,7 @@ function small_graph_co2_1()
     # transmission_line = GEO.RefStatic("transline", Power, 100, 0.1, 1)
     pipeline = GEO.PipelineMode("pipeline", CO2_150, CO2_200, Power, 0.1, 100, 0.05, 1)
 
-    transmissions = [GEO.Transmission(areas[1], areas[2], [pipeline], [Dict("" => EMB.EmptyData())])]
+    transmissions = [GEO.Transmission(areas[1], areas[2], [pipeline], Dict("" => EMB.EmptyData()))]
         #GEO.Transmission(areas[2], areas[1], [pipeline], [Dict("" => EMB.EmptyData())])]
 
     # Creation of the time structure and the used global data
