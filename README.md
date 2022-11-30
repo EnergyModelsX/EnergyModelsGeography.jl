@@ -1,4 +1,4 @@
-# Geography
+# EnergyModelsGeography
 
 [![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
 
@@ -9,7 +9,7 @@ This package is currently experimental/proof-of-concept and under heavy developm
 ## Usage
 
 ```julia
-using Geography
+using EnergyModelsGeography
 ```
 
 ## Discussion points
