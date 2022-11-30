@@ -4,7 +4,7 @@ Main module for `Geography.jl`.
 # Exports:
  - `Area`, `Transmission`, `RefStatic`, `RefDynamic`, `PipelineMode`.
 """
-module Geography
+module EnergyModelsGeography
 
 using Base: Float64
 using JuMP

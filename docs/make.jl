@@ -10,12 +10,12 @@ catch
     using Documenter
 end
 
-using Geography
+using EnergyModelsGeography
 
 makedocs(
-    sitename = "Geography",
+    sitename = "EnergyModelsGeography",
     format = Documenter.HTML(),
-    modules = [Geography],
+    modules = [EnergyModelsGeography],
     pages = [
         "Home" => "index.md",
         "Manual" => Any[

@@ -1,4 +1,4 @@
-using Geography
+using EnergyModelsGeography
 using JuMP
 using Test
 
@@ -8,7 +8,7 @@ using TimeStructures
 
 const TS = TimeStructures
 const EMB = EnergyModelsBase
-const GEO = Geography
+const GEO = EnergyModelsGeography
 
 
 @testset "Geography" begin

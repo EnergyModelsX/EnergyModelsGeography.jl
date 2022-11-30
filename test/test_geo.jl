@@ -8,7 +8,7 @@ using PlotlyJS, DataFrames, CSV
 import Statistics
 
 ## Run with Geography package and several areas
-import Geography; const GEO = Geography
+import EnergyModelsGeography; const GEO = EnergyModelsGeography
 
 # Create and run the model
 model = EMB.OperationalModel()
