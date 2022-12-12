@@ -1,6 +1,12 @@
 Geography release notes
 ===================================
 
+Version 0.2.2 (2022-12-12)
+--------------------------
+### Internal release
+* Updated Readme
+* Renamed with common prefix
+
 Version 0.2.1 (2021-09-07)
 --------------------------
 ### Changes in naming
