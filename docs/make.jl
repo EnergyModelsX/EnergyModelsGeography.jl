@@ -1,14 +1,5 @@
-push!(LOAD_PATH,"../src/")
+using Documenter
 
-try
-    using Documenter
-catch
-    import Pkg
-    Pkg.activate(@__DIR__)
-    Pkg.instantiate()
-    
-    using Documenter
-end
 
 using EnergyModelsGeography
 
