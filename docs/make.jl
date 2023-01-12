@@ -11,7 +11,7 @@ end
 cp("../NEWS.md", "src/manual/NEWS.md")
 
 makedocs(
-    sitename = "EnergyModelsGeography",
+    sitename = "EnergyModelsGeography.jl",
     format = Documenter.HTML(),
     modules = [EnergyModelsGeography],
     pages = [
@@ -24,7 +24,9 @@ makedocs(
         ],
         "Library" => Any[
             "Public" => "library/public.md",
-            "Internals" => "library/internals.md"
+            "Internals" => Any[
+                "Internals" => "library/internals/internals.md", 
+                "Reference" => "library/internals/reference.md"]
         ]
     ]
 )

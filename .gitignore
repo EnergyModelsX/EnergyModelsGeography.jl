@@ -18,8 +18,5 @@ docs/src/manual/NEWS.md
 # environment.
 Manifest.toml
 
-# Output
-*.md
-
 # MacOS
 .DS_Store

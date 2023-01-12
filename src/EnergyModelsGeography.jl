@@ -1,5 +1,5 @@
 """
-Main module for `Geography.jl`.
+Main module for `EnergyModelsGeography.jl`.
 
 # Exports:
  - `Area`, `Transmission`, `RefStatic`, `RefDynamic`, `PipelineMode`.
