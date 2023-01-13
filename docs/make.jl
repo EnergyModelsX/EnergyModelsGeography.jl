@@ -1,19 +1,17 @@
-push!(LOAD_PATH,"../src/")
-
-try
-    using Documenter
-catch
-    import Pkg
-    Pkg.activate(@__DIR__)
-    Pkg.instantiate()
-    
-    using Documenter
-end
+using Documenter
 
 using EnergyModelsGeography
 
+
+# Copy the NEWS.md file
+news = "src/manual/NEWS.md"
+if isfile(news)
+    rm(news)
+end
+cp("../NEWS.md", "src/manual/NEWS.md")
+
 makedocs(
-    sitename = "EnergyModelsGeography",
+    sitename = "EnergyModelsGeography.jl",
     format = Documenter.HTML(),
     modules = [EnergyModelsGeography],
     pages = [
@@ -22,10 +20,13 @@ makedocs(
             "Quick Start" => "manual/quick-start.md",
             "Philosophy" => "manual/philosophy.md",
             "Example" => "manual/simple-example.md",
+            "Release notes" => "manual/NEWS.md",
         ],
         "Library" => Any[
             "Public" => "library/public.md",
-            "Internals" => "library/internals.md"
+            "Internals" => Any[
+                "Internals" => "library/internals/internals.md", 
+                "Reference" => "library/internals/reference.md"]
         ]
     ]
 )

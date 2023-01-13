@@ -1,8 +1,12 @@
 # EnergyModelsGeography
+
+[![Pipeline: passing](https://gitlab.sintef.no/clean_export/energymodelsgeography.jl/badges/main/pipeline.svg)](https://gitlab.sintef.no/clean_export/energymodelsgeography.jl/-/jobs)
+[![Docs: stable](https://img.shields.io/badge/docs-stable-4495d1.svg)](https://clean_export.pages.sintef.no/energymodelsgeography.jl)
 <!---
 [![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
 --->
-`EnergyModelsGeography` is a package to add a geographic represation to both operational and investment models. It is developed primarily to add this functionality to `EnergyModelsBase` and `EnergyModelsInvestments`
+
+`EnergyModelsGeography` is a package to add a geographic representation to both operational and investment models. It is developed primarily to add this functionality to `EnergyModelsBase` and `EnergyModelsInvestments`
 
 > **Note**
 > This is an internal pre-release not intended for distribution outside the project consortium. 

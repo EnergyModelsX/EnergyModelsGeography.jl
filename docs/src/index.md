@@ -1,8 +1,13 @@
-# Geography.jl
+# EnergyModelsGeography.jl
+
+```@docs
+EnergyModelsGeography
+```
+
 
 This Julia package provides an operational, multi nodal model.
 
-The package extends  `EnergyModelsBase.jl` with functionality to set up an energy system consisting of several separate regions, with transmissions between.
+The package extends  [`EnergyModelsBase.jl`](https://clean_export.pages.sintef.no/energymodelsbase.jl/) with functionality to set up an energy system consisting of several separate regions, with transmissions between.
 
 
 ## Manual outline
