@@ -79,7 +79,8 @@ function read_data(modeltype)
     # Creation of the time structure and global data
     T = UniformTwoLevel(1, 4, 1, UniformTimes(1, 24, 1))
     global_data = EMB.GlobalData(Dict(CO2 => StrategicFixedProfile([450, 400, 350, 300]),
-                                      NG  => FixedProfile(1e6))
+                                      NG  => FixedProfile(1e6)),
+                                      CO2,
                                       )
 
     # WIP data structure
@@ -132,13 +133,26 @@ function get_sub_system_data(i,𝒫₀, 𝒫ᵉᵐ₀, products, modeltype;
     j=(i-1)*100
     nodes = [
             GeoAvailability(j+1, 𝒫₀, 𝒫₀),
-            EMB.RefSource(j+2, FixedProfile(1e12), FixedProfile(30*mc_scale), FixedProfile(0), Dict(NG => 1), 𝒫ᵉᵐ₀, Dict("" => EMB.EmptyData())),  
-            EMB.RefSource(j+3, FixedProfile(1e12), FixedProfile(9*mc_scale), FixedProfile(0), Dict(Coal => 1), 𝒫ᵉᵐ₀, Dict("" => EMB.EmptyData())),  
-            EMB.RefGeneration(j+4, FixedProfile(25), FixedProfile(5.5*mc_scale), FixedProfile(0), Dict(NG => 2), Dict(Power => 1, CO2 => 1), 𝒫ᵉᵐ₀, 0.9, Dict("" => EMB.EmptyData())),  
-            EMB.RefGeneration(j+5, FixedProfile(25), FixedProfile(6*mc_scale), FixedProfile(0),  Dict(Coal => 2.5), Dict(Power => 1, CO2 => 1), 𝒫ᵉᵐ₀, 0, Dict("" => EMB.EmptyData())),  
-            EMB.RefStorage(j+6, FixedProfile(20), FixedProfile(600), FixedProfile(9.1), FixedProfile(0),  Dict(CO2 => 1, Power => 0.02), Dict(CO2 => 1), Dict("" => EMB.EmptyData())),
+            EMB.RefSource(j+2, FixedProfile(1e12), FixedProfile(30*mc_scale),
+                            FixedProfile(0), Dict(NG => 1),
+                            Dict("" => EMB.EmptyData())),  
+            EMB.RefSource(j+3, FixedProfile(1e12), FixedProfile(9*mc_scale),
+                            FixedProfile(0), Dict(Coal => 1),
+                            Dict("" => EMB.EmptyData())),  
+            EMB.RefNetworkEmissions(j+4, FixedProfile(25), FixedProfile(5.5*mc_scale),
+                            FixedProfile(0), Dict(NG => 2),
+                            Dict(Power => 1, CO2 => 1), 𝒫ᵉᵐ₀, 0.9,
+                            Dict("" => EMB.EmptyData())),  
+            EMB.RefNetwork(j+5, FixedProfile(25), FixedProfile(6*mc_scale),
+                            FixedProfile(0),  Dict(Coal => 2.5),
+                            Dict(Power => 1),
+                            Dict("" => EMB.EmptyData())),  
+            EMB.RefStorageEmissions(j+6, FixedProfile(20), FixedProfile(600), FixedProfile(9.1),
+                            FixedProfile(0),  CO2, Dict(CO2 => 1, Power => 0.02), Dict(CO2 => 1),
+                            Dict("" => EMB.EmptyData())),
             EMB.RefSink(j+7, DynamicProfile(demand),
-                    Dict(:Surplus => 0, :Deficit => 1e6), Dict(Power => 1), 𝒫ᵉᵐ₀),
+                            Dict(:Surplus => FixedProfile(0), :Deficit => FixedProfile(1e6)),
+                            Dict(Power => 1)),
             ]
 
     links = [

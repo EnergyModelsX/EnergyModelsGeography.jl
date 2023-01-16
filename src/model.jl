@@ -184,12 +184,12 @@ function update_objective(m, 𝒩, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, global_data, mo
 end
 
 """
-    EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫)
+    EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫, global_data)
 
 Repaces constraints for availability nodes of type GeoAvailability.
 The resource balances are set by the area constraints instead.
 """
-function EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫)
+function EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫, global_data::AbstractGlobalData)
 
 end
 

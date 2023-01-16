@@ -1,6 +1,11 @@
 Release notes
 =============
 
+Version 0.3.0 (2023-01-16)
+--------------------------
+### Adjustment to type changes
+* Adjusted test for changes in EnergyModelsBase introduced with Version 0.3.0
+
 Version 0.2.2 (2022-12-12)
 --------------------------
 ### Internal release

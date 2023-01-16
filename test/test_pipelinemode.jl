@@ -8,7 +8,6 @@ struct LiquidResource{T<:Real} <: EMB.Resource
 end
 Base.show(io::IO, n::LiquidResource) = print(io, "$(n.id)-$(n.pressure)")
 
-NG = ResourceEmit("NG", 0.2)
 CO2 = ResourceEmit("CO2", 1.0)
 Power = ResourceCarrier("Power", 0.0)
 Coal = ResourceCarrier("Coal", 0.35)
@@ -24,7 +23,7 @@ A test case representing a simple model of a CCS case, with a CO2 source with ca
 implemented, then using a PipelineMode for transportation to the offshore storage site.
 """
 function small_graph_co2_1()
-    products = [NG, Power, CO2, CO2_150, CO2_200]
+    products = [Power, CO2, CO2_150, CO2_200]
 
     # Creation of a dictionary with entries of 0. for all resources
     𝒫₀ = Dict(k => 0 for k ∈ products)
@@ -34,14 +33,14 @@ function small_graph_co2_1()
 
     # Creation of the source and sink module as well as the arrays used for nodes and links
     source = EMB.RefSource("-src", FixedProfile(25), FixedProfile(10),
-        FixedProfile(5), Dict(CO2_150 => 1, Power => 1), 𝒫ᵉᵐ₀, Dict("" => EMB.EmptyData()))
+        FixedProfile(5), Dict(CO2_150 => 1, Power => 1), Dict("" => EMB.EmptyData()))
     el_sink = EMB.RefSink("-el-sink", FixedProfile(0),
         Dict(:Surplus => FixedProfile(0), :Deficit => FixedProfile(1e6)), 
-        Dict(Power => 1), 𝒫ᵉᵐ₀)
+        Dict(Power => 1))
 
     sink = EMB.RefSink("-sink", FixedProfile(20),
         Dict(:Surplus => FixedProfile(0), :Deficit => FixedProfile(1e6)), 
-        Dict(CO2_200 => 1), 𝒫ᵉᵐ₀)
+        Dict(CO2_200 => 1))
 
     nodes = [GEO.GeoAvailability(1, 𝒫₀, 𝒫₀), GEO.GeoAvailability(2, 𝒫₀, 𝒫₀), source, 
         sink, el_sink]
@@ -61,8 +60,9 @@ function small_graph_co2_1()
 
     # Creation of the time structure and the used global data
     T = UniformTwoLevel(1, 4, 1, UniformTimes(1, 4, 1))
-    global_data = EMB.GlobalData(Dict(CO2 => StrategicFixedProfile([450, 400, 350, 300]),
-        NG => FixedProfile(1e6)))
+    global_data = EMB.GlobalData(Dict(CO2 => StrategicFixedProfile([450, 400, 350, 300])),
+                                CO2
+                                )
 
 
     # Creation of the case dictionary
@@ -95,9 +95,9 @@ end
     𝒩 = case[:nodes]
     ℒ = case[:transmission]
 
-    Power = 𝒫[2]
-    CO2_150 = 𝒫[4]
-    CO2_200 = 𝒫[5]
+    Power = 𝒫[1]
+    CO2_150 = 𝒫[3]
+    CO2_200 = 𝒫[4]
 
     area_from = case[:areas][1]
     area_to = case[:areas][2]
@@ -112,6 +112,13 @@ end
     pipeline::GEO.PipelineMode = transmission.Modes[1]
     inlet_resource = pipeline.Inlet
     outlet_resource = pipeline.Outlet
+
+    @testset "Energy transferred" begin     
+        # Test that energy is transferred
+        @test sum(value.(m[:trans_in])[transmission, t, pipeline] > 0 for t ∈ 𝒯) ==
+                length(𝒯)
+
+    end
 
     @testset "Resource exchange" begin
         # Check that only CO2_150 is exported from the factory area and that only 
