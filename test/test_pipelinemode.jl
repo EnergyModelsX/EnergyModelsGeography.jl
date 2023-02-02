@@ -60,8 +60,8 @@ function small_graph_co2_1()
 
     # Creation of the time structure and the used global data
     T = UniformTwoLevel(1, 4, 1, UniformTimes(1, 4, 1))
-    global_data = EMB.GlobalData(Dict(CO2 => StrategicFixedProfile([450, 400, 350, 300])),
-                                CO2
+    modeltype = OperationalModel(Dict(CO2 => StrategicFixedProfile([450, 400, 350, 300])),
+                                      CO2
                                 )
 
 
@@ -72,17 +72,16 @@ function small_graph_co2_1()
         :areas => areas,
         :transmission => transmissions,
         :T => T,
-        :global_data => global_data,
     )
-    return case
+    return case, modeltype
 end
 
 
 @testset "PipelineMode test" begin
 
-    case = small_graph_co2_1()
+    case, modeltype = small_graph_co2_1()
 
-    m = optimize(case)
+    m = optimize(case, modeltype)
     general_tests(m)
 
     """

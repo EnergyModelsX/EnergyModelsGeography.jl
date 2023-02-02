@@ -13,31 +13,31 @@ function small_graph(source=nothing, sink=nothing)
 
     # Creation of the source and sink module as well as the arrays used for nodes and links
     if isnothing(source)
-        source = EMB.RefSource("-src", FixedProfile(25), FixedProfile(10), 
-            FixedProfile(5), Dict(Power => 1), Dict(""=>EMB.EmptyData()))
+        source = RefSource("-src", FixedProfile(25), FixedProfile(10), 
+            FixedProfile(5), Dict(Power => 1), Dict(""=>EmptyData()))
     end
 
     if isnothing(sink)
-        sink = EMB.RefSink("-snk", FixedProfile(20), 
+        sink = RefSink("-snk", FixedProfile(20), 
             Dict(:Surplus => FixedProfile(0), :Deficit => FixedProfile(1e6)), 
             Dict(Power => 1))
     end
 
     nodes = [GEO.GeoAvailability(1, 𝒫₀, 𝒫₀), GEO.GeoAvailability(1, 𝒫₀, 𝒫₀), source, sink]
-    links = [EMB.Direct(31, nodes[3], nodes[1], EMB.Linear())
-             EMB.Direct(24, nodes[2], nodes[4], EMB.Linear())]
+    links = [Direct(31, nodes[3], nodes[1], Linear())
+             Direct(24, nodes[2], nodes[4], Linear())]
     
     # Creation of the two areas and potential transmission lines
-    areas = [GEO.Area(1, "Oslo", 10.751, 59.921, nodes[1]), 
-             GEO.Area(2, "Trondheim", 10.398, 63.4366, nodes[2])]        
+    areas = [Area(1, "Oslo", 10.751, 59.921, nodes[1]), 
+             Area(2, "Trondheim", 10.398, 63.4366, nodes[2])]        
 
-    transmission_line = GEO.RefStatic("transline", Power, 100, 0.1, 1)
-    transmissions = [GEO.Transmission(areas[1], areas[2], [transmission_line], Dict("" => EMB.EmptyData())),
-                     GEO.Transmission(areas[2], areas[1], [transmission_line], Dict("" => EMB.EmptyData()))]
+    transmission_line = RefStatic("transline", Power, 100, 0.1, 1)
+    transmissions = [Transmission(areas[1], areas[2], [transmission_line], Dict("" => EmptyData())),
+                     Transmission(areas[2], areas[1], [transmission_line], Dict("" => EmptyData()))]
 
     # Creation of the time structure and the used global data
     T = UniformTwoLevel(1, 4, 1, UniformTimes(1, 4, 1))
-    global_data = EMB.GlobalData(Dict(CO2 => StrategicFixedProfile([450, 400, 350, 300])),
+    modeltype = OperationalModel(Dict(CO2 => StrategicFixedProfile([450, 400, 350, 300])),
                                 CO2,
                                 )
 
@@ -49,9 +49,8 @@ function small_graph(source=nothing, sink=nothing)
                 :areas          => areas,
                 :transmission   => transmissions,
                 :T              => T,
-                :global_data    => global_data,
                 )
-    return case
+    return case, modeltype
 end
 
 
@@ -95,8 +94,8 @@ end
 @testset "Unidirectional transmission" begin
     
     # Creation and run of the model
-    case = small_graph()
-    m    = optimize(case)
+    case, modeltype = small_graph()
+    m    = optimize(case, modeltype)
 
     # Run of the generalized tests
     general_tests(m)
@@ -111,7 +110,7 @@ end
 # PipelineMode as the TransmissionMode instead.
 @testset "Unidirectional pipeline transmission" begin
     
-    case = small_graph()
+    case, modeltype = small_graph()
 
     # Replace each TransmissionMode's with a PipelineMode with identical properties.
     for transmission in case[:transmission]
@@ -130,7 +129,7 @@ end
         end
     end
 
-    m = optimize(case)
+    m = optimize(case, modeltype)
     general_tests(m)
     transmission_tests(m, case)
 end
