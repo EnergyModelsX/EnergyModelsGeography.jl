@@ -15,11 +15,10 @@ function create_model(case, modeltype)
     𝒫           = case[:products]
     𝒯           = case[:T]
     𝒩           = case[:nodes]
-    global_data = case[:global_data]
 
     # Declaration of variables foir areas and transmission corridors
     variables_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype)
-    variables_capex_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, global_data, modeltype)
+    variables_capex_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
     variables_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
 
     # Construction of constraints for areas and transmission corridors
@@ -27,14 +26,14 @@ function create_model(case, modeltype)
     constraints_transmission(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
 
     # Updates the objective function
-    update_objective(m, 𝒩, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, global_data, modeltype)
+    update_objective(m, 𝒩, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, modeltype)
 
     return m
 end
 
 
 """
-    variables_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype)
+    variables_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype::EnergyModel
 
 Create variables to track how much energy is exchanged from an area for all 
 time periods `t ∈ 𝒯`.
@@ -46,12 +45,12 @@ end
 
 
 """
-    variables_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+    variables_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel
 
 Create variables to track how much of installed transmision capacity is used for all 
 time periods `t ∈ 𝒯` and how much energy is lossed.
 """
-function variables_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+function variables_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel)
     @variable(m, trans_in[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, corridor_modes(l)])
     @variable(m, trans_out[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, corridor_modes(l)])
     @variable(m, trans_loss[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, corridor_modes(l)] >= 0)
@@ -66,24 +65,24 @@ end
 
 
 """
-    variables_capex_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, global_data, modeltype)
+    variables_capex_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel)
 
 Create variables for the capital costs for the investments in transmission.
 
 Empty function to allow for multipled dispatch in the InvestmentModels package
 """
-function variables_capex_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, global_data, modeltype)
+function variables_capex_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel)
 
 end
 
 
 """
-    constraints_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype)
+    constraints_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype::EnergyModel)
 
 Create constraints for the energy balances within an area for each resource using the GeoAvailability node.
 Keep track of the exchange with other areas in a seperate variable `:area_exchange`.
 """
-function constraints_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype)
+function constraints_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype::EnergyModel)
     for a ∈ 𝒜
         # Resource balance within an area
         n = a.An
@@ -109,11 +108,11 @@ end
 
 
 """
-    constraints_transmission(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+    constraints_transmission(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel)
 
 Create transmission constraints on all transmission corridors.
 """
-function constraints_transmission(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+function constraints_transmission(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel)
 
     for l ∈ ℒᵗʳᵃⁿˢ
         create_trans(m, 𝒯, l)
@@ -176,20 +175,20 @@ function compute_trans_out(m, l, t, p, cm::PipelineMode)
 end
 
 """
-    update_objective(m, 𝒩, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, global_data, modeltype)
+    update_objective(m, 𝒩, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel)
 
 Update the objective function with costs related to geography (areas and energy transmission).
 """
-function update_objective(m, 𝒩, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, global_data, modeltype)
+function update_objective(m, 𝒩, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel)
 end
 
 """
-    EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫)
+    EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫, modeltype::EnergyModel)
 
 Repaces constraints for availability nodes of type GeoAvailability.
 The resource balances are set by the area constraints instead.
 """
-function EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫)
+function EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫, modeltype::EnergyModel)
 
 end
 

@@ -1,10 +1,10 @@
-using GLPK
+using HiGHS
 
-function optimize(case)
-    model = EMB.OperationalModel()
-    m = GEO.create_model(case, model)
-    optimizer = GLPK.Optimizer
+function optimize(case, modeltype)
+    m = GEO.create_model(case, modeltype)
+    optimizer = HiGHS.Optimizer
     set_optimizer(m, optimizer)
+    set_optimizer_attribute(m, MOI.Silent(), true)
     optimize!(m)
     return m
 end

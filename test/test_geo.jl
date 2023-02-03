@@ -3,7 +3,7 @@ using Revise
 import EnergyModelsBase; const EMB = EnergyModelsBase
 using TimeStructures
 using JuMP
-using GLPK
+using HiGHS
 using PlotlyJS, DataFrames, CSV
 import Statistics
 
@@ -11,8 +11,7 @@ import Statistics
 import EnergyModelsGeography; const GEO = EnergyModelsGeography
 
 # Create and run the model
-model = EMB.OperationalModel()
-m, case = GEO.run_model("", model, GLPK.Optimizer)
+m, case = GEO.run_model("", HiGHS.Optimizer)
 
 # Extract the indiviudal data from the model
 𝒯       = case[:T]
