@@ -1,7 +1,7 @@
 
 ROUND_DIGITS = 8
 
-struct LiquidResource{T<:Real} <: EMB.Resource
+struct LiquidResource{T<:Real} <: Resource
     id
     CO2Int::T
     pressure::Int
@@ -32,30 +32,30 @@ function small_graph_co2_1()
     𝒫ᵉᵐ₀ = Dict(k => 0.0 for k ∈ products if typeof(k) == ResourceEmit{Float64})
 
     # Creation of the source and sink module as well as the arrays used for nodes and links
-    source = EMB.RefSource("-src", FixedProfile(25), FixedProfile(10),
-        FixedProfile(5), Dict(CO2_150 => 1, Power => 1), Dict("" => EMB.EmptyData()))
-    el_sink = EMB.RefSink("-el-sink", FixedProfile(0),
+    source = RefSource("-src", FixedProfile(25), FixedProfile(10),
+        FixedProfile(5), Dict(CO2_150 => 1, Power => 1), Dict("" => EmptyData()))
+    el_sink = RefSink("-el-sink", FixedProfile(0),
         Dict(:Surplus => FixedProfile(0), :Deficit => FixedProfile(1e6)), 
         Dict(Power => 1))
 
-    sink = EMB.RefSink("-sink", FixedProfile(20),
+    sink = RefSink("-sink", FixedProfile(20),
         Dict(:Surplus => FixedProfile(0), :Deficit => FixedProfile(1e6)), 
         Dict(CO2_200 => 1))
 
-    nodes = [GEO.GeoAvailability(1, 𝒫₀, 𝒫₀), GEO.GeoAvailability(2, 𝒫₀, 𝒫₀), source, 
+    nodes = [GeoAvailability(1, 𝒫₀, 𝒫₀), GEO.GeoAvailability(2, 𝒫₀, 𝒫₀), source, 
         sink, el_sink]
-    links = [EMB.Direct(31, nodes[3], nodes[1], EMB.Linear()),
-        EMB.Direct(24, nodes[2], nodes[4], EMB.Linear()),
-        EMB.Direct(15, nodes[1], nodes[5], EMB.Linear())]
+    links = [Direct(31, nodes[3], nodes[1], Linear()),
+        Direct(24, nodes[2], nodes[4], Linear()),
+        Direct(15, nodes[1], nodes[5], Linear())]
 
     # Creation of the two areas and potential transmission lines
-    areas = [GEO.Area(1, "Factory", 10.751, 59.921, nodes[1]),
-        GEO.Area(2, "North Sea", 10.398, 63.4366, nodes[2])]
+    areas = [RefArea(1, "Factory", 10.751, 59.921, nodes[1]),
+             RefArea(2, "North Sea", 10.398, 63.4366, nodes[2])]
 
-    pipeline = GEO.PipeSimple("pipeline", CO2_150, CO2_200, Power, FixedProfile(0.1), FixedProfile(100), FixedProfile(0.05), 1)
+    pipeline = PipeSimple("pipeline", CO2_150, CO2_200, Power, FixedProfile(0.1), FixedProfile(100), FixedProfile(0.05), 1)
 
-    transmissions = [GEO.Transmission(areas[1], areas[2], [pipeline], Dict("" => EMB.EmptyData()))]
-        #GEO.Transmission(areas[2], areas[1], [pipeline], [Dict("" => EMB.EmptyData())])]
+    transmissions = [Transmission(areas[1], areas[2], [pipeline], Dict("" => EmptyData()))]
+        #GEO.Transmission(areas[2], areas[1], [pipeline], [Dict("" => EmptyData())])]
 
     # Creation of the time structure and the used global data
     T = UniformTwoLevel(1, 4, 1, UniformTimes(1, 4, 1))

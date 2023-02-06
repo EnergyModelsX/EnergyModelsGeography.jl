@@ -28,8 +28,8 @@ function small_graph(source=nothing, sink=nothing)
              Direct(24, nodes[2], nodes[4], Linear())]
     
     # Creation of the two areas and potential transmission lines
-    areas = [Area(1, "Oslo", 10.751, 59.921, nodes[1]), 
-             Area(2, "Trondheim", 10.398, 63.4366, nodes[2])]        
+    areas = [RefArea(1, "Oslo", 10.751, 59.921, nodes[1]), 
+             RefArea(2, "Trondheim", 10.398, 63.4366, nodes[2])]        
 
     transmission_line = RefStatic("transline", Power, FixedProfile(100), FixedProfile(0.1), 1)
     transmissions = [Transmission(areas[1], areas[2], [transmission_line], Dict("" => EmptyData())),

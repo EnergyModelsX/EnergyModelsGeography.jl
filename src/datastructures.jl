@@ -15,6 +15,10 @@ struct GeoAvailability <: EMB.Availability
     Output::Dict{EMB.Resource, Real}
 end
 
+
+""" Declaration of the general type for areas."""
+abstract type Area end
+
 """ A reference `Area`.
 
 # Fields
@@ -25,7 +29,7 @@ end
 - **`An::Availability`** is the `Availability` node routing different resources within an area.
 
 """
-struct Area
+struct RefArea <: Area
 	id
     Name
 	Lon::Real
@@ -34,6 +38,25 @@ struct Area
 end
 Base.show(io::IO, a::Area) = print(io, "$(a.Name)")
 
+
+""" An `Area` with limited exchange based on local load.
+
+# Fields
+- **`id`** is the name/identifier of the area.\n
+- **`Name`** is the name of the area.\n
+- **`Lon::Real`** is the longitudinal position of the area.\n
+- **`Lat::Real`** is the latitudinal position of the area.\n
+- **`An::Availability`** is the `Availability` node routing different resources within an area.
+- **`ExchangeLimit::Dict{EMB.Resource, Real}`** is the amount of a resource that can be exchanged with other areas
+"""
+struct LimitedExchangeArea <: Area
+    id
+    Name
+    Lon::Real
+    Lat::Real
+    An::EMB.Availability
+    Exchange_limit::Dict{EMB.Resource,StrategicFixedProfile}
+end
 
 """ Declaration of the general type for transmission mode transporting resources between areas."""
 abstract type TransmissionMode end 

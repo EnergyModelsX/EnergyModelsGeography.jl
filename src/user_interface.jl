@@ -62,27 +62,27 @@ function read_data()
     end
 
     # Create the individual areas and transmission modes
-    areas = [Area(1, "Oslo", 10.751, 59.921, an[1]),
-             Area(2, "Bergen", 5.334, 60.389, an[2]),
-             Area(3, "Trondheim", 10.398, 63.4366, an[3]),
-             Area(4, "Tromsø", 18.953, 69.669, an[4]),
-             Area(5, "Kristiansand", 7.984, 58.146, an[5]),
-             Area(6, "Sørlige Nordsjø II", 6.836, 57.151, an[6]),
-             Area(7, "Danmark", 8.614, 56.359, an[7])]
+    areas = [RefArea(1, "Oslo", 10.751, 59.921, an[1]),
+             RefArea(2, "Bergen", 5.334, 60.389, an[2]),
+             RefArea(3, "Trondheim", 10.398, 63.4366, an[3]),
+             RefArea(4, "Tromsø", 18.953, 69.669, an[4]),
+             RefArea(5, "Kristiansand", 7.984, 58.146, an[5]),
+             RefArea(6, "Sørlige Nordsjø II", 6.836, 57.151, an[6]),
+             RefArea(7, "Danmark", 8.614, 56.359, an[7])]
 
     OverheadLine_50MW   = RefStatic("PowerLine_50", Power, FixedProfile(50.0), FixedProfile(0.05), 2)#, EMB.Linear)
     LNG_Ship_100MW      = RefDynamic("LNG_100", NG, FixedProfile(100.0), FixedProfile(0.05), 1)#, EMB.Linear)
 
     # Create transmission between areas
-    transmission = [Transmission(areas[1], areas[2], [OverheadLine_50MW],Dict(""=> EMB.EmptyData())),
-                    Transmission(areas[3], areas[1], [OverheadLine_50MW],Dict(""=> EMB.EmptyData())),
-                    Transmission(areas[2], areas[3], [OverheadLine_50MW],Dict(""=> EMB.EmptyData())),
-                    Transmission(areas[3], areas[4], [OverheadLine_50MW],Dict(""=> EMB.EmptyData())),
-                    Transmission(areas[1], areas[5], [OverheadLine_50MW],Dict(""=> EMB.EmptyData())),
-                    Transmission(areas[2], areas[5], [OverheadLine_50MW],Dict(""=> EMB.EmptyData())),
-                    Transmission(areas[5], areas[6], [OverheadLine_50MW],Dict(""=> EMB.EmptyData())),
-                    Transmission(areas[6], areas[7], [OverheadLine_50MW],Dict(""=> EMB.EmptyData())),
-                    Transmission(areas[4], areas[2], [LNG_Ship_100MW],Dict(""=> EMB.EmptyData()))]
+    transmission = [Transmission(areas[1], areas[2], [OverheadLine_50MW],Dict(""=> EmptyData())),
+                    Transmission(areas[3], areas[1], [OverheadLine_50MW],Dict(""=> EmptyData())),
+                    Transmission(areas[2], areas[3], [OverheadLine_50MW],Dict(""=> EmptyData())),
+                    Transmission(areas[3], areas[4], [OverheadLine_50MW],Dict(""=> EmptyData())),
+                    Transmission(areas[1], areas[5], [OverheadLine_50MW],Dict(""=> EmptyData())),
+                    Transmission(areas[2], areas[5], [OverheadLine_50MW],Dict(""=> EmptyData())),
+                    Transmission(areas[5], areas[6], [OverheadLine_50MW],Dict(""=> EmptyData())),
+                    Transmission(areas[6], areas[7], [OverheadLine_50MW],Dict(""=> EmptyData())),
+                    Transmission(areas[4], areas[2], [LNG_Ship_100MW],Dict(""=> EmptyData()))]
 
     # Creation of the time structure and global data
     T = UniformTwoLevel(1, 4, 1, UniformTimes(1, 24, 1))
@@ -91,8 +91,8 @@ function read_data()
     case = Dict(
                 :areas          => Array{Area}(areas),
                 :transmission   => Array{Transmission}(transmission),
-                :nodes          => Array{EMB.Node}(nodes),
-                :links          => Array{EMB.Link}(links),
+                :nodes          => Array{Node}(nodes),
+                :links          => Array{Link}(links),
                 :products       => products,
                 :T              => T,
                 )
@@ -159,15 +159,15 @@ function get_sub_system_data(i,𝒫₀, 𝒫ᵉᵐ₀, products, modeltype;
             ]
 
     links = [
-            EMB.Direct(j+14,nodes[1],nodes[4],EMB.Linear())
-            EMB.Direct(j+15,nodes[1],nodes[5],EMB.Linear())
-            EMB.Direct(j+16,nodes[1],nodes[6],EMB.Linear())
-            EMB.Direct(j+17,nodes[1],nodes[7],EMB.Linear())
-            EMB.Direct(j+21,nodes[2],nodes[1],EMB.Linear())
-            EMB.Direct(j+31,nodes[3],nodes[1],EMB.Linear())
-            EMB.Direct(j+41,nodes[4],nodes[1],EMB.Linear())
-            EMB.Direct(j+51,nodes[5],nodes[1],EMB.Linear())
-            EMB.Direct(j+61,nodes[6],nodes[1],EMB.Linear())
+            Direct(j+14,nodes[1],nodes[4],Linear())
+            Direct(j+15,nodes[1],nodes[5],Linear())
+            Direct(j+16,nodes[1],nodes[6],Linear())
+            Direct(j+17,nodes[1],nodes[7],Linear())
+            Direct(j+21,nodes[2],nodes[1],Linear())
+            Direct(j+31,nodes[3],nodes[1],Linear())
+            Direct(j+41,nodes[4],nodes[1],Linear())
+            Direct(j+51,nodes[5],nodes[1],Linear())
+            Direct(j+61,nodes[6],nodes[1],Linear())
             ]
     return nodes, links
 end

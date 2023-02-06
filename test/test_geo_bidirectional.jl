@@ -50,8 +50,8 @@ function bidirectional_case()
             ]
     
     # Definition of the two areas and the corresponding transmission line between them
-    areas = [Area(1, "Oslo", 10.751, 59.921, nodes[1]),
-             Area(2, "Bergen", 5.334, 60.389, nodes[5])]
+    areas = [RefArea(1, "Oslo", 10.751, 59.921, nodes[1]),
+             RefArea(2, "Bergen", 5.334, 60.389, nodes[5])]
             
     # Definition of the power lines
     transmission_line = RefStatic("Transline", Power, FixedProfile(30.0), FixedProfile(0.05), 2)

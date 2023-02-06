@@ -103,6 +103,9 @@ function constraints_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype::Ener
             m[:area_exchange][a, t, p] + 
                 sum(sum(compute_trans_in(m, l, t, p, cm) for cm in l.Modes) for l in ℒᶠʳᵒᵐ)
                 == sum(sum(compute_trans_out(m, l, t, p, cm) for cm in l.Modes) for l in ℒᵗᵒ ))
+                
+        # Limit area exchange
+        create_area(m, a, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
     end
 end
 
@@ -115,6 +118,32 @@ The resource balances are set by the area constraints instead.
 function EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫, modeltype::EnergyModel)
 
 end
+
+
+"""
+    create_area(m, a::Area, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+
+Default fallback method when no function is defined for a node type.
+"""
+function create_area(m, a::Area, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+
+end
+
+"""
+    create_area(m, a::LimitedExchangeArea, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+
+Constraint that limit exchange with other areas based on ExchangeLimit.
+"""
+function create_area(m, a::LimitedExchangeArea, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+    # n = a.An
+    #@constraint(m, [t ∈ 𝒯, p ∈ exchange_resources(ℒᵗʳᵃⁿˢ, a)],
+    #    m[:area_exchange][a, t, p] <= a.ExchangeLimit[p]) # Import limit
+
+    @constraint(m, [t ∈ 𝒯, p ∈ exchange_resources(ℒᵗʳᵃⁿˢ, a)],
+        m[:area_exchange][a, t, p] >= -1 * a.ExchangeLimit[p][t]) # Export limit
+
+end
+
 
 """
     constraints_transmission(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel)
