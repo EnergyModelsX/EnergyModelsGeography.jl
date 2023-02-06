@@ -70,8 +70,8 @@ function read_data()
              Area(6, "Sørlige Nordsjø II", 6.836, 57.151, an[6]),
              Area(7, "Danmark", 8.614, 56.359, an[7])]
 
-    OverheadLine_50MW   = RefStatic("PowerLine_50", Power, 50.0, 0.05, 2)#, EMB.Linear)
-    LNG_Ship_100MW      = RefDynamic("LNG_100", NG, 100.0, 0.05, 1)#, EMB.Linear)
+    OverheadLine_50MW   = RefStatic("PowerLine_50", Power, FixedProfile(50.0), FixedProfile(0.05), 2)#, EMB.Linear)
+    LNG_Ship_100MW      = RefDynamic("LNG_100", NG, FixedProfile(100.0), FixedProfile(0.05), 1)#, EMB.Linear)
 
     # Create transmission between areas
     transmission = [Transmission(areas[1], areas[2], [OverheadLine_50MW],Dict(""=> EMB.EmptyData())),

@@ -59,7 +59,7 @@ function variables_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype::EnergyMode
     @variable(m, trans_loss_pos[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, modes_of_dir(l, 2)] >= 0)
 
     for l ∈ ℒᵗʳᵃⁿˢ, t ∈ 𝒯, cm ∈ corridor_modes(l)
-        @constraint(m, trans_cap[l, t, cm] == cm.Trans_cap)
+        @constraint(m, trans_cap[l, t, cm] == cm.Trans_cap[t])
     end
 end
 
@@ -106,6 +106,15 @@ function constraints_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype::Ener
     end
 end
 
+"""
+    EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫, modeltype::EnergyModel)
+
+Repaces constraints for availability nodes of type GeoAvailability.
+The resource balances are set by the area constraints instead.
+"""
+function EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫, modeltype::EnergyModel)
+
+end
 
 """
     constraints_transmission(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel)
@@ -133,17 +142,17 @@ function compute_trans_in(m, l, t, p, cm::TransmissionMode)
 end
 
 """
-    compute_trans_in(m, l, t, p, cm::PipelineMode)
+    compute_trans_in(m, l, t, p, cm::PipeMode)
 
-Return the amount of resources going into transmission corridor l by a PipelineMode transmission mode.
+Return the amount of resources going into transmission corridor l by a PipeMode transmission mode.
 """
-function compute_trans_in(m, l, t, p, cm::PipelineMode)
+function compute_trans_in(m, l, t, p, cm::PipeMode)
     exp = 0
     if cm.Inlet == p
         exp += m[:trans_in][l, t, cm]
     end
     if cm.Consuming == p
-        exp += m[:trans_in][l, t, cm] * cm.Consumption_rate
+        exp += m[:trans_in][l, t, cm] * cm.Consumption_rate[t]
     end
     return exp
 end
@@ -162,11 +171,11 @@ function compute_trans_out(m, l, t, p, cm::TransmissionMode)
 end
 
 """
-    compute_trans_out(m, l, t, p, cm::PipelineMode)
+    compute_trans_out(m, l, t, p, cm::PipeMode)
 
-Return the amount of resources going out of transmission corridor l by a PipelineMode transmission mode.
+Return the amount of resources going out of transmission corridor l by a PipeMode transmission mode.
 """
-function compute_trans_out(m, l, t, p, cm::PipelineMode)
+function compute_trans_out(m, l, t, p, cm::PipeMode)
     exp = 0
     if cm.Outlet == p
         exp += m[:trans_out][l, t, cm]
@@ -180,16 +189,6 @@ end
 Update the objective function with costs related to geography (areas and energy transmission).
 """
 function update_objective(m, 𝒩, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel)
-end
-
-"""
-    EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫, modeltype::EnergyModel)
-
-Repaces constraints for availability nodes of type GeoAvailability.
-The resource balances are set by the area constraints instead.
-"""
-function EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫, modeltype::EnergyModel)
-
 end
 
 """
@@ -220,7 +219,7 @@ function create_transmission_mode(m, 𝒯, l, cm)
     # Constraints for unidirectional energy transmission
     if cm.Directions == 1
         @constraint(m, [t ∈ 𝒯],
-            m[:trans_loss][l, t, cm] == cm.Trans_loss * m[:trans_in][l, t, cm])
+            m[:trans_loss][l, t, cm] == cm.Trans_loss[t] * m[:trans_in][l, t, cm])
 
         @constraint(m, [t ∈ 𝒯], m[:trans_out][l, t, cm] >= 0)
 
@@ -231,7 +230,7 @@ function create_transmission_mode(m, 𝒯, l, cm)
             m[:trans_loss][l, t, cm] == m[:trans_loss_pos][l, t, cm] + m[:trans_loss_neg][l, t, cm])
 
         @constraint(m, [t ∈ 𝒯],
-            m[:trans_loss_pos][l, t, cm] - m[:trans_loss_neg][l, t, cm] == cm.Trans_loss * 0.5 * (m[:trans_in][l, t, cm] + m[:trans_out][l, t, cm]))
+            m[:trans_loss_pos][l, t, cm] - m[:trans_loss_neg][l, t, cm] == cm.Trans_loss[t] * 0.5 * (m[:trans_in][l, t, cm] + m[:trans_out][l, t, cm]))
 
         @constraint(m, [t ∈ 𝒯],
             m[:trans_in][l, t, cm] >= -1 * m[:trans_cap][l, t, cm])
@@ -247,11 +246,11 @@ function create_transmission_mode(m, 𝒯, l, cm)
 end
 
 """
-    create_transmission_mode(m, 𝒯, l, cm::PipelineMode)
+    create_transmission_mode(m, 𝒯, l, cm::PipeMode)
 
-Set all constraints for transmission mode of type `PipelineMode`.
+Set all constraints for transmission mode of type `PipeMode`.
 """
-function create_transmission_mode(m, 𝒯, l, cm::PipelineMode)
+function create_transmission_mode(m, 𝒯, l, cm::PipeMode)
 
     # Generic trans in which each output corresponds to the input
     @constraint(m, [t ∈ 𝒯],
@@ -263,7 +262,7 @@ function create_transmission_mode(m, 𝒯, l, cm::PipelineMode)
     # Constraints for unidirectional energy transmission
     if cm.Directions == 1
         @constraint(m, [t ∈ 𝒯],
-            m[:trans_loss][l, t, cm] == cm.Trans_loss * m[:trans_in][l, t, cm])
+            m[:trans_loss][l, t, cm] == cm.Trans_loss[t] * m[:trans_in][l, t, cm])
 
         @constraint(m, [t ∈ 𝒯], m[:trans_out][l, t, cm] >= 0)
     end

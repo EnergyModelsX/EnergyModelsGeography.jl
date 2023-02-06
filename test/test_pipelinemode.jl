@@ -20,7 +20,7 @@ CO2_200 = LiquidResource("CO2", 1, 200)
 
 """
 A test case representing a simple model of a CCS case, with a CO2 source with capture
-implemented, then using a PipelineMode for transportation to the offshore storage site.
+implemented, then using a PipeSimple for transportation to the offshore storage site.
 """
 function small_graph_co2_1()
     products = [Power, CO2, CO2_150, CO2_200]
@@ -52,8 +52,7 @@ function small_graph_co2_1()
     areas = [GEO.Area(1, "Factory", 10.751, 59.921, nodes[1]),
         GEO.Area(2, "North Sea", 10.398, 63.4366, nodes[2])]
 
-    # transmission_line = GEO.RefStatic("transline", Power, 100, 0.1, 1)
-    pipeline = GEO.PipelineMode("pipeline", CO2_150, CO2_200, Power, 0.1, 100, 0.05, 1)
+    pipeline = GEO.PipeSimple("pipeline", CO2_150, CO2_200, Power, FixedProfile(0.1), FixedProfile(100), FixedProfile(0.05), 1)
 
     transmissions = [GEO.Transmission(areas[1], areas[2], [pipeline], Dict("" => EMB.EmptyData()))]
         #GEO.Transmission(areas[2], areas[1], [pipeline], [Dict("" => EMB.EmptyData())])]
@@ -77,7 +76,7 @@ function small_graph_co2_1()
 end
 
 
-@testset "PipelineMode test" begin
+@testset "PipeSimple test" begin
 
     case, modeltype = small_graph_co2_1()
 
@@ -108,7 +107,7 @@ end
     el_sink = 𝒩[5]
 
     transmission = case[:transmission][1]
-    pipeline::GEO.PipelineMode = transmission.Modes[1]
+    pipeline::GEO.PipeSimple = transmission.Modes[1]
     inlet_resource = pipeline.Inlet
     outlet_resource = pipeline.Outlet
 
@@ -149,7 +148,7 @@ end
     @testset "Consumed resource" begin
         # Test that the difference in Power at the availability node corresponds to the
         # pipeline.Consumption_rate.
-        @test sum(value.(m[:flow_in][a1, t, Power]) * (1 - pipeline.Consumption_rate) 
+        @test sum(value.(m[:flow_in][a1, t, Power]) * (1 - pipeline.Consumption_rate[t]) 
                   == value.(m[:flow_out][a1, t, Power]) for t ∈ 𝒯) == length(𝒯)
 
         # Test that the difference in Power in the availability node, is taken up in
@@ -169,7 +168,7 @@ end
 
     @testset "Transport accounting" begin
         # Test that the loss in transported volume is computed in the expected way.
-        @test sum(round((1 - pipeline.Trans_loss) * value.(m[:trans_in][transmission, t, pipeline]), 
+        @test sum(round((1 - pipeline.Trans_loss[t]) * value.(m[:trans_in][transmission, t, pipeline]), 
                         digits=ROUND_DIGITS)
                   ==
                   round(value.(m[:trans_out][transmission, t, pipeline]), digits=ROUND_DIGITS) 
@@ -177,7 +176,7 @@ end
 
         # Test that the :area_exchange variables in CO2_150 has the proper loss when transported
         # to the other area as CO2_200. The exported resource should have a negative sign.
-        @test sum(-round((1 - pipeline.Trans_loss) * value.(m[:area_exchange][area_from, t, CO2_150]), 
+        @test sum(-round((1 - pipeline.Trans_loss[t]) * value.(m[:area_exchange][area_from, t, CO2_150]), 
                         digits=ROUND_DIGITS)
                   ==
                   round(value.(m[:area_exchange][area_to, t, CO2_200]), digits=ROUND_DIGITS) 
