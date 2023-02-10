@@ -2,7 +2,7 @@
 Main module for `EnergyModelsGeography.jl`.
 
 # Exports:
- - `Area`, `RefArea`, `GeoAvailability`, `Transmission`, `RefStatic`, `RefDynamic`, `PipeMode`, `PipeSimple`.
+ - `Area`, `RefArea`, `GeoAvailability`, `Transmission`, `RefStatic`, `RefDynamic`, `PipeMode`, `PipeSimple`, `PipeLinepackSimple`.
 """
 module EnergyModelsGeography
 
@@ -19,6 +19,6 @@ export Area, RefArea
 export GeoAvailability
 export Transmission
 export RefStatic, RefDynamic
-export PipeMode, PipeSimple
+export PipeMode, PipeSimple, PipeLinepackSimple
 
 end # module

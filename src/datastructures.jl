@@ -140,7 +140,28 @@ Base.@kwdef struct PipeSimple <: PipeMode
     Trans_cap::TimeProfile
     Trans_loss::TimeProfile
     # TODO remove below field? Should not be relevant for fluid pipeline.
-    Directions::Int = 1     # 1: Unidirectional or 2: Bidirectional
+    Directions::Int = 1     # 1: Unidirectional only for pipeline
+end
+
+
+"""
+    PipeLinepackSimple <: TransmissionMode
+Pipeline model with linepacking implemented as simple storage function.
+
+# Fields (additional to `PipeSimple`)
+- **`Linepack_energy_share::Flaot64`**  - is the storage energy capacity relative to pipeline capacity.\n
+- **`Level_share_init::Float64`**  - is the initial storage level. \n
+"""
+Base.@kwdef struct PipeLinepackSimple <: PipeMode
+    Name::String
+    Inlet::EMB.Resource
+    Outlet::EMB.Resource
+    Consuming::EMB.Resource
+    Consumption_rate::TimeProfile
+    Trans_cap::TimeProfile
+    Trans_loss::TimeProfile
+    Linepack_energy_share::Float64 # Storage energy capacity relative to pipeline capacity
+    Directions::Int = 1     # 1: Unidirectional only for pipeline
 end
 
 
@@ -174,11 +195,11 @@ function trans_sub(ℒ, a::Area)
 end
 
 """
-    corridor_modes(l)
+    corridor_modes(l::Transmission)
 
 Return an array of the transmission modes for a transmission corridor l.
 """
-function corridor_modes(l)
+function corridor_modes(l::Transmission)
     return [m for m in l.Modes]
 end
 
@@ -245,7 +266,13 @@ function modes_of_dir(l, dir::Int)
     return l.Modes[findall(x -> x.Directions == dir, l.Modes)]
 end
 
+"""
+    filter_mode_set_by_type(l::Transmission, type::TransmissionMode)
 
-#function trans_res(l::Transmission)
-#    return intersect(keys(l.To.An.Input), keys(l.From.An.Output))
-#end
+Arguments:
+- `l::Transmission`: Transmission object for which a `TransmissionMode` set is sought
+- `type::TransmissionMode`: type of `TransmissionMode` to filter by.
+"""
+function filter_mode_set_by_type(l::Transmission, type)
+    return [m for m ∈ l.Modes if typeof(m) == type]
+end

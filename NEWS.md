@@ -7,6 +7,9 @@ Version 0.3.0 (2023-02-02)
 Adjustment to version 0.3.0, namely:
 * The removal of emissions from `Node` type definition that do not require them in all tests
 * Removal of the type `GlobalData` and replacement with fields in the type `OperationalModel` in all tests
+### Introduction of linepacking
+* Redefinition of `PipelineMode` as abstract type `PipeMode` and introduction of `PipeSimple` as a composite type corresponding to the previous `PipelineMode`
+* Introduction of a simple linepacking implementation _via_ the type `PipeLinepackSimple`
 
 Version 0.2.2 (2022-12-12)
 --------------------------

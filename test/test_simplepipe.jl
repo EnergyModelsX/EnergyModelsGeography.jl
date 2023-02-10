@@ -1,6 +1,3 @@
-
-ROUND_DIGITS = 8
-
 struct LiquidResource{T<:Real} <: Resource
     id
     CO2Int::T
@@ -10,8 +7,6 @@ Base.show(io::IO, n::LiquidResource) = print(io, "$(n.id)-$(n.pressure)")
 
 CO2 = ResourceEmit("CO2", 1.0)
 Power = ResourceCarrier("Power", 0.0)
-Coal = ResourceCarrier("Coal", 0.35)
-
 
 CO2_150 = LiquidResource("CO2", 1, 150)
 CO2_90 = LiquidResource("CO2", 1, 90)
@@ -27,9 +22,6 @@ function small_graph_co2_1()
 
     # Creation of a dictionary with entries of 0. for all resources
     𝒫₀ = Dict(k => 0 for k ∈ products)
-
-    # Creation of a dictionary with entries of 0. for all emission resources
-    𝒫ᵉᵐ₀ = Dict(k => 0.0 for k ∈ products if typeof(k) == ResourceEmit{Float64})
 
     # Creation of the source and sink module as well as the arrays used for nodes and links
     source = RefSource("-src", FixedProfile(25), FixedProfile(10),
@@ -83,11 +75,6 @@ end
     m = optimize(case, modeltype)
     general_tests(m)
 
-    """
-    TODO:
-    - check that transport is above zero.
-    - why doesnt it work if we remove the el_sink node?
-    """
     𝒯 = case[:T]
     𝒫 = case[:products]
     𝒩 = case[:nodes]
@@ -128,7 +115,7 @@ end
         @test length(GEO.exchange_resources(ℒ, area_from)) == 2
         @test length(GEO.exchange_resources(ℒ, area_to)) == 1
 
-        # The variable :area_exchange should not have values cor CO2_200 at the Factory 
+        # The variable :area_exchange should not have values for CO2_200 at the Factory 
         # area, and not for CO2_150 at the receiving area. This should hold for all time 
         # steps. Trying to access these variables should result in a KeyError.
         @test_throws KeyError value.(m[:area_exchange][area_from, first(𝒯), CO2_200])
@@ -153,9 +140,10 @@ end
 
         # Test that the difference in Power in the availability node, is taken up in
         # the variable :area_exchange.
-        @test sum(round(value.(m[:flow_in][a1, t, Power])
-                  - value.(m[:flow_out][a1, t, Power]), digits=ROUND_DIGITS) == 
-                  - round(value(m[:area_exchange][area_from, t, Power]), digits=ROUND_DIGITS) for t ∈ 𝒯) == length(𝒯)
+        @test sum(value.(m[:flow_in][a1, t, Power])
+                  - value.(m[:flow_out][a1, t, Power]) ≈ 
+                  - value(m[:area_exchange][area_from, t, Power])
+                  for t ∈ 𝒯, atol=TEST_ATOL) == length(𝒯)
         
         # Check that what the source produces goes into the availability node.
         @test sum(value.(m[:flow_out][source, t, Power])
@@ -168,18 +156,16 @@ end
 
     @testset "Transport accounting" begin
         # Test that the loss in transported volume is computed in the expected way.
-        @test sum(round((1 - pipeline.Trans_loss[t]) * value.(m[:trans_in][transmission, t, pipeline]), 
-                        digits=ROUND_DIGITS)
+        @test sum((1 - pipeline.Trans_loss[t]) * value.(m[:trans_in][transmission, t, pipeline])
                   ==
-                  round(value.(m[:trans_out][transmission, t, pipeline]), digits=ROUND_DIGITS) 
-                  for t in 𝒯) == length(𝒯)
+                  value.(m[:trans_out][transmission, t, pipeline])
+                  for t in 𝒯, atol=TEST_ATOL) == length(𝒯)
 
         # Test that the :area_exchange variables in CO2_150 has the proper loss when transported
         # to the other area as CO2_200. The exported resource should have a negative sign.
-        @test sum(-round((1 - pipeline.Trans_loss[t]) * value.(m[:area_exchange][area_from, t, CO2_150]), 
-                        digits=ROUND_DIGITS)
-                  ==
-                  round(value.(m[:area_exchange][area_to, t, CO2_200]), digits=ROUND_DIGITS) 
-                  for t in 𝒯) == length(𝒯)
+        @test sum(-(1 - pipeline.Trans_loss[t]) * value.(m[:area_exchange][area_from, t, CO2_150])
+                  ≈
+                  value.(m[:area_exchange][area_to, t, CO2_200])
+                  for t in 𝒯, atol=TEST_ATOL) == length(𝒯)
     end
 end
