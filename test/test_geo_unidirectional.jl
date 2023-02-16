@@ -28,10 +28,10 @@ function small_graph(source=nothing, sink=nothing)
              Direct(24, nodes[2], nodes[4], Linear())]
     
     # Creation of the two areas and potential transmission lines
-    areas = [Area(1, "Oslo", 10.751, 59.921, nodes[1]), 
-             Area(2, "Trondheim", 10.398, 63.4366, nodes[2])]        
+    areas = [RefArea(1, "Oslo", 10.751, 59.921, nodes[1]), 
+             RefArea(2, "Trondheim", 10.398, 63.4366, nodes[2])]        
 
-    transmission_line = RefStatic("transline", Power, 100, 0.1, 1)
+    transmission_line = RefStatic("transline", Power, FixedProfile(100), FixedProfile(0.1), 1)
     transmissions = [Transmission(areas[1], areas[2], [transmission_line], Dict("" => EmptyData())),
                      Transmission(areas[2], areas[1], [transmission_line], Dict("" => EmptyData()))]
 
@@ -71,7 +71,7 @@ function transmission_tests(m, case)
         loss = trans_mode.Trans_loss
         if sum(value.(m[:cap_inst][source, t]) ≥ value.(m[:cap_inst][sink, t]) for t ∈ 𝒯) == length(𝒯)
             # If the source has the needed capacity, it should cover the usage in the sink exactly.
-            @test sum(round(value.(m[:cap_use][source, t]) * (1 - loss), digits = ROUND_DIGITS) 
+            @test sum(round(value.(m[:cap_use][source, t]) * (1 - loss[t]), digits = ROUND_DIGITS) 
                 == round(value.(m[:cap_use][sink, t]), digits = ROUND_DIGITS) for t ∈ 𝒯) == length(𝒯)
    
             # TODO: check that the correct amount is transmitted.
@@ -83,7 +83,7 @@ function transmission_tests(m, case)
 
         # Check that the transmission loss is computed correctly.
         @test sum(round(value.(m[:trans_loss][tr_osl_trd, t, trans_mode]), digits = ROUND_DIGITS) 
-            == round(loss * value.(m[:trans_in][tr_osl_trd, t, trans_mode]), digits = ROUND_DIGITS) for t ∈ 𝒯) == length(𝒯)
+            == round(loss[t] * value.(m[:trans_in][tr_osl_trd, t, trans_mode]), digits = ROUND_DIGITS) for t ∈ 𝒯) == length(𝒯)
 
         @test sum(value.(m[:trans_in][tr_osl_trd, t, trans_mode]) >= 0 for t ∈ 𝒯) == length(𝒯)
         @test sum(value.(m[:trans_in][tr_trd_osl, t, case[:transmission][2].Modes[1]]) == 0 for t ∈ 𝒯) == length(𝒯)
@@ -103,23 +103,23 @@ end
 end
 
 
-# The PipelineMode should be equivalent to the RefStatic (and RefDynamic) if 
-# * PipelineMode.Consumption_rate = 0
-# * PipelineMode.Inlet == PipelinMode.Outlet
-# This test uses the same tests as the transmission testscase above, but uses 
-# PipelineMode as the TransmissionMode instead.
+# The PipeSimple should be equivalent to the RefStatic (and RefDynamic) if 
+# * PipeSimple.Consumption_rate = 0
+# * PipeSimple.Inlet == PipelinMode.Outlet
+# This test uses the same tests as the transmission testscase above, but uses
+# PipeSimple as the TransmissionMode instead.
 @testset "Unidirectional pipeline transmission" begin
     
     case, modeltype = small_graph()
 
-    # Replace each TransmissionMode's with a PipelineMode with identical properties.
+    # Replace each TransmissionMode's with a PipeSimple with identical properties.
     for transmission in case[:transmission]
         for (i, prev_tmode) in enumerate(transmission.Modes)
-            pipeline = GEO.PipelineMode(prev_tmode.Name, 
+            pipeline = GEO.PipeSimple(prev_tmode.Name, 
                                         prev_tmode.Resource,
                                         prev_tmode.Resource,
                                         prev_tmode.Resource, # Doesn't matter when Consumption_rate = 0
-                                        0, 
+                                        FixedProfile(0), 
                                         prev_tmode.Trans_cap,
                                         prev_tmode.Trans_loss,
                                         prev_tmode.Directions)

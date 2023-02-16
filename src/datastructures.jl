@@ -2,10 +2,10 @@
 """ A geography `Availability` node. for substituion of the general `Availability` node.
 
 # Fields
-**`id`** is the name/identifyer of the node.\n
-**`Input::Dict{Resource, Real}`** are the input `Resource`s with conversion value `Real`.
+- **`id`** is the name/identifier of the node.\n
+- **`Input::Dict{Resource, Real}`** are the input `Resource`s with conversion value `Real`.
 The latter are not relevant but included for consistency with other formulations.\n
-**`Output::Dict{Resource, Real}`** are the generated `Resource`s with conversion value `Real`.
+- **`Output::Dict{Resource, Real}`** are the generated `Resource`s with conversion value `Real`.
 The latter are not relevant but included for consistency with other formulations.\n
 
 """
@@ -15,17 +15,21 @@ struct GeoAvailability <: EMB.Availability
     Output::Dict{EMB.Resource, Real}
 end
 
+
+""" Declaration of the general type for areas."""
+abstract type Area end
+
 """ A reference `Area`.
 
 # Fields
-**`id`** is the identifyer of the area.\n
-**`Name`** is the name of the area.\n
-**`Lon::Real`** is the longitudinal position of the area.\n
-**`Lat::Real`** is the latitudinal position of the area.\n
-**`An::Availability`** is the `Availability` node routing different resources within an area.
+- **`id`** is the name/identifier of the area.\n
+- **`Name`** is the name of the area.\n
+- **`Lon::Real`** is the longitudinal position of the area.\n
+- **`Lat::Real`** is the latitudinal position of the area.\n
+- **`An::Availability`** is the `Availability` node routing different resources within an area.
 
 """
-struct Area
+struct RefArea <: Area
 	id
     Name
 	Lon::Real
@@ -33,6 +37,26 @@ struct Area
 	An::EMB.Availability
 end
 Base.show(io::IO, a::Area) = print(io, "$(a.Name)")
+
+
+""" An `Area` with limited exchange based on local load.
+
+# Fields
+- **`id`** is the name/identifier of the area.\n
+- **`Name`** is the name of the area.\n
+- **`Lon::Real`** is the longitudinal position of the area.\n
+- **`Lat::Real`** is the latitudinal position of the area.\n
+- **`An::Availability`** is the `Availability` node routing different resources within an area.
+- **`ExchangeLimit::Dict{EMB.Resource, Real}`** is the amount of a resource that can be exchanged with other areas
+"""
+struct LimitedExchangeArea <: Area
+    id
+    Name
+    Lon::Real
+    Lat::Real
+    An::EMB.Availability
+    Exchange_limit::Dict{EMB.Resource,StrategicFixedProfile}
+end
 
 """ Declaration of the general type for transmission mode transporting resources between areas."""
 abstract type TransmissionMode end 
@@ -42,20 +66,18 @@ Base.show(io::IO, t::TransmissionMode) = print(io, "$(t.Name)")
 
 Generic representation of dynamic transmission modes, using for example truck, ship or railway transport.
 
-TODO: convert transmission capacity from Real to a time series. Alternatively a transport delay/ cycle/ period (Real).
-
 # Fields
-**`Name::String`** is the name/identifyer of the transmission mode.\n
-**`Resource::Resource`** is the resource that is transported.\n
-**`Trans_cap::Real`** is the capacity of the transmission mode.\n
-**`Trans_loss::Real`** is the loss of the transported resource during transmission, modelled as a ratio.\n
-**`Directions`** is the number of directions the resource can be transported, 1 is unidirectional (A->B) or 2 id bidirectional (A<->B).
+- **`Name::String`** is the name/identifyer of the transmission mode.\n
+- **`Resource::Resource`** is the resource that is transported.\n
+- **`Trans_cap::TimeProfile`** is the capacity of the transmission mode.\n
+- **`Trans_loss::TimeProfile`** is the loss of the transported resource during transmission, modelled as a ratio.\n
+- **`Directions`** is the number of directions the resource can be transported, 1 is unidirectional (A->B) or 2 id bidirectional (A<->B).
 """
 struct RefDynamic <: TransmissionMode # E.g. Trucks, ships etc.
     Name::String
     Resource::EMB.Resource
-    Trans_cap::Real
-    Trans_loss:: Real
+    Trans_cap::TimeProfile
+    Trans_loss:: TimeProfile
     Directions::Int # 1: Unidirectional or 2: Bidirectional
     #formulation::EMB.Formulation # linear/non-linear etc.
 end
@@ -65,21 +87,24 @@ end
 Generic representation of static transmission modes, such as overhead power lines or pipelines.
 
 # Fields
-**`Name::String`** is the name/identifyer of the transmission mode.\n
-**`Resource::Resource`** is the resource that is transported.\n
-**`Trans_cap::Real`** is the capacity of the transmission mode.\n
-**`Trans_loss::Real`** is the loss of the transported resource during transmission, modelled as a ratio.\n
-**`Directions`** is the number of directions the resource can be transported, 1 is unidirectional (A->B) or 2 id bidirectional (A<->B).
+- **`Name::String`** is the name/identifyer of the transmission mode.\n
+- **`Resource::Resource`** is the resource that is transported.\n
+- **`Trans_cap::Real`** is the capacity of the transmission mode.\n
+- **`Trans_loss::Real`** is the loss of the transported resource during transmission, modelled as a ratio.\n
+- **`Directions`** is the number of directions the resource can be transported, 1 is unidirectional (A->B) or 2 id bidirectional (A<->B).
 """
 struct RefStatic <: TransmissionMode # E.g. overhead power lines, pipelines etc.
     Name::String
     Resource::EMB.Resource
-    Trans_cap::Real
-    Trans_loss::Real
+    Trans_cap::TimeProfile
+    Trans_loss::TimeProfile
     Directions::Int
     #formulation::EMB.Formulation
 end
 
+
+""" `TransmissionMode` mode for additional variable potential."""
+abstract type PipeMode <: TransmissionMode end
 
 """
 This `TransmissionMode` allows for altering the transported `Resource`.
@@ -93,29 +118,50 @@ This type also supports consuming resources proportionally to the volume of tran
 the pipeline.
 
 # Fields
-**`Name::String`** is the identifier used in printed output.\n
-**`Inlet::Resource`** is the `Resource` going into transmission.\n
-**`Outlet::Resource`** is the `Resource` going out of the outlet of the transmission.\n
-**`Consuming::Resource`** is the `Resource` the transmission consumes by operating.\n
-**`Consumption_rate::Real`** the rate of which the resource `Pipeline.Consuming` is consumed, as
+- **`Name::String`** is the identifier used in printed output.\n
+- **`Inlet::Resource`** is the `Resource` going into transmission.\n
+- **`Outlet::Resource`** is the `Resource` going out of the outlet of the transmission.\n
+- **`Consuming::Resource`** is the `Resource` the transmission consumes by operating.\n
+- **`Consumption_rate::Real`** the rate of which the resource `Pipeline.Consuming` is consumed, as
     a ratio of the volume of the resource going into the inlet. I.e.:
 
         `Consumption_rate` = consumed volume / inlet volume (per operational period)\n
-**`Trans_cap::Real`** is the capacity of the transmission mode.\n
-**`Trans_loss::Real`** is the loss of the transported resource during transmission, modelled as a ratio.\n
-**`Directions`** specifies that the pipeline is Unidirectional (1) by default.\n
+- **`Trans_cap::Real`** is the capacity of the transmission mode.\n
+- **`Trans_loss::Real`** is the loss of the transported resource during transmission, modelled as a ratio.\n
+- **`Directions`** specifies that the pipeline is Unidirectional (1) by default.\n
 """
-Base.@kwdef struct PipelineMode <: TransmissionMode
+Base.@kwdef struct PipeSimple <: PipeMode
     Name::String
 
     Inlet::EMB.Resource
     Outlet::EMB.Resource
     Consuming::EMB.Resource
-    Consumption_rate::Real
-    Trans_cap::Real
-    Trans_loss::Real
+    Consumption_rate::TimeProfile
+    Trans_cap::TimeProfile
+    Trans_loss::TimeProfile
     # TODO remove below field? Should not be relevant for fluid pipeline.
-    Directions::Int = 1     # 1: Unidirectional or 2: Bidirectional
+    Directions::Int = 1     # 1: Unidirectional only for pipeline
+end
+
+
+"""
+    PipeLinepackSimple <: TransmissionMode
+Pipeline model with linepacking implemented as simple storage function.
+
+# Fields (additional to `PipeSimple`)
+- **`Linepack_energy_share::Flaot64`**  - is the storage energy capacity relative to pipeline capacity.\n
+- **`Level_share_init::Float64`**  - is the initial storage level. \n
+"""
+Base.@kwdef struct PipeLinepackSimple <: PipeMode
+    Name::String
+    Inlet::EMB.Resource
+    Outlet::EMB.Resource
+    Consuming::EMB.Resource
+    Consumption_rate::TimeProfile
+    Trans_cap::TimeProfile
+    Trans_loss::TimeProfile
+    Linepack_energy_share::Float64 # Storage energy capacity relative to pipeline capacity
+    Directions::Int = 1     # 1: Unidirectional only for pipeline
 end
 
 
@@ -149,20 +195,20 @@ function trans_sub(ℒ, a::Area)
 end
 
 """
-    corridor_modes(l)
+    corridor_modes(l::Transmission)
 
 Return an array of the transmission modes for a transmission corridor l.
 """
-function corridor_modes(l)
+function corridor_modes(l::Transmission)
     return [m for m in l.Modes]
 end
 
 
 trans_mode_import(tm::TransmissionMode) = [tm.Resource]
-trans_mode_import(tm::PipelineMode) = [tm.Outlet]
+trans_mode_import(tm::PipeMode) = [tm.Outlet]
 
 trans_mode_export(tm::TransmissionMode) = [tm.Resource]
-trans_mode_export(tm::PipelineMode) = [tm.Inlet, tm.Consuming]
+trans_mode_export(tm::PipeMode) = [tm.Inlet, tm.Consuming]
 
 """
     filter_transmission_modes(ℒ, filter_method)
@@ -220,7 +266,13 @@ function modes_of_dir(l, dir::Int)
     return l.Modes[findall(x -> x.Directions == dir, l.Modes)]
 end
 
+"""
+    filter_mode_set_by_type(l::Transmission, type::TransmissionMode)
 
-#function trans_res(l::Transmission)
-#    return intersect(keys(l.To.An.Input), keys(l.From.An.Output))
-#end
+Arguments:
+- `l::Transmission`: Transmission object for which a `TransmissionMode` set is sought
+- `type::TransmissionMode`: type of `TransmissionMode` to filter by.
+"""
+function filter_mode_set_by_type(l::Transmission, type)
+    return [m for m ∈ l.Modes if typeof(m) == type]
+end

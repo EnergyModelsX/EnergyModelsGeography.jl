@@ -17,9 +17,12 @@ function create_model(case, modeltype)
     𝒩           = case[:nodes]
 
     # Declaration of variables foir areas and transmission corridors
-    variables_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype)
-    variables_capex_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
-    variables_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+    variables_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+    variables_trans_general(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+    variables_trans_capex(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+    # variables_trans_opex(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+    variables_trans_capacity(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+    variables_trans_modes(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
 
     # Construction of constraints for areas and transmission corridors
     constraints_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype)
@@ -33,45 +36,112 @@ end
 
 
 """
-    variables_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype::EnergyModel
+    variables_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel)
 
 Create variables to track how much energy is exchanged from an area for all 
 time periods `t ∈ 𝒯`.
 """
-function variables_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype::EnergyModel)
+function variables_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel)
     @variable(m, area_exchange[a ∈ 𝒜, 𝒯, p ∈ exchange_resources(ℒᵗʳᵃⁿˢ, a)])
 
 end
 
 
 """
-    variables_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel
+    variables_trans_capacity(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
 
 Create variables to track how much of installed transmision capacity is used for all 
-time periods `t ∈ 𝒯` and how much energy is lossed.
+time periods `t ∈ 𝒯`.
 """
-function variables_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel)
-    @variable(m, trans_in[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, corridor_modes(l)])
-    @variable(m, trans_out[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, corridor_modes(l)])
-    @variable(m, trans_loss[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, corridor_modes(l)] >= 0)
-    @variable(m, trans_cap[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, corridor_modes(l)] >= 0)
-    @variable(m, trans_loss_neg[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, modes_of_dir(l, 2)] >= 0)
-    @variable(m, trans_loss_pos[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, modes_of_dir(l, 2)] >= 0)
+function variables_trans_capacity(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+    @variable(m, trans_cap[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, l.Modes] >= 0)
 
-    for l ∈ ℒᵗʳᵃⁿˢ, t ∈ 𝒯, cm ∈ corridor_modes(l)
-        @constraint(m, trans_cap[l, t, cm] == cm.Trans_cap)
+    for l ∈ ℒᵗʳᵃⁿˢ, t ∈ 𝒯, cm ∈ l.Modes
+        @constraint(m, trans_cap[l, t, cm] == cm.Trans_cap[t])
     end
 end
 
 
 """
-    variables_capex_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel)
+    variables_trans_general(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+
+Create variables to track how much of installed transmission capacity is used for all 
+time periods `t ∈ 𝒯` and how much energy is lossed.
+"""
+function variables_trans_general(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel)
+    @variable(m, trans_in[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, l.Modes])
+    @variable(m, trans_out[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, l.Modes])
+    @variable(m, trans_loss[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, l.Modes] >= 0)
+    @variable(m, trans_loss_neg[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, modes_of_dir(l, 2)] >= 0)
+    @variable(m, trans_loss_pos[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, modes_of_dir(l, 2)] >= 0)
+end
+
+"""
+    variables_trans_modes(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+
+Call a method for creating e.g. other variables specific to the different 
+`TransmissionMode` types. The method is only called once for each mode type.
+"""
+function variables_trans_modes(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel)
+    modetypes = []
+    for l ∈ ℒᵗʳᵃⁿˢ, cm ∈ l.Modes
+        if ! (typeof(cm) in modetypes)
+            variables_trans_mode(m, 𝒯, ℒᵗʳᵃⁿˢ, cm, modeltype)
+            push!(modetypes, typeof(cm))
+        end
+    end
+end
+
+
+""""
+    variables_trans_mode(m, 𝒯, ℒᵗʳᵃⁿˢ, cm, modeltype::EnergyModel)
+
+Default fallback method when no function is defined for a `TransmissionMode`  type.
+"""
+function variables_trans_mode(m, 𝒯, ℒᵗʳᵃⁿˢ, cm, modeltype::EnergyModel)
+end
+
+
+""""
+    variables_trans_mode(m, 𝒯, ℒᵗʳᵃⁿˢ, cm::PipeLinepackSimple, modeltype::EnergyModel)
+
+Adds the following special variables for linepacking:\n
+    `linepack_flow_in[l,t,cm_lp]`: This is the characteristic throughput of the linepack storage (not of the entire transmission mode)\n
+    `linepack_flow_out[l,t,cm_lp]`: [TBD] this variable is not necessary with current implementation but may be useful for more advanced implementations\n
+    `linepack_stor_level[l,t,cm_lp]`: Storage level in linepack\n
+    `linepack_cap_inst[l,t,cm_lp]`: Installed storage capacity == cm_lp.Linepack_cap[t]\n
+    `linepack_rate_inst[l,t,cm_lp]`: Installed maximum inflow == cm_lp.Linepack_rate_cap[t]\n
+    `linepack_opex_var[l,t,cm_lp]`: 
+    `linepack_opex_fixed[l,t,cm_lp]`: 
+"""
+function variables_trans_mode(m, 𝒯, ℒᵗʳᵃⁿˢ, cm::PipeLinepackSimple, modeltype::EnergyModel)
+
+    𝒯ᴵⁿᵛ    = strategic_periods(𝒯)
+
+    #@variable(m, linepack_flow_in[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, filter_mode_set_by_type(l, typeof(cm))] >= 0)
+    #@variable(m, linepack_flow_out[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, filter_mode_set_by_type(l, typeof(cm))] >= 0)
+    @variable(m, linepack_stor_level[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, filter_mode_set_by_type(l, typeof(cm))] >= 0)
+    @variable(m, linepack_cap_inst[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, filter_mode_set_by_type(l, typeof(cm))] >= 0)
+    #@variable(m, linepack_rate_inst[l ∈ ℒᵗʳᵃⁿˢ, 𝒯, filter_mode_set_by_type(l, typeof(cm))] >= 0)
+    #@variable(m, linepack_opex_var[l ∈ ℒᵗʳᵃⁿˢ, 𝒯ᴵⁿᵛ, filter_mode_set_by_type(l, typeof(cm))])
+    #@variable(m, linepack_opex_fixed[l ∈ ℒᵗʳᵃⁿˢ, 𝒯ᴵⁿᵛ, filter_mode_set_by_type(l, typeof(cm))])
+
+    # Setting up the standard upper bounds on installed capacities:
+    #for l ∈ ℒᵗʳᵃⁿˢ, t ∈ 𝒯, cm ∈ filter_mode_set_by_type(l, typeof(cm))
+        #@constraint(m, linepack_cap_inst[l, t, cm] == cm.Linepack_cap[t])
+        #@constraint(m, linepack_rate_inst[l, t, cm] == cm.Linepack_rate_cap[t])
+    #end
+end
+
+
+"""
+    variables_trans_capex(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
 
 Create variables for the capital costs for the investments in transmission.
 
 Empty function to allow for multipled dispatch in the InvestmentModels package
 """
-function variables_capex_transmission(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel)
+function variables_trans_capex(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel)
 
 end
 
@@ -103,7 +173,45 @@ function constraints_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype::Ener
             m[:area_exchange][a, t, p] + 
                 sum(sum(compute_trans_in(m, l, t, p, cm) for cm in l.Modes) for l in ℒᶠʳᵒᵐ)
                 == sum(sum(compute_trans_out(m, l, t, p, cm) for cm in l.Modes) for l in ℒᵗᵒ ))
+                
+        # Limit area exchange
+        create_area(m, a, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
     end
+end
+
+"""
+    EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫, modeltype::EnergyModel)
+
+Repaces constraints for availability nodes of type GeoAvailability.
+The resource balances are set by the area constraints instead.
+"""
+function EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫, modeltype::EnergyModel)
+
+end
+
+
+"""
+    create_area(m, a::Area, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+
+Default fallback method when no function is defined for a node type.
+"""
+function create_area(m, a::Area, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+
+end
+
+"""
+    create_area(m, a::LimitedExchangeArea, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+
+Constraint that limit exchange with other areas based on ExchangeLimit.
+"""
+function create_area(m, a::LimitedExchangeArea, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+    # n = a.An
+    #@constraint(m, [t ∈ 𝒯, p ∈ exchange_resources(ℒᵗʳᵃⁿˢ, a)],
+    #    m[:area_exchange][a, t, p] <= a.ExchangeLimit[p]) # Import limit
+
+    @constraint(m, [t ∈ 𝒯, p ∈ exchange_resources(ℒᵗʳᵃⁿˢ, a)],
+        m[:area_exchange][a, t, p] >= -1 * a.ExchangeLimit[p][t]) # Export limit
+
 end
 
 
@@ -133,17 +241,17 @@ function compute_trans_in(m, l, t, p, cm::TransmissionMode)
 end
 
 """
-    compute_trans_in(m, l, t, p, cm::PipelineMode)
+    compute_trans_in(m, l, t, p, cm::PipeMode)
 
-Return the amount of resources going into transmission corridor l by a PipelineMode transmission mode.
+Return the amount of resources going into transmission corridor l by a PipeMode transmission mode.
 """
-function compute_trans_in(m, l, t, p, cm::PipelineMode)
+function compute_trans_in(m, l, t, p, cm::PipeMode)
     exp = 0
     if cm.Inlet == p
         exp += m[:trans_in][l, t, cm]
     end
     if cm.Consuming == p
-        exp += m[:trans_in][l, t, cm] * cm.Consumption_rate
+        exp += m[:trans_in][l, t, cm] * cm.Consumption_rate[t]
     end
     return exp
 end
@@ -162,11 +270,11 @@ function compute_trans_out(m, l, t, p, cm::TransmissionMode)
 end
 
 """
-    compute_trans_out(m, l, t, p, cm::PipelineMode)
+    compute_trans_out(m, l, t, p, cm::PipeMode)
 
-Return the amount of resources going out of transmission corridor l by a PipelineMode transmission mode.
+Return the amount of resources going out of transmission corridor l by a PipeMode transmission mode.
 """
-function compute_trans_out(m, l, t, p, cm::PipelineMode)
+function compute_trans_out(m, l, t, p, cm::PipeMode)
     exp = 0
     if cm.Outlet == p
         exp += m[:trans_out][l, t, cm]
@@ -180,16 +288,6 @@ end
 Update the objective function with costs related to geography (areas and energy transmission).
 """
 function update_objective(m, 𝒩, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel)
-end
-
-"""
-    EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫, modeltype::EnergyModel)
-
-Repaces constraints for availability nodes of type GeoAvailability.
-The resource balances are set by the area constraints instead.
-"""
-function EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫, modeltype::EnergyModel)
-
 end
 
 """
@@ -220,7 +318,7 @@ function create_transmission_mode(m, 𝒯, l, cm)
     # Constraints for unidirectional energy transmission
     if cm.Directions == 1
         @constraint(m, [t ∈ 𝒯],
-            m[:trans_loss][l, t, cm] == cm.Trans_loss * m[:trans_in][l, t, cm])
+            m[:trans_loss][l, t, cm] == cm.Trans_loss[t] * m[:trans_in][l, t, cm])
 
         @constraint(m, [t ∈ 𝒯], m[:trans_out][l, t, cm] >= 0)
 
@@ -231,7 +329,7 @@ function create_transmission_mode(m, 𝒯, l, cm)
             m[:trans_loss][l, t, cm] == m[:trans_loss_pos][l, t, cm] + m[:trans_loss_neg][l, t, cm])
 
         @constraint(m, [t ∈ 𝒯],
-            m[:trans_loss_pos][l, t, cm] - m[:trans_loss_neg][l, t, cm] == cm.Trans_loss * 0.5 * (m[:trans_in][l, t, cm] + m[:trans_out][l, t, cm]))
+            m[:trans_loss_pos][l, t, cm] - m[:trans_loss_neg][l, t, cm] == cm.Trans_loss[t] * 0.5 * (m[:trans_in][l, t, cm] + m[:trans_out][l, t, cm]))
 
         @constraint(m, [t ∈ 𝒯],
             m[:trans_in][l, t, cm] >= -1 * m[:trans_cap][l, t, cm])
@@ -247,11 +345,11 @@ function create_transmission_mode(m, 𝒯, l, cm)
 end
 
 """
-    create_transmission_mode(m, 𝒯, l, cm::PipelineMode)
+    create_transmission_mode(m, 𝒯, l, cm::PipeMode)
 
-Set all constraints for transmission mode of type `PipelineMode`.
+Set all constraints for transmission mode of type `PipeMode`.
 """
-function create_transmission_mode(m, 𝒯, l, cm::PipelineMode)
+function create_transmission_mode(m, 𝒯, l, cm::PipeMode)
 
     # Generic trans in which each output corresponds to the input
     @constraint(m, [t ∈ 𝒯],
@@ -263,8 +361,87 @@ function create_transmission_mode(m, 𝒯, l, cm::PipelineMode)
     # Constraints for unidirectional energy transmission
     if cm.Directions == 1
         @constraint(m, [t ∈ 𝒯],
-            m[:trans_loss][l, t, cm] == cm.Trans_loss * m[:trans_in][l, t, cm])
+            m[:trans_loss][l, t, cm] == cm.Trans_loss[t] * m[:trans_in][l, t, cm])
 
         @constraint(m, [t ∈ 𝒯], m[:trans_out][l, t, cm] >= 0)
     end
+end
+
+
+"""
+    create_transmission_mode(m, 𝒯, l, cm::PipeLinepackSimple)
+
+Method to set constraints for `PipeLinepackSimple` transmission mode. Only implements basic linepack
+as simple_storage.
+`linepack_flow_in[l, t, cm]` taken as the characteristic flow for the opex calculations. 
+[WIP]: Need to modify the update objective, objective variable? 
+"""
+function create_transmission_mode(m, 𝒯, l, cm::PipeLinepackSimple)
+    # Defining the required sets
+    𝒯ᴵⁿᵛ = strategic_periods(𝒯)
+
+    # First set flow into the line pack. Transmission loss is assumed to occur prior to linepack.
+    #@constraint(m, [t ∈ 𝒯],
+    #    m[:linepack_flow_in][l, t, cm] == m[:trans_in][l, t, cm] - m[:trans_loss][l, t, cm])
+
+    # Flow rate constraints on storage flows
+    @constraint(m, [t ∈ 𝒯],
+        m[:trans_in][l, t, cm] - m[:trans_loss][l, t, cm] <= m[:trans_cap][l, t, cm])
+
+
+    @constraint(m, [t ∈ 𝒯],
+        m[:trans_out][l, t, cm] <= m[:trans_cap][l, t, cm])
+
+    @constraint(m, [t ∈ 𝒯],
+        m[:linepack_cap_inst][l, t, cm] == cm.Linepack_energy_share * m[:trans_cap][l, t, cm])
+
+    #@constraint(m, [t ∈ 𝒯],
+    #    m[:linepack_flow_out][l, t, cm] <= m[:linepack_rate_inst][l, t, cm])
+
+    # Constraints for unidirectional energy transmission.
+    if cm.Directions == 1
+        @constraint(m, [t ∈ 𝒯],
+            m[:trans_loss][l, t, cm] == cm.Trans_loss[t] * m[:trans_in][l, t, cm])
+
+        @constraint(m, [t ∈ 𝒯], m[:trans_out][l, t, cm] >= 0)
+        @constraint(m, [t ∈ 𝒯], m[:trans_in][l, t, cm] >= 0)
+
+        for t_inv ∈ 𝒯ᴵⁿᵛ, t ∈ t_inv
+            # Periodicity constraint
+            if t == first_operational(t_inv)
+                @constraint(m, m[:linepack_stor_level][l, t, cm] == 
+                    m[:linepack_stor_level][l, last_operational(t_inv), cm] +
+                    (m[:trans_in][l, t, cm] - m[:trans_loss][l, t, cm] - m[:trans_out][l, t, cm])
+                )
+            else # From one operational period to next.
+                @constraint(m, m[:linepack_stor_level][l, t, cm] == 
+                    m[:linepack_stor_level][l, previous(t, 𝒯), cm] +
+                    (m[:trans_in][l, t, cm] - m[:trans_loss][l, t, cm] - m[:trans_out][l, t, cm])
+                )
+            end
+        end
+
+        # Constraints for bidirectional energy transmission
+    elseif cm.Directions == 2
+        @warn "Only one-directional flow implemented for linepacking."
+    end
+
+    # Linking the linepack to the transmission model
+    #@constraint(m, [t ∈ 𝒯],
+    #    m[:trans_out][l, t, cm] == m[:linepack_flow_out][l, t, cm])
+
+    # Lastly, flow out of the pipeline is capped. Same as parent. 
+    @constraint(m, [t ∈ 𝒯],
+        m[:trans_out][l, t, cm] <= m[:trans_cap][l, t, cm])
+
+    @constraint(m,  [t ∈ 𝒯],
+        m[:linepack_stor_level][l, t, cm] <= m[:linepack_cap_inst][l, t, cm])
+
+    # Constraint for the Opex contributions
+    #@constraint(m, [t_inv ∈ 𝒯ᴵⁿᵛ],
+    #    m[:linepack_opex_var][l, t_inv, cm] == sum((m[:linepack_flow_in][l, t, cm] * cm.Linepack_opex_var[t]) for t ∈ t_inv))
+
+    # QN: For fixed opex, scale from `linepack_cap_inst` or `linepack_rate_inst`?
+    #@constraint(m, [t_inv ∈ 𝒯ᴵⁿᵛ],
+    #    m[:linepack_opex_fixed][l, t_inv, cm] == sum(m[:linepack_rate_inst][l, t, cm] * cm.Linepack_opex_fixed[t] for t ∈ t_inv))
 end

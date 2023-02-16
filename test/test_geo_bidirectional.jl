@@ -50,11 +50,11 @@ function bidirectional_case()
             ]
     
     # Definition of the two areas and the corresponding transmission line between them
-    areas = [Area(1, "Oslo", 10.751, 59.921, nodes[1]),
-             Area(2, "Bergen", 5.334, 60.389, nodes[5])]
+    areas = [RefArea(1, "Oslo", 10.751, 59.921, nodes[1]),
+             RefArea(2, "Bergen", 5.334, 60.389, nodes[5])]
             
     # Definition of the power lines
-    transmission_line = RefStatic("Transline", Power, 30.0, 0.05, 2)
+    transmission_line = RefStatic("Transline", Power, FixedProfile(30.0), FixedProfile(0.05), 2)
     transmission = [Transmission(areas[1], areas[2], [transmission_line], Dict("" => EmptyData()))]
 
     # Aggregation of the problem case
@@ -93,10 +93,10 @@ end
     for t ∈ 𝒯
         if value.(m[:trans_in])[l, t, cm] <= 0
             @test abs(value.(m[:trans_in])[l, t, cm]) <= abs(value.(m[:trans_out])[l, t, cm])
-            @test abs(value.(m[:trans_in])[l, t, cm]) == cm.Trans_cap
+            @test abs(value.(m[:trans_in])[l, t, cm]) == cm.Trans_cap[t]
         else
             @test value.(m[:trans_out])[l, t, cm] <= value.(m[:trans_in])[l, t, cm]
-            @test value.(m[:trans_out])[l, t, cm] == cm.Trans_cap
+            @test value.(m[:trans_out])[l, t, cm] == cm.Trans_cap[t]
         end
     end
 
