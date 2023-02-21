@@ -31,9 +31,10 @@ function small_graph(source=nothing, sink=nothing)
     areas = [RefArea(1, "Oslo", 10.751, 59.921, nodes[1]), 
              RefArea(2, "Trondheim", 10.398, 63.4366, nodes[2])]        
 
-    transmission_line = RefStatic("transline", Power, FixedProfile(100), FixedProfile(0.1), 1)
-    transmissions = [Transmission(areas[1], areas[2], [transmission_line], Dict("" => EmptyData())),
-                     Transmission(areas[2], areas[1], [transmission_line], Dict("" => EmptyData()))]
+    transmission_line_1 = GEO.RefStatic("transline1", Power, FixedProfile(100), FixedProfile(0.1), 1)
+    transmission_line_2 = GEO.RefStatic("transline2", Power, FixedProfile(100), FixedProfile(0.1), 1)
+    transmissions = [Transmission(areas[1], areas[2], [transmission_line_1], Dict("" => EmptyData())),
+                     Transmission(areas[2], areas[1], [transmission_line_2], Dict("" => EmptyData()))]
 
     # Creation of the time structure and the used global data
     T = UniformTwoLevel(1, 4, 1, UniformTimes(1, 4, 1))
@@ -63,12 +64,13 @@ function transmission_tests(m, case)
     Power   = case[:products][1]
     
     tr_osl_trd, tr_trd_osl  = case[:transmission]
-    trans_mode              = case[:transmission][1].Modes[1]
+    tr_osl_trd_mode         = tr_osl_trd.Modes[1]
+    tr_trd_osl_mode         = tr_trd_osl.Modes[1]
     areas                   = case[:areas]
 
     @testset "Test transmission" begin
         
-        loss = trans_mode.Trans_loss
+        loss = tr_osl_trd_mode.Trans_loss
         if sum(value.(m[:cap_inst][source, t]) ≥ value.(m[:cap_inst][sink, t]) for t ∈ 𝒯) == length(𝒯)
             # If the source has the needed capacity, it should cover the usage in the sink exactly.
             @test sum(round(value.(m[:cap_use][source, t]) * (1 - loss[t]), digits = ROUND_DIGITS) 
@@ -78,15 +80,15 @@ function transmission_tests(m, case)
         end
         
         # Test that energy is transferred
-        @test sum(value.(m[:trans_in])[tr_osl_trd, t, trans_mode] > 0 for t ∈ 𝒯) ==
+        @test sum(value.(m[:trans_in])[tr_osl_trd_mode, t] > 0 for t ∈ 𝒯) ==
                 length(𝒯)
 
         # Check that the transmission loss is computed correctly.
-        @test sum(round(value.(m[:trans_loss][tr_osl_trd, t, trans_mode]), digits = ROUND_DIGITS) 
-            == round(loss[t] * value.(m[:trans_in][tr_osl_trd, t, trans_mode]), digits = ROUND_DIGITS) for t ∈ 𝒯) == length(𝒯)
+        @test sum(round(value.(m[:trans_loss][tr_osl_trd_mode, t]), digits = ROUND_DIGITS) 
+            == round(loss[t] * value.(m[:trans_in][tr_osl_trd_mode, t]), digits = ROUND_DIGITS) for t ∈ 𝒯) == length(𝒯)
 
-        @test sum(value.(m[:trans_in][tr_osl_trd, t, trans_mode]) >= 0 for t ∈ 𝒯) == length(𝒯)
-        @test sum(value.(m[:trans_in][tr_trd_osl, t, case[:transmission][2].Modes[1]]) == 0 for t ∈ 𝒯) == length(𝒯)
+        @test sum(value.(m[:trans_in][tr_osl_trd_mode, t]) >= 0 for t ∈ 𝒯) == length(𝒯)
+        @test sum(value.(m[:trans_in][tr_trd_osl_mode, t]) == 0 for t ∈ 𝒯) == length(𝒯)
     end
 end
 

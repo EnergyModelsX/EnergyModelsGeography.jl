@@ -204,6 +204,41 @@ function corridor_modes(l::Transmission)
 end
 
 
+"""
+    corridor_modes(ℒ::Vector{::Transmission})
+
+Return an array fo all transmission modes present in the different transmission corrioders
+"""
+function corridor_modes(ℒ::Vector{<:Transmission})
+    tmp = Vector{TransmissionMode}()
+    for l ∈ ℒ
+        append!(tmp, l.Modes)
+    end
+
+    return tmp
+end
+
+"""
+    mode_sub(l::Transmission, type::TransmissionMode)
+
+Return an array containing all `TransmissionMode`s of type `type` in the `Transmission` corridor `l`.
+"""
+function mode_sub(l::Transmission, mode_type::TransmissionMode)
+    return [m for m ∈ l.Modes if typeof(m) == mode_type]
+end
+
+"""
+    mode_sub(ℒᵗʳᵃⁿˢ::Vector{::Transmission}, type::TransmissionMode)
+
+Return an array containing all `TransmissionMode`s of type `type` in the `Transmission`s `ℒ`.
+"""
+function mode_sub(ℒᵗʳᵃⁿˢ::Vector{<:Transmission}, mode_type::TransmissionMode)
+    𝒞ℳ = corridor_modes(ℒᵗʳᵃⁿˢ)
+
+    return 𝒞ℳ[findall(x -> isa(x, typeof(mode_type)), 𝒞ℳ)]
+end
+
+
 trans_mode_import(tm::TransmissionMode) = [tm.Resource]
 trans_mode_import(tm::PipeMode) = [tm.Outlet]
 
@@ -260,19 +295,17 @@ end
 """ 
     modes_of_dir(l, dir::Int)
 
-Return the transmission modes of dir directions for transmission corridor l.
+Return the transmission modes of dir directions for transmission corridor `l``.
 """
-function modes_of_dir(l, dir::Int)
+function modes_of_dir(l::Transmission, dir::Int)
     return l.Modes[findall(x -> x.Directions == dir, l.Modes)]
 end
+""" 
+    modes_of_dir(ℒ, dir::Int)
 
+Return the transmission modes of dir directions for transmission modes `𝒞ℳ`.
 """
-    filter_mode_set_by_type(l::Transmission, type::TransmissionMode)
-
-Arguments:
-- `l::Transmission`: Transmission object for which a `TransmissionMode` set is sought
-- `type::TransmissionMode`: type of `TransmissionMode` to filter by.
-"""
-function filter_mode_set_by_type(l::Transmission, type)
-    return [m for m ∈ l.Modes if typeof(m) == type]
+function modes_of_dir(𝒞ℳ::Vector{<:TransmissionMode}, dir::Int)
+    
+    return 𝒞ℳ[findall(x -> x.Directions == dir, 𝒞ℳ)]
 end

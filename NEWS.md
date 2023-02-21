@@ -1,6 +1,13 @@
 Release notes
 =============
 
+Version 0.4.0 (2023-02-xx)
+--------------------------
+### Change of indexing
+* Variables are now indexed _via_ the `TransmissionMode` and the time period instead of the using a `SparseAxisArray` and indexing _via_ `Transmission`, time period, and `TransmissionMode`. This also improves model generation time.
+* This adjustment requires the declaration of a new instance for each usage of a `TransmissionMode`, see, _e.g._, the changes in `scr\user_interface.jl`.
+
+
 Version 0.3.1 (2023-02-16)
 --------------------------
 ### Introduction of linepacking
