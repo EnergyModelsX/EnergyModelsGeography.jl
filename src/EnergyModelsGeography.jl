@@ -17,7 +17,7 @@ include("user_interface.jl")
 
 export Area, RefArea
 export GeoAvailability
-export Transmission
+export Transmission, TransmissionMode
 export RefStatic, RefDynamic
 export PipeMode, PipeSimple, PipeLinepackSimple
 

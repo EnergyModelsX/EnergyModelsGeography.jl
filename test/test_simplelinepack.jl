@@ -40,10 +40,11 @@ function small_graph_linepack()
         FixedProfile(50),  # Capacity
         FixedProfile(0.05),   # Loss
         0.1,                # Storage capacity
-        1
+        1,
+        Dict("" => EmptyData())
         )
 
-    transmissions = [Transmission(areas[1], areas[2], [pipeline], Dict("" => EmptyData()))]
+    transmissions = [Transmission(areas[1], areas[2], [pipeline])]
 
     # Creation of the time structure and the used global data
     T = UniformTwoLevel(1, 1, 1, UniformTimes(1, 10, 1))
