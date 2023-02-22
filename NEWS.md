@@ -6,7 +6,8 @@ Version 0.4.0 (2023-02-xx)
 ### Change of indexing
 * Variables are now indexed _via_ the `TransmissionMode` and the time period instead of the using a `SparseAxisArray` and indexing _via_ `Transmission`, time period, and `TransmissionMode`. This also improves model generation time.
 * This adjustment requires the declaration of a new instance for each usage of a `TransmissionMode`, see, _e.g._, the changes in `scr\user_interface.jl`.
-
+### Change of variable generation for individual transmission modes
+* Variable generation _via_ the function `variables_trans_mode(s)` is adjusted to follow the concept introduced in `EnergyModelsBase`  commit [c58804ca](https://gitlab.sintef.no/clean_export/energymodelsbase.jl/-/commit/c58804cae6415f9a3da05f2d43cfbf5c78525c91).
 
 Version 0.3.1 (2023-02-16)
 --------------------------

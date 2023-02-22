@@ -15,14 +15,16 @@ function create_model(case, modeltype)
     𝒫           = case[:products]
     𝒯           = case[:T]
     𝒩           = case[:nodes]
+    
+    # Vector of all `TransmissionMode`s in the corridors
+    𝒞ℳ = corridor_modes(ℒᵗʳᵃⁿˢ)
 
     # Declaration of variables foir areas and transmission corridors
     variables_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
-    variables_trans_general(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
     variables_trans_capex(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
-    # variables_trans_opex(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
-    variables_trans_capacity(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
-    variables_trans_modes(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+    # variables_trans_opex(m, 𝒯, 𝒞ℳ, modeltype)
+    variables_trans_capacity(m, 𝒯, 𝒞ℳ, modeltype)
+    variables_trans_modes(m, 𝒯, 𝒞ℳ, modeltype)
 
     # Construction of constraints for areas and transmission corridors
     constraints_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype)
@@ -48,15 +50,24 @@ end
 
 
 """
-    variables_trans_capacity(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+    variables_trans_capex(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+
+Create variables for the capital costs for the investments in transmission.
+Empty function to allow for multiple dispatch in the `EnergyModelsInvestment` package.
+"""
+function variables_trans_capex(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel)
+
+end
+
+
+"""
+    variables_trans_capacity(m, 𝒯, 𝒞ℳ, modeltype)
 
 Create variables to track how much of installed transmision capacity is used for all 
 time periods `t ∈ 𝒯`.
 """
-function variables_trans_capacity(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+function variables_trans_capacity(m, 𝒯, 𝒞ℳ, modeltype)
     
-    𝒞ℳ = corridor_modes(ℒᵗʳᵃⁿˢ)
-
     @variable(m, trans_cap[𝒞ℳ, 𝒯] >= 0)
 
     for cm ∈ 𝒞ℳ, t ∈ 𝒯
@@ -66,92 +77,92 @@ end
 
 
 """
-    variables_trans_general(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+    variables_trans_modes(m, 𝒯, 𝒞ℳ, modeltype::EnergyModel)
 
-Create variables to track how much of installed transmission capacity is used for all 
-time periods `t ∈ 𝒯` and how much energy is lossed.
+Loop through all `TransmissionMode` types and create variables specific to each type.
+This is done by calling the method [`variables_trans_mode`](@ref) on all modes of each type.
+
+The `TransmissionMode` type representing the widest category will be called first. That is, 
+`variables_trans_mode` will be called on a `TransmissionMode` before it is called on `PipeMode`-nodes.
 """
-function variables_trans_general(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel)
+function variables_trans_modes(m, 𝒯, 𝒞ℳ, modeltype::EnergyModel)
     
-    𝒞ℳ = corridor_modes(ℒᵗʳᵃⁿˢ)
-    𝒞ℳ2 = modes_of_dir(𝒞ℳ, 2)    
+    # Vector of the unique node types in 𝒩.
+    mode_composite_types = unique(map(cm -> typeof(cm), 𝒞ℳ))
+    # Get all `Node`-types in the type-hierarchy that the transmission modes 𝒞ℳ represents.
+    mode_types = EMB.collect_types(mode_composite_types)
+    # Sort the node-types such that a supertype will always come its subtypes.
+    mode_types = EMB.sort_types(mode_types)
 
-    @variable(m, trans_in[𝒞ℳ, 𝒯])
-    @variable(m, trans_out[𝒞ℳ, 𝒯])
-    @variable(m, trans_loss[𝒞ℳ, 𝒯] >= 0)
-    @variable(m, trans_loss_neg[𝒞ℳ2, 𝒯] >= 0)
-    @variable(m, trans_loss_pos[𝒞ℳ2, 𝒯] >= 0)
-end
-
-"""
-    variables_trans_modes(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
-
-Call a method for creating e.g. other variables specific to the different 
-`TransmissionMode` types. The method is only called once for each mode type.
-"""
-function variables_trans_modes(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel)
-    modetypes = []
-    for l ∈ ℒᵗʳᵃⁿˢ, cm ∈ l.Modes
-        if ! (typeof(cm) in modetypes)
-            variables_trans_mode(m, 𝒯, ℒᵗʳᵃⁿˢ, cm, modeltype)
-            push!(modetypes, typeof(cm))
+    for mode_type ∈ mode_types
+        # All nodes of the given sub type.
+        𝒞ℳˢᵘᵇ = filter(cm -> isa(cm, mode_type), 𝒞ℳ)
+        # Convert to a Vector of common-type instad of Any.
+        𝒞ℳˢᵘᵇ = convert(Vector{mode_type}, 𝒞ℳˢᵘᵇ)
+        try
+            variables_trans_mode(m, 𝒯, 𝒞ℳˢᵘᵇ, modeltype)
+        catch e
+            if !isa(e, ErrorException)
+                @error "Creating variables failed."
+            end
+            # 𝒞ℳˢᵘᵇ was already registered by a call to a supertype, so just continue.
         end
     end
 end
 
-
 """"
-    variables_trans_mode(m, 𝒯, ℒᵗʳᵃⁿˢ, cm, modeltype::EnergyModel)
+    variables_trans_mode(m, 𝒯, 𝒞ℳˢᵘᵇ::Vector{<:TransmissionMode}, modeltype::EnergyModel)
 
-Default fallback method when no function is defined for a `TransmissionMode`  type.
+Default fallback method when no function is defined for a `TransmissionMode` type.
+It introduces the variables that are required in all `TransmissionMode`s. These variables
+are:
+
+* `:trans_in` - inlet flow to transmission mode
+* `:trans_out` - outlet flow from a transmission mode
+* `:trans_loss` - loss during transmission 
+* `:trans_loss_neg` - negative loss during transmission, helper variable if bidirectional
+transport is possible 
+* `:trans_loss_pos` - positive loss during transmission, helper variable if bidirectional
+transport is possible 
 """
-function variables_trans_mode(m, 𝒯, ℒᵗʳᵃⁿˢ, cm, modeltype::EnergyModel)
+function variables_trans_mode(m, 𝒯, 𝒞ℳˢᵘᵇ::Vector{<:TransmissionMode}, modeltype::EnergyModel)
+    
+    𝒞ℳ2 = modes_of_dir(𝒞ℳˢᵘᵇ, 2)    
+
+    @variable(m, trans_in[𝒞ℳˢᵘᵇ, 𝒯])
+    @variable(m, trans_out[𝒞ℳˢᵘᵇ, 𝒯])
+    @variable(m, trans_loss[𝒞ℳˢᵘᵇ, 𝒯] >= 0)
+    @variable(m, trans_loss_neg[𝒞ℳ2, 𝒯] >= 0)
+    @variable(m, trans_loss_pos[𝒞ℳ2, 𝒯] >= 0)
 end
 
 
 """"
-    variables_trans_mode(m, 𝒯, ℒᵗʳᵃⁿˢ, cm::PipeLinepackSimple, modeltype::EnergyModel)
+    variables_trans_mode(m, 𝒯, 𝒞ℳᴸᴾ::Vector{<:PipeLinepackSimple}, modeltype::EnergyModel)
 
-Adds the following special variables for linepacking:\n
-    `linepack_flow_in[l,t,cm_lp]`: This is the characteristic throughput of the linepack storage (not of the entire transmission mode)\n
-    `linepack_flow_out[l,t,cm_lp]`: [TBD] this variable is not necessary with current implementation but may be useful for more advanced implementations\n
-    `linepack_stor_level[l,t,cm_lp]`: Storage level in linepack\n
-    `linepack_cap_inst[l,t,cm_lp]`: Installed storage capacity == cm_lp.Linepack_cap[t]\n
-    `linepack_rate_inst[l,t,cm_lp]`: Installed maximum inflow == cm_lp.Linepack_rate_cap[t]\n
-    `linepack_opex_var[l,t,cm_lp]`: 
-    `linepack_opex_fixed[l,t,cm_lp]`: 
+Adds the following special variables for linepacking:
+
+* `:linepack_flow_in`: This is the characteristic throughput of the linepack storage (not of the entire transmission mode)
+* `:linepack_flow_out`: [TBD] this variable is not necessary with current implementation but may be useful for more advanced implementations
+* `:linepack_stor_level` - storage level in linepack
+* `:linepack_cap_inst` - installed storage capacity == cm_lp.Linepack_cap[t]
+* `:linepack_rate_inst` - installed maximum inflow == cm_lp.Linepack_rate_cap[t]
 """
-function variables_trans_mode(m, 𝒯, ℒᵗʳᵃⁿˢ, cm::PipeLinepackSimple, modeltype::EnergyModel)
+function variables_trans_mode(m, 𝒯, 𝒞ℳᴸᴾ::Vector{<:PipeLinepackSimple}, modeltype::EnergyModel)
 
     𝒯ᴵⁿᵛ = strategic_periods(𝒯)
   
-    𝒞ℳᴸᴾ = mode_sub(ℒᵗʳᵃⁿˢ, cm)
-
     # @variable(m, linepack_flow_in[𝒞ℳᴸᴾ, 𝒯] >= 0)
     # @variable(m, linepack_flow_out[𝒞ℳᴸᴾ, 𝒯] >= 0)
     @variable(m, linepack_stor_level[𝒞ℳᴸᴾ, 𝒯] >= 0)
     @variable(m, linepack_cap_inst[𝒞ℳᴸᴾ, 𝒯] >= 0)
     # @variable(m, linepack_rate_inst[𝒞ℳᴸᴾ, 𝒯] >= 0)
-    # @variable(m, linepack_opex_var[𝒞ℳᴸᴾ,𝒯ᴵⁿᵛ])
-    # @variable(m, linepack_opex_fixed[𝒞ℳᴸᴾ,𝒯ᴵⁿᵛ])
 
     # # Setting up the standard upper bounds on installed capacities:
     # for cm ∈ 𝒞ℳᴸᴾ, t ∈ 𝒯
     #     @constraint(m, linepack_cap_inst[cm, t] == cm.Linepack_cap[t])
     #     @constraint(m, linepack_rate_inst[cm, t] == cm.Linepack_rate_cap[t])
     # end
-end
-
-
-"""
-    variables_trans_capex(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
-
-Create variables for the capital costs for the investments in transmission.
-
-Empty function to allow for multipled dispatch in the InvestmentModels package
-"""
-function variables_trans_capex(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel)
-
 end
 
 
