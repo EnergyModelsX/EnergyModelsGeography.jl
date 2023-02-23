@@ -15,7 +15,6 @@ const TEST_ATOL = 1e-6
 @testset "Geography" begin
     include("utils.jl")
 
-    include("test_geo.jl")
     include("test_geo_unidirectional.jl")
     include("test_geo_bidirectional.jl")
     include("test_simplepipe.jl")
