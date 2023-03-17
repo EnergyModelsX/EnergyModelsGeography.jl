@@ -41,21 +41,21 @@ flow_out = [[value.(m[:flow_out])[a.An, t, Power] for t ∈ 𝒯] for a ∈ area
 trans = Dict()
 for l ∈ ℒᵗʳᵃⁿˢ
     for cm ∈ l.Modes
-        trans[l, cm.Name] =  [value.(m[:trans_out])[l, t, cm] for t ∈ 𝒯]
+        trans[l, cm.Name] =  [value.(m[:trans_out])[cm, t] for t ∈ 𝒯]
     end
 end
 
 trans_in = Dict()
 for l ∈ ℒᵗʳᵃⁿˢ
     for cm ∈ l.Modes
-        trans_in[l, cm.Name] =  [value.(m[:trans_in])[l, t, cm] for t ∈ 𝒯]
+        trans_in[l, cm.Name] =  [value.(m[:trans_in])[cm, t] for t ∈ 𝒯]
     end
 end
 
 trans_loss = Dict()
 for l ∈ ℒᵗʳᵃⁿˢ
     for cm ∈ l.Modes
-        trans_loss[l, cm.Name] =  [value.(m[:trans_loss])[l, t, cm] for t ∈ 𝒯]
+        trans_loss[l, cm.Name] =  [value.(m[:trans_loss])[cm, t] for t ∈ 𝒯]
     end
 end
 
@@ -136,7 +136,7 @@ function resource_map_avg(m, resource, times, lines; line_scale = 10, node_scale
         trans[l] = zeros(length(times))
         for cm in l.Modes
             if cm.Resource == resource
-                trans[l] += [value.(m[:trans_out])[l, t, cm] for t ∈ times]
+                trans[l] += [value.(m[:trans_out])[cm, t] for t ∈ times]
             end
         end
     end

@@ -70,19 +70,27 @@ function read_data()
              RefArea(6, "Sørlige Nordsjø II", 6.836, 57.151, an[6]),
              RefArea(7, "Danmark", 8.614, 56.359, an[7])]
 
-    OverheadLine_50MW   = RefStatic("PowerLine_50", Power, FixedProfile(50.0), FixedProfile(0.05), 2)#, EMB.Linear)
-    LNG_Ship_100MW      = RefDynamic("LNG_100", NG, FixedProfile(100.0), FixedProfile(0.05), 1)#, EMB.Linear)
+    OB_OverheadLine_50MW   = RefStatic("OB_PowerLine_50", Power, FixedProfile(50.0), FixedProfile(0.05), 2, Dict(""=> EMB.EmptyData()))
+    OT_OverheadLine_50MW   = RefStatic("OT_PowerLine_50", Power, FixedProfile(50.0), FixedProfile(0.05), 2, Dict(""=> EMB.EmptyData()))
+    OK_OverheadLine_50MW   = RefStatic("OK_PowerLine_50", Power, FixedProfile(50.0), FixedProfile(0.05), 2, Dict(""=> EMB.EmptyData()))
+    BT_OverheadLine_50MW   = RefStatic("BT_PowerLine_50", Power, FixedProfile(50.0), FixedProfile(0.05), 2, Dict(""=> EMB.EmptyData()))
+    BTN_LNG_Ship_100MW     = RefDynamic("BTN_LNG_100", NG, FixedProfile(100.0), FixedProfile(0.05), 1, Dict(""=> EMB.EmptyData()))
+    BK_OverheadLine_50MW   = RefStatic("BK_PowerLine_50", Power, FixedProfile(50.0), FixedProfile(0.05), 2, Dict(""=> EMB.EmptyData()))
+    TTN_OverheadLine_50MW  = RefStatic("TTN_PowerLine_50", Power, FixedProfile(50.0), FixedProfile(0.05), 2, Dict(""=> EMB.EmptyData()))
+    KS_OverheadLine_50MW  = RefStatic("KS_PowerLine_50", Power, FixedProfile(50.0), FixedProfile(0.05), 2, Dict(""=> EMB.EmptyData()))
+    SD_OverheadLine_50MW  = RefStatic("SD_PowerLine_50", Power, FixedProfile(50.0), FixedProfile(0.05), 2, Dict(""=> EMB.EmptyData()))
 
-    # Create transmission between areas
-    transmission = [Transmission(areas[1], areas[2], [OverheadLine_50MW],Dict(""=> EmptyData())),
-                    Transmission(areas[3], areas[1], [OverheadLine_50MW],Dict(""=> EmptyData())),
-                    Transmission(areas[2], areas[3], [OverheadLine_50MW],Dict(""=> EmptyData())),
-                    Transmission(areas[3], areas[4], [OverheadLine_50MW],Dict(""=> EmptyData())),
-                    Transmission(areas[1], areas[5], [OverheadLine_50MW],Dict(""=> EmptyData())),
-                    Transmission(areas[2], areas[5], [OverheadLine_50MW],Dict(""=> EmptyData())),
-                    Transmission(areas[5], areas[6], [OverheadLine_50MW],Dict(""=> EmptyData())),
-                    Transmission(areas[6], areas[7], [OverheadLine_50MW],Dict(""=> EmptyData())),
-                    Transmission(areas[4], areas[2], [LNG_Ship_100MW],Dict(""=> EmptyData()))]
+    transmission = [
+                Transmission(areas[1], areas[2], [OB_OverheadLine_50MW]),
+                Transmission(areas[1], areas[3], [OT_OverheadLine_50MW]),
+                Transmission(areas[1], areas[5], [OK_OverheadLine_50MW]),
+                Transmission(areas[2], areas[3], [BT_OverheadLine_50MW]),
+                Transmission(areas[2], areas[4], [BTN_LNG_Ship_100MW]),
+                Transmission(areas[2], areas[5], [BK_OverheadLine_50MW]),
+                Transmission(areas[3], areas[4], [TTN_OverheadLine_50MW]),
+                Transmission(areas[5], areas[6], [KS_OverheadLine_50MW]),
+                Transmission(areas[6], areas[7], [SD_OverheadLine_50MW]),
+    ]
 
     # Creation of the time structure and global data
     T = UniformTwoLevel(1, 4, 1, UniformTimes(1, 24, 1))
@@ -91,7 +99,7 @@ function read_data()
     case = Dict(
                 :areas          => Array{Area}(areas),
                 :transmission   => Array{Transmission}(transmission),
-                :nodes          => Array{Node}(nodes),
+                :nodes          => Array{EMB.Node}(nodes),
                 :links          => Array{Link}(links),
                 :products       => products,
                 :T              => T,

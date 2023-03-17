@@ -44,9 +44,9 @@ function small_graph_co2_1()
     areas = [RefArea(1, "Factory", 10.751, 59.921, nodes[1]),
              RefArea(2, "North Sea", 10.398, 63.4366, nodes[2])]
 
-    pipeline = PipeSimple("pipeline", CO2_150, CO2_200, Power, FixedProfile(0.1), FixedProfile(100), FixedProfile(0.05), 1)
+    pipeline = PipeSimple("pipeline", CO2_150, CO2_200, Power, FixedProfile(0.1), FixedProfile(100), FixedProfile(0.05), 1, Dict("" => EmptyData()))
 
-    transmissions = [Transmission(areas[1], areas[2], [pipeline], Dict("" => EmptyData()))]
+    transmissions = [Transmission(areas[1], areas[2], [pipeline])]
         #GEO.Transmission(areas[2], areas[1], [pipeline], [Dict("" => EmptyData())])]
 
     # Creation of the time structure and the used global data
@@ -100,7 +100,7 @@ end
 
     @testset "Energy transferred" begin     
         # Test that energy is transferred
-        @test sum(value.(m[:trans_in])[transmission, t, pipeline] > 0 for t ∈ 𝒯) ==
+        @test sum(value.(m[:trans_in])[pipeline, t] > 0 for t ∈ 𝒯) ==
                 length(𝒯)
 
     end
@@ -124,12 +124,12 @@ end
         # The exported quantity should be negative and equal in absolute value to the 
         # trans_in (of the inlet resource).
         @test sum(value.(m[:area_exchange][area_from, t, CO2_150]) 
-            == -value.(m[:trans_in][transmission, t, pipeline]) for t ∈ 𝒯) == length(𝒯)
+            == -value.(m[:trans_in][pipeline, t]) for t ∈ 𝒯) == length(𝒯)
         
         # The imported quantity should be positive and equal to trans_out of the pipeline
         # outlet resource.
         @test sum(value.(m[:area_exchange][area_to, t, CO2_200]) 
-        == value.(m[:trans_out][transmission, t, pipeline]) for t ∈ 𝒯) == length(𝒯)
+        == value.(m[:trans_out][pipeline, t]) for t ∈ 𝒯) == length(𝒯)
     end
 
     @testset "Consumed resource" begin
@@ -156,9 +156,9 @@ end
 
     @testset "Transport accounting" begin
         # Test that the loss in transported volume is computed in the expected way.
-        @test sum((1 - pipeline.Trans_loss[t]) * value.(m[:trans_in][transmission, t, pipeline])
+        @test sum((1 - pipeline.Trans_loss[t]) * value.(m[:trans_in][pipeline, t])
                   ==
-                  value.(m[:trans_out][transmission, t, pipeline])
+                  value.(m[:trans_out][pipeline, t])
                   for t in 𝒯, atol=TEST_ATOL) == length(𝒯)
 
         # Test that the :area_exchange variables in CO2_150 has the proper loss when transported

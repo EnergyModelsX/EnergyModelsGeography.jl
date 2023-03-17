@@ -40,10 +40,11 @@ function small_graph_linepack()
         FixedProfile(50),  # Capacity
         FixedProfile(0.05),   # Loss
         0.1,                # Storage capacity
-        1
+        1,
+        Dict("" => EmptyData())
         )
 
-    transmissions = [Transmission(areas[1], areas[2], [pipeline], Dict("" => EmptyData()))]
+    transmissions = [Transmission(areas[1], areas[2], [pipeline])]
 
     # Creation of the time structure and the used global data
     T = UniformTwoLevel(1, 1, 1, UniformTimes(1, 10, 1))
@@ -64,7 +65,7 @@ function small_graph_linepack()
 end
 
 
-@testset "PipeSimple test" begin
+@testset "PipeLinepackSimple test" begin
 
     case, modeltype = small_graph_linepack()
 
@@ -96,7 +97,7 @@ end
 
     @testset "Energy transferred" begin     
         # Test that energy is transferred
-        @test sum(value.(m[:trans_out])[transmission, t, pipeline] > 0 for t ∈ 𝒯) ==
+        @test sum(value.(m[:trans_out])[pipeline, t] > 0 for t ∈ 𝒯) ==
                 length(𝒯)
 
     end
@@ -104,19 +105,19 @@ end
     @testset "Energy stored in linepack" begin
 
         # Check that not more energy is stored than available in a pipeline
-        @test sum(value.(m[:linepack_stor_level][transmission, t, pipeline]) 
+        @test sum(value.(m[:linepack_stor_level][pipeline, t]) 
             <= 
-            pipeline.Linepack_energy_share * value.(m[:trans_cap][transmission, t, pipeline]) for t ∈ 𝒯) == length(𝒯)
+            pipeline.Linepack_energy_share * value.(m[:trans_cap][pipeline, t]) for t ∈ 𝒯) == length(𝒯)
         
         # Check that the linepack level increase equals the difference between inlet and outlet flow
         @test sum(sum(
                 isapprox(
-                    value.(m[:trans_in][transmission, t, pipeline])*(1 - pipeline.Trans_loss[t]) - 
-                        value.(m[:trans_out][transmission, t, pipeline]),
-                    value.(m[:linepack_stor_level][transmission, t, pipeline]) - 
+                    value.(m[:trans_in][pipeline, t])*(1 - pipeline.Trans_loss[t]) - 
+                        value.(m[:trans_out][pipeline, t]),
+                    value.(m[:linepack_stor_level][pipeline, t]) - 
                         (TS.isfirst(t) ?
-                            value.(m[:linepack_stor_level][transmission, last_operational(t_inv), pipeline]) :
-                            value.(m[:linepack_stor_level][transmission, previous(t, 𝒯), pipeline])
+                            value.(m[:linepack_stor_level][pipeline, last_operational(t_inv)]) :
+                            value.(m[:linepack_stor_level][pipeline, previous(t, 𝒯)])
                         ),
                     atol=TEST_ATOL
                     )
@@ -125,7 +126,7 @@ end
 
     @testset "Transport accounting" begin
         # Test that the overall system with line packing does not result in unaccounted energy
-        @test sum((1 - pipeline.Trans_loss[t]) * value.(m[:trans_in][transmission, t, pipeline]) for t in 𝒯) ≈
-                  sum(value.(m[:trans_out][transmission, t, pipeline]) for t in 𝒯)  atol=TEST_ATOL
+        @test sum((1 - pipeline.Trans_loss[t]) * value.(m[:trans_in][pipeline, t]) for t in 𝒯) ≈
+                  sum(value.(m[:trans_out][pipeline, t]) for t in 𝒯)  atol=TEST_ATOL
     end
 end

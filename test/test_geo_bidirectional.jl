@@ -54,8 +54,8 @@ function bidirectional_case()
              RefArea(2, "Bergen", 5.334, 60.389, nodes[5])]
             
     # Definition of the power lines
-    transmission_line = RefStatic("Transline", Power, FixedProfile(30.0), FixedProfile(0.05), 2)
-    transmission = [Transmission(areas[1], areas[2], [transmission_line], Dict("" => EmptyData()))]
+    transmission_line = RefStatic("Transline", Power, FixedProfile(30.0), FixedProfile(0.05), 2, Dict("" => EmptyData()))
+    transmission = [Transmission(areas[1], areas[2], [transmission_line])]
 
     # Aggregation of the problem case
     case = Dict(
@@ -86,17 +86,17 @@ end
     cm  = l.Modes[1]
 
     # The sign should be the same for both directions
-    @test sum(sign(value.(m[:trans_in])[l, t, cm]) 
-              == sign(value.(m[:trans_out])[l, t, cm]) for t ∈ 𝒯) == length(𝒯)
+    @test sum(sign(value.(m[:trans_in])[cm, t]) 
+              == sign(value.(m[:trans_out])[cm, t]) for t ∈ 𝒯) == length(𝒯)
     
     # Depending on the direction, check on the individual flows
     for t ∈ 𝒯
-        if value.(m[:trans_in])[l, t, cm] <= 0
-            @test abs(value.(m[:trans_in])[l, t, cm]) <= abs(value.(m[:trans_out])[l, t, cm])
-            @test abs(value.(m[:trans_in])[l, t, cm]) == cm.Trans_cap[t]
+        if value.(m[:trans_in])[cm, t] <= 0
+            @test abs(value.(m[:trans_in])[cm, t]) <= abs(value.(m[:trans_out])[cm, t])
+            @test abs(value.(m[:trans_in])[cm, t]) == cm.Trans_cap[t]
         else
-            @test value.(m[:trans_out])[l, t, cm] <= value.(m[:trans_in])[l, t, cm]
-            @test value.(m[:trans_out])[l, t, cm] == cm.Trans_cap[t]
+            @test value.(m[:trans_out])[cm, t] <= value.(m[:trans_in])[cm, t]
+            @test value.(m[:trans_out])[cm, t] == cm.Trans_cap[t]
         end
     end
 

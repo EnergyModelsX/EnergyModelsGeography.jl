@@ -72,6 +72,7 @@ Generic representation of dynamic transmission modes, using for example truck, s
 - **`Trans_cap::TimeProfile`** is the capacity of the transmission mode.\n
 - **`Trans_loss::TimeProfile`** is the loss of the transported resource during transmission, modelled as a ratio.\n
 - **`Directions`** is the number of directions the resource can be transported, 1 is unidirectional (A->B) or 2 id bidirectional (A<->B).
+- **`Data::Dict{String, Data}`** is the additional data (e.g. for investments).
 """
 struct RefDynamic <: TransmissionMode # E.g. Trucks, ships etc.
     Name::String
@@ -80,6 +81,7 @@ struct RefDynamic <: TransmissionMode # E.g. Trucks, ships etc.
     Trans_loss:: TimeProfile
     Directions::Int # 1: Unidirectional or 2: Bidirectional
     #formulation::EMB.Formulation # linear/non-linear etc.
+    Data::Dict{String, Data}
 end
 
 """ A reference static `TransmissionMode`.
@@ -92,6 +94,7 @@ Generic representation of static transmission modes, such as overhead power line
 - **`Trans_cap::Real`** is the capacity of the transmission mode.\n
 - **`Trans_loss::Real`** is the loss of the transported resource during transmission, modelled as a ratio.\n
 - **`Directions`** is the number of directions the resource can be transported, 1 is unidirectional (A->B) or 2 id bidirectional (A<->B).
+- **`Data::Dict{String, Data}`** is the additional data (e.g. for investments).
 """
 struct RefStatic <: TransmissionMode # E.g. overhead power lines, pipelines etc.
     Name::String
@@ -100,6 +103,7 @@ struct RefStatic <: TransmissionMode # E.g. overhead power lines, pipelines etc.
     Trans_loss::TimeProfile
     Directions::Int
     #formulation::EMB.Formulation
+    Data::Dict{String, Data}
 end
 
 
@@ -129,6 +133,7 @@ the pipeline.
 - **`Trans_cap::Real`** is the capacity of the transmission mode.\n
 - **`Trans_loss::Real`** is the loss of the transported resource during transmission, modelled as a ratio.\n
 - **`Directions`** specifies that the pipeline is Unidirectional (1) by default.\n
+- **`Data::Dict{String, Data}`** is the additional data (e.g. for investments).
 """
 Base.@kwdef struct PipeSimple <: PipeMode
     Name::String
@@ -141,6 +146,7 @@ Base.@kwdef struct PipeSimple <: PipeMode
     Trans_loss::TimeProfile
     # TODO remove below field? Should not be relevant for fluid pipeline.
     Directions::Int = 1     # 1: Unidirectional only for pipeline
+    Data::Dict{String, Data}
 end
 
 
@@ -151,6 +157,7 @@ Pipeline model with linepacking implemented as simple storage function.
 # Fields (additional to `PipeSimple`)
 - **`Linepack_energy_share::Flaot64`**  - is the storage energy capacity relative to pipeline capacity.\n
 - **`Level_share_init::Float64`**  - is the initial storage level. \n
+- **`Data::Dict{String, Data}`** is the additional data (e.g. for investments).
 """
 Base.@kwdef struct PipeLinepackSimple <: PipeMode
     Name::String
@@ -162,6 +169,7 @@ Base.@kwdef struct PipeLinepackSimple <: PipeMode
     Trans_loss::TimeProfile
     Linepack_energy_share::Float64 # Storage energy capacity relative to pipeline capacity
     Directions::Int = 1     # 1: Unidirectional only for pipeline
+    Data::Dict{String, Data}
 end
 
 
@@ -170,17 +178,14 @@ end
 A geographic corridor where `TransmissionModes` are used to transport resources.
 
 # Fields
-**`From::Area`** is the area resources are trasported from.\n
-**`To::Area`** is the area resources are trasported to.\n
-**`Modes::Array{TransmissionMode}`** is the transmission modes that are available.\n
-**`Data::Array{Dict{String, Data}}`** is the additional data (e.g. for investments).
+- **`From::Area`** is the area resources are transported from.\n
+- **`To::Area`** is the area resources are transported to.\n
+- **`Modes::Array{TransmissionMode}`** is the transmission modes that are available.\n
 """
 struct Transmission
     From::Area
     To::Area
     Modes::Array{TransmissionMode}
-    Data::Dict{String, Union{EMB.Data,Dict{TransmissionMode,EMB.Data}}}
-    #distance::Float
 end
 Base.show(io::IO, t::Transmission) = print(io, "$(t.From)-$(t.To)")
 
@@ -201,6 +206,41 @@ Return an array of the transmission modes for a transmission corridor l.
 """
 function corridor_modes(l::Transmission)
     return [m for m in l.Modes]
+end
+
+
+"""
+    corridor_modes(ℒ::Vector{::Transmission})
+
+Return an array fo all transmission modes present in the different transmission corrioders
+"""
+function corridor_modes(ℒ::Vector{<:Transmission})
+    tmp = Vector{TransmissionMode}()
+    for l ∈ ℒ
+        append!(tmp, l.Modes)
+    end
+
+    return tmp
+end
+
+"""
+    mode_sub(l::Transmission, type::TransmissionMode)
+
+Return an array containing all `TransmissionMode`s of type `type` in the `Transmission` corridor `l`.
+"""
+function mode_sub(l::Transmission, mode_type::TransmissionMode)
+    return [m for m ∈ l.Modes if typeof(m) == mode_type]
+end
+
+"""
+    mode_sub(ℒᵗʳᵃⁿˢ::Vector{::Transmission}, type::TransmissionMode)
+
+Return an array containing all `TransmissionMode`s of type `type` in the `Transmission`s `ℒ`.
+"""
+function mode_sub(ℒᵗʳᵃⁿˢ::Vector{<:Transmission}, mode_type::TransmissionMode)
+    𝒞ℳ = corridor_modes(ℒᵗʳᵃⁿˢ)
+
+    return 𝒞ℳ[findall(x -> isa(x, typeof(mode_type)), 𝒞ℳ)]
 end
 
 
@@ -260,19 +300,17 @@ end
 """ 
     modes_of_dir(l, dir::Int)
 
-Return the transmission modes of dir directions for transmission corridor l.
+Return the transmission modes of dir directions for transmission corridor `l``.
 """
-function modes_of_dir(l, dir::Int)
+function modes_of_dir(l::Transmission, dir::Int)
     return l.Modes[findall(x -> x.Directions == dir, l.Modes)]
 end
+""" 
+    modes_of_dir(ℒ, dir::Int)
 
+Return the transmission modes of dir directions for transmission modes `𝒞ℳ`.
 """
-    filter_mode_set_by_type(l::Transmission, type::TransmissionMode)
-
-Arguments:
-- `l::Transmission`: Transmission object for which a `TransmissionMode` set is sought
-- `type::TransmissionMode`: type of `TransmissionMode` to filter by.
-"""
-function filter_mode_set_by_type(l::Transmission, type)
-    return [m for m ∈ l.Modes if typeof(m) == type]
+function modes_of_dir(𝒞ℳ::Vector{<:TransmissionMode}, dir::Int)
+    
+    return 𝒞ℳ[findall(x -> x.Directions == dir, 𝒞ℳ)]
 end
