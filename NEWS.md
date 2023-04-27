@@ -1,5 +1,15 @@
 Release notes
 =============
+Version 0.5.0 (2023-04-27)
+--------------------------
+### Added var and fixed opex for transmision modes
+* All `TransmissionMode` are updated to have fields for var and fixed opex.
+* Variables `trans_opex_var` and `trans_opex_fixed`, also constraints that describes these variables.
+* The function update_objective is updated in `src\model.jl` to add var and fixed opex to the objective function.
+### Additional changes
+* Constraints formulations are seperated into functions and moved to `src\constraint_functions.jl`, similar to how is is organized in `EnergyModelsBase` commit [26ad8740].
+* Compute functions are moved to seperate file `src\compute_functions.jl`.
+
 
 Version 0.4.0 (2023-02-xx)
 --------------------------

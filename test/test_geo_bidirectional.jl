@@ -54,7 +54,7 @@ function bidirectional_case()
              RefArea(2, "Bergen", 5.334, 60.389, nodes[5])]
             
     # Definition of the power lines
-    transmission_line = RefStatic("Transline", Power, FixedProfile(30.0), FixedProfile(0.05), 2, Dict("" => EmptyData()))
+    transmission_line = RefStatic("Transline", Power, FixedProfile(30.0), FixedProfile(0.05), FixedProfile(0.05), FixedProfile(0.05), 2, Dict("" => EmptyData()))
     transmission = [Transmission(areas[1], areas[2], [transmission_line])]
 
     # Aggregation of the problem case

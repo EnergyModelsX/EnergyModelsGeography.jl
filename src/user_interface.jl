@@ -70,15 +70,23 @@ function read_data()
              RefArea(6, "Sørlige Nordsjø II", 6.836, 57.151, an[6]),
              RefArea(7, "Danmark", 8.614, 56.359, an[7])]
 
-    OB_OverheadLine_50MW   = RefStatic("OB_PowerLine_50", Power, FixedProfile(50.0), FixedProfile(0.05), 2, Dict(""=> EMB.EmptyData()))
-    OT_OverheadLine_50MW   = RefStatic("OT_PowerLine_50", Power, FixedProfile(50.0), FixedProfile(0.05), 2, Dict(""=> EMB.EmptyData()))
-    OK_OverheadLine_50MW   = RefStatic("OK_PowerLine_50", Power, FixedProfile(50.0), FixedProfile(0.05), 2, Dict(""=> EMB.EmptyData()))
-    BT_OverheadLine_50MW   = RefStatic("BT_PowerLine_50", Power, FixedProfile(50.0), FixedProfile(0.05), 2, Dict(""=> EMB.EmptyData()))
-    BTN_LNG_Ship_100MW     = RefDynamic("BTN_LNG_100", NG, FixedProfile(100.0), FixedProfile(0.05), 1, Dict(""=> EMB.EmptyData()))
-    BK_OverheadLine_50MW   = RefStatic("BK_PowerLine_50", Power, FixedProfile(50.0), FixedProfile(0.05), 2, Dict(""=> EMB.EmptyData()))
-    TTN_OverheadLine_50MW  = RefStatic("TTN_PowerLine_50", Power, FixedProfile(50.0), FixedProfile(0.05), 2, Dict(""=> EMB.EmptyData()))
-    KS_OverheadLine_50MW  = RefStatic("KS_PowerLine_50", Power, FixedProfile(50.0), FixedProfile(0.05), 2, Dict(""=> EMB.EmptyData()))
-    SD_OverheadLine_50MW  = RefStatic("SD_PowerLine_50", Power, FixedProfile(50.0), FixedProfile(0.05), 2, Dict(""=> EMB.EmptyData()))
+    
+    cap_ohl = FixedProfile(50.0)
+    cap_lng = FixedProfile(100.0)
+    loss = FixedProfile(0.05)
+    opex_var = FixedProfile(0.05)
+    opex_fix = FixedProfile(0.05)
+
+
+    OB_OverheadLine_50MW   = RefStatic("OB_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix,  2, Dict(""=> EMB.EmptyData()))
+    OT_OverheadLine_50MW   = RefStatic("OT_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2, Dict(""=> EMB.EmptyData()))
+    OK_OverheadLine_50MW   = RefStatic("OK_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2, Dict(""=> EMB.EmptyData()))
+    BT_OverheadLine_50MW   = RefStatic("BT_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2, Dict(""=> EMB.EmptyData()))
+    BTN_LNG_Ship_100MW     = RefDynamic("BTN_LNG_100", NG, cap_lng, loss, opex_var, opex_fix, 1, Dict(""=> EMB.EmptyData()))
+    BK_OverheadLine_50MW   = RefStatic("BK_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2, Dict(""=> EMB.EmptyData()))
+    TTN_OverheadLine_50MW  = RefStatic("TTN_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2, Dict(""=> EMB.EmptyData()))
+    KS_OverheadLine_50MW  = RefStatic("KS_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2, Dict(""=> EMB.EmptyData()))
+    SD_OverheadLine_50MW  = RefStatic("SD_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2, Dict(""=> EMB.EmptyData()))
 
     transmission = [
                 Transmission(areas[1], areas[2], [OB_OverheadLine_50MW]),

@@ -31,8 +31,8 @@ function small_graph(source=nothing, sink=nothing)
     areas = [RefArea(1, "Oslo", 10.751, 59.921, nodes[1]), 
              RefArea(2, "Trondheim", 10.398, 63.4366, nodes[2])]        
 
-    transmission_line_1 = GEO.RefStatic("transline1", Power, FixedProfile(100), FixedProfile(0.1), 1, Dict("" => EmptyData()))
-    transmission_line_2 = GEO.RefStatic("transline2", Power, FixedProfile(100), FixedProfile(0.1), 1, Dict("" => EmptyData()))
+    transmission_line_1 = GEO.RefStatic("transline1", Power, FixedProfile(100), FixedProfile(0.1), FixedProfile(0.1), FixedProfile(0.1), 1, Dict("" => EmptyData()))
+    transmission_line_2 = GEO.RefStatic("transline2", Power, FixedProfile(100), FixedProfile(0.1), FixedProfile(0.1), FixedProfile(0.1), 1, Dict("" => EmptyData()))
     transmissions = [Transmission(areas[1], areas[2], [transmission_line_1]),
                      Transmission(areas[2], areas[1], [transmission_line_2])]
 
@@ -124,6 +124,8 @@ end
                                         FixedProfile(0), 
                                         prev_tmode.Trans_cap,
                                         prev_tmode.Trans_loss,
+                                        prev_tmode.Opex_var,
+                                        prev_tmode.Opex_fixed,
                                         prev_tmode.Directions,
                                         Dict("" => EmptyData()))
             @assert prev_tmode.Directions == 1 "The Dircetion mode should be 
