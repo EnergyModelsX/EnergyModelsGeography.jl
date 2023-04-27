@@ -14,6 +14,8 @@ using TimeStructures
 include("datastructures.jl")
 include("model.jl")
 include("user_interface.jl")
+include("constraint_functions.jl")
+include("compute_functions.jl")
 
 export Area, RefArea
 export GeoAvailability

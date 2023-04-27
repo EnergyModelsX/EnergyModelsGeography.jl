@@ -33,13 +33,15 @@ function small_graph_linepack()
 
     pipeline = PipeLinepackSimple(
         "pipeline",
-        H2,                 # Inlet
-        H2,                 # Outlet
-        Power,              # Consuming resource
-        FixedProfile(0),  # Consumption rate
-        FixedProfile(50),  # Capacity
+        H2,                   # Inlet
+        H2,                   # Outlet
+        Power,                # Consuming resource
+        FixedProfile(0),      # Consumption rate
+        FixedProfile(50),     # Capacity
         FixedProfile(0.05),   # Loss
-        0.1,                # Storage capacity
+        FixedProfile(0.05),   # Opex var
+        FixedProfile(0.05),   # Opex fixed
+        0.1,                  # Storage capacity
         1,
         Dict("" => EmptyData())
         )

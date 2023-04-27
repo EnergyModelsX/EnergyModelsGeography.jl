@@ -11,8 +11,8 @@ The latter are not relevant but included for consistency with other formulations
 """
 struct GeoAvailability <: EMB.Availability
     id
-    Input::Dict{EMB.Resource, Real}
-    Output::Dict{EMB.Resource, Real}
+    Input::Dict{EMB.Resource,Real}
+    Output::Dict{EMB.Resource,Real}
 end
 
 
@@ -30,11 +30,11 @@ abstract type Area end
 
 """
 struct RefArea <: Area
-	id
+    id
     Name
-	Lon::Real
-	Lat::Real
-	An::EMB.Availability
+    Lon::Real
+    Lat::Real
+    An::EMB.Availability
 end
 Base.show(io::IO, a::Area) = print(io, "$(a.Name)")
 
@@ -59,7 +59,7 @@ struct LimitedExchangeArea <: Area
 end
 
 """ Declaration of the general type for transmission mode transporting resources between areas."""
-abstract type TransmissionMode end 
+abstract type TransmissionMode end
 Base.show(io::IO, t::TransmissionMode) = print(io, "$(t.Name)")
 
 """ A reference dynamic `TransmissionMode`.
@@ -71,17 +71,21 @@ Generic representation of dynamic transmission modes, using for example truck, s
 - **`Resource::Resource`** is the resource that is transported.\n
 - **`Trans_cap::TimeProfile`** is the capacity of the transmission mode.\n
 - **`Trans_loss::TimeProfile`** is the loss of the transported resource during transmission, modelled as a ratio.\n
-- **`Directions`** is the number of directions the resource can be transported, 1 is unidirectional (A->B) or 2 id bidirectional (A<->B).
+- **`Opex_var::TimeProfile`** is the variational operational costs per energy unit transported.\n
+- **`Opex_fixed::TimeProfile`** is the fixed operational costs per installed capacity.\n
+- **`Directions`** is the number of directions the resource can be transported, 1 is unidirectional (A->B) or 2 id bidirectional (A<->B).\n
 - **`Data::Dict{String, Data}`** is the additional data (e.g. for investments).
 """
 struct RefDynamic <: TransmissionMode # E.g. Trucks, ships etc.
     Name::String
     Resource::EMB.Resource
     Trans_cap::TimeProfile
-    Trans_loss:: TimeProfile
+    Trans_loss::TimeProfile
+    Opex_var::TimeProfile
+    Opex_fixed::TimeProfile
     Directions::Int # 1: Unidirectional or 2: Bidirectional
     #formulation::EMB.Formulation # linear/non-linear etc.
-    Data::Dict{String, Data}
+    Data::Dict{String,Data}
 end
 
 """ A reference static `TransmissionMode`.
@@ -93,7 +97,9 @@ Generic representation of static transmission modes, such as overhead power line
 - **`Resource::Resource`** is the resource that is transported.\n
 - **`Trans_cap::Real`** is the capacity of the transmission mode.\n
 - **`Trans_loss::Real`** is the loss of the transported resource during transmission, modelled as a ratio.\n
-- **`Directions`** is the number of directions the resource can be transported, 1 is unidirectional (A->B) or 2 id bidirectional (A<->B).
+- **`Opex_var::TimeProfile`** is the variational operational costs per energy unit transported.\n
+- **`Opex_fixed::TimeProfile`** is the fixed operational costs per installed capacity.\n
+- **`Directions`** is the number of directions the resource can be transported, 1 is unidirectional (A->B) or 2 id bidirectional (A<->B).\n
 - **`Data::Dict{String, Data}`** is the additional data (e.g. for investments).
 """
 struct RefStatic <: TransmissionMode # E.g. overhead power lines, pipelines etc.
@@ -101,9 +107,11 @@ struct RefStatic <: TransmissionMode # E.g. overhead power lines, pipelines etc.
     Resource::EMB.Resource
     Trans_cap::TimeProfile
     Trans_loss::TimeProfile
+    Opex_var::TimeProfile
+    Opex_fixed::TimeProfile
     Directions::Int
     #formulation::EMB.Formulation
-    Data::Dict{String, Data}
+    Data::Dict{String,Data}
 end
 
 
@@ -132,6 +140,8 @@ the pipeline.
         `Consumption_rate` = consumed volume / inlet volume (per operational period)\n
 - **`Trans_cap::Real`** is the capacity of the transmission mode.\n
 - **`Trans_loss::Real`** is the loss of the transported resource during transmission, modelled as a ratio.\n
+- **`Opex_var::TimeProfile`** is the variational operational costs per energy unit transported.\n
+- **`Opex_fixed::TimeProfile`** is the fixed operational costs per installed capacity.\n
 - **`Directions`** specifies that the pipeline is Unidirectional (1) by default.\n
 - **`Data::Dict{String, Data}`** is the additional data (e.g. for investments).
 """
@@ -144,9 +154,11 @@ Base.@kwdef struct PipeSimple <: PipeMode
     Consumption_rate::TimeProfile
     Trans_cap::TimeProfile
     Trans_loss::TimeProfile
+    Opex_var::TimeProfile
+    Opex_fixed::TimeProfile
     # TODO remove below field? Should not be relevant for fluid pipeline.
     Directions::Int = 1     # 1: Unidirectional only for pipeline
-    Data::Dict{String, Data}
+    Data::Dict{String,Data}
 end
 
 
@@ -167,9 +179,11 @@ Base.@kwdef struct PipeLinepackSimple <: PipeMode
     Consumption_rate::TimeProfile
     Trans_cap::TimeProfile
     Trans_loss::TimeProfile
+    Opex_var::TimeProfile
+    Opex_fixed::TimeProfile
     Linepack_energy_share::Float64 # Storage energy capacity relative to pipeline capacity
     Directions::Int = 1     # 1: Unidirectional only for pipeline
-    Data::Dict{String, Data}
+    Data::Dict{String,Data}
 end
 
 
@@ -196,7 +210,7 @@ Return connected transmission corridors for a given area.
 """
 function trans_sub(ℒ, a::Area)
     return [ℒ[findall(x -> x.From == a, ℒ)],
-            ℒ[findall(x -> x.To   == a, ℒ)]]
+        ℒ[findall(x -> x.To == a, ℒ)]]
 end
 
 """
@@ -284,7 +298,7 @@ Return the resources exported from area a on the transmission corridors in ℒ.
 """
 function export_resources(ℒ, a::Area)
     ℒᶠʳᵒᵐ = ℒ[findall(x -> x.From == a, ℒ)]
-    return filter_transmission_modes(ℒᶠʳᵒᵐ , trans_mode_export)
+    return filter_transmission_modes(ℒᶠʳᵒᵐ, trans_mode_export)
 end
 
 """ 
@@ -311,6 +325,6 @@ end
 Return the transmission modes of dir directions for transmission modes `𝒞ℳ`.
 """
 function modes_of_dir(𝒞ℳ::Vector{<:TransmissionMode}, dir::Int)
-    
+
     return 𝒞ℳ[findall(x -> x.Directions == dir, 𝒞ℳ)]
 end
