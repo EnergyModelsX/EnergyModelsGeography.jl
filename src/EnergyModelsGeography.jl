@@ -12,6 +12,7 @@ using EnergyModelsBase; const EMB = EnergyModelsBase
 using TimeStructures
 
 include("datastructures.jl")
+include("checks.jl")
 include("model.jl")
 include("constraint_functions.jl")
 include("compute_functions.jl")
