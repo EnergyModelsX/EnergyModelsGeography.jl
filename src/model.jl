@@ -236,7 +236,7 @@ function create_area(m, a::LimitedExchangeArea, 𝒯, ℒᵗʳᵃⁿˢ, modeltyp
     #    m[:area_exchange][a, t, p] <= a.ExchangeLimit[p]) # Import limit
 
     @constraint(m, [t ∈ 𝒯, p ∈ exchange_resources(ℒᵗʳᵃⁿˢ, a)],
-        m[:area_exchange][a, t, p] >= -1 * a.ExchangeLimit[p][t]) # Export limit
+        m[:area_exchange][a, t, p] >= -1 * a.Exchange_limit[p][t]) # Export limit
 
 end
 
