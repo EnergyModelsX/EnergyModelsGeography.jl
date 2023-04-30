@@ -1,5 +1,12 @@
 Release notes
 =============
+Version 0.5.1 (2023-04-30)
+--------------------------
+### Multiple smaller updates
+* Moved the example in `user_interface.jl` into an example folder
+* Introduced checks that can be utlized to check transmission related data
+* Fixed a bug for `LimitedExchangeArea` that utilized wrong values
+
 Version 0.5.0 (2023-04-27)
 --------------------------
 ### Added var and fixed opex for transmision modes
