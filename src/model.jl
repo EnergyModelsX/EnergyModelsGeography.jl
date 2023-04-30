@@ -8,8 +8,9 @@ function create_model(case, modeltype)
     @debug "Construct model"
     # Call of the basic model
     m = EMB.create_model(case, modeltype)
+    check_data(case, modeltype)
 
-    # WIP Data structure
+    # Data structure
     𝒜 = case[:areas]
     ℒᵗʳᵃⁿˢ = case[:transmission]
     𝒫 = case[:products]

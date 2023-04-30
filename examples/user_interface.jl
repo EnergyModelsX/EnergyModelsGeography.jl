@@ -1,5 +1,23 @@
-function run_model(fn, optimizer=nothing)
-   @debug "Run model" fn optimizer
+using Pkg
+# Activate the test-environment, where PrettyTables and HiGHS are added as dependencies.
+Pkg.activate(joinpath(@__DIR__, "../test"))
+# Install the dependencies.
+Pkg.instantiate()
+# Add the package EnergyModelsInvestments to the environment.
+Pkg.develop(path=joinpath(@__DIR__, ".."))
+
+using EnergyModelsBase
+using EnergyModelsGeography
+using JuMP
+using HiGHS
+using TimeStructures
+
+
+const EMB = EnergyModelsBase
+
+
+function run_model(optimizer=nothing)
+   @debug "Run model" optimizer
 
     case, model = read_data()
     m = create_model(case, model)
@@ -187,3 +205,10 @@ function get_sub_system_data(i,𝒫₀, 𝒫ᵉᵐ₀, products, modeltype;
             ]
     return nodes, links
 end
+
+
+@show "hiasdflhkøasfdlk"
+
+m, case = run_model(HiGHS.Optimizer)
+
+solution_summary(m)
