@@ -22,15 +22,15 @@ function bidirectional_case()
     demand = [40 40]
     nodes = [
             GEO.GeoAvailability(1, 𝒫₀, 𝒫₀),
-            RefSource(2, FixedProfile(200), OperationalFixedProfile([10 100]), FixedProfile(0), Dict(NG => 1), Dict("" => EmptyData())),  
-            RefNetwork(3, FixedProfile(100), FixedProfile(5.5), FixedProfile(0), Dict(NG => 2), Dict(Power => 1), Dict("" => EmptyData())),  
+            RefSource(2, FixedProfile(200), OperationalFixedProfile([10 100]), FixedProfile(0), Dict(NG => 1), []),  
+            RefNetwork(3, FixedProfile(100), FixedProfile(5.5), FixedProfile(0), Dict(NG => 2), Dict(Power => 1), []),  
             RefSink(4, DynamicProfile(demand), 
                 Dict(:Surplus => FixedProfile(0), :Deficit => FixedProfile(1e6)), 
                 Dict(Power => 1)),
             
             GEO.GeoAvailability(5, 𝒫₀, 𝒫₀),
-            RefSource(6, FixedProfile(200), OperationalFixedProfile([100 10]), FixedProfile(0), Dict(NG => 1), Dict("" => EmptyData())),  
-            RefNetwork(7, FixedProfile(100), FixedProfile(5.5), FixedProfile(0), Dict(NG => 2), Dict(Power => 1), Dict("" => EmptyData())),  
+            RefSource(6, FixedProfile(200), OperationalFixedProfile([100 10]), FixedProfile(0), Dict(NG => 1), []),  
+            RefNetwork(7, FixedProfile(100), FixedProfile(5.5), FixedProfile(0), Dict(NG => 2), Dict(Power => 1), []),  
             RefSink(8, DynamicProfile(demand), 
                 Dict(:Surplus => FixedProfile(0), :Deficit => FixedProfile(1e6)), 
                 Dict(Power => 1)),
@@ -54,7 +54,7 @@ function bidirectional_case()
              RefArea(2, "Bergen", 5.334, 60.389, nodes[5])]
             
     # Definition of the power lines
-    transmission_line = RefStatic("Transline", Power, FixedProfile(30.0), FixedProfile(0.05), FixedProfile(0.05), FixedProfile(0.05), 2, Dict("" => EmptyData()))
+    transmission_line = RefStatic("Transline", Power, FixedProfile(30.0), FixedProfile(0.05), FixedProfile(0.05), FixedProfile(0.05), 2, [])
     transmission = [Transmission(areas[1], areas[2], [transmission_line])]
 
     # Aggregation of the problem case

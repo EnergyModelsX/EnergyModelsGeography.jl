@@ -25,7 +25,7 @@ function small_graph_co2_1()
 
     # Creation of the source and sink module as well as the arrays used for nodes and links
     source = RefSource("-src", FixedProfile(25), FixedProfile(10),
-        FixedProfile(5), Dict(CO2_150 => 1, Power => 1), Dict("" => EmptyData()))
+        FixedProfile(5), Dict(CO2_150 => 1, Power => 1), [])
     el_sink = RefSink("-el-sink", FixedProfile(0),
         Dict(:Surplus => FixedProfile(0), :Deficit => FixedProfile(1e6)), 
         Dict(Power => 1))
@@ -44,10 +44,9 @@ function small_graph_co2_1()
     areas = [RefArea(1, "Factory", 10.751, 59.921, nodes[1]),
              RefArea(2, "North Sea", 10.398, 63.4366, nodes[2])]
 
-    pipeline = PipeSimple("pipeline", CO2_150, CO2_200, Power, FixedProfile(0.1), FixedProfile(100), FixedProfile(0.05), FixedProfile(0.05), FixedProfile(0.05), 1, Dict("" => EmptyData()))
+    pipeline = PipeSimple("pipeline", CO2_150, CO2_200, Power, FixedProfile(0.1), FixedProfile(100), FixedProfile(0.05), FixedProfile(0.05), FixedProfile(0.05), 1, [])
 
     transmissions = [Transmission(areas[1], areas[2], [pipeline])]
-        #GEO.Transmission(areas[2], areas[1], [pipeline], [Dict("" => EmptyData())])]
 
     # Creation of the time structure and the used global data
     T = UniformTwoLevel(1, 4, 1, UniformTimes(1, 4, 1))

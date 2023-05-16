@@ -85,7 +85,7 @@ struct RefDynamic <: TransmissionMode # E.g. Trucks, ships etc.
     Opex_fixed::TimeProfile
     Directions::Int # 1: Unidirectional or 2: Bidirectional
     #formulation::EMB.Formulation # linear/non-linear etc.
-    Data::Dict{String,Data}
+    Data::Array{Data}
 end
 
 """ A reference static `TransmissionMode`.
@@ -111,7 +111,7 @@ struct RefStatic <: TransmissionMode # E.g. overhead power lines, pipelines etc.
     Opex_fixed::TimeProfile
     Directions::Int
     #formulation::EMB.Formulation
-    Data::Dict{String,Data}
+    Data::Array{Data}
 end
 
 
@@ -158,7 +158,7 @@ Base.@kwdef struct PipeSimple <: PipeMode
     Opex_fixed::TimeProfile
     # TODO remove below field? Should not be relevant for fluid pipeline.
     Directions::Int = 1     # 1: Unidirectional only for pipeline
-    Data::Dict{String,Data}
+    Data::Array{Data}
 end
 
 
@@ -183,7 +183,7 @@ Base.@kwdef struct PipeLinepackSimple <: PipeMode
     Opex_fixed::TimeProfile
     Linepack_energy_share::Float64 # Storage energy capacity relative to pipeline capacity
     Directions::Int = 1     # 1: Unidirectional only for pipeline
-    Data::Dict{String,Data}
+    Data::Array{Data}
 end
 
 

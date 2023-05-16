@@ -96,15 +96,15 @@ function read_data()
     opex_fix = FixedProfile(0.05)
 
 
-    OB_OverheadLine_50MW   = RefStatic("OB_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix,  2, Dict(""=> EMB.EmptyData()))
-    OT_OverheadLine_50MW   = RefStatic("OT_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2, Dict(""=> EMB.EmptyData()))
-    OK_OverheadLine_50MW   = RefStatic("OK_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2, Dict(""=> EMB.EmptyData()))
-    BT_OverheadLine_50MW   = RefStatic("BT_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2, Dict(""=> EMB.EmptyData()))
-    BTN_LNG_Ship_100MW     = RefDynamic("BTN_LNG_100", NG, cap_lng, loss, opex_var, opex_fix, 1, Dict(""=> EMB.EmptyData()))
-    BK_OverheadLine_50MW   = RefStatic("BK_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2, Dict(""=> EMB.EmptyData()))
-    TTN_OverheadLine_50MW  = RefStatic("TTN_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2, Dict(""=> EMB.EmptyData()))
-    KS_OverheadLine_50MW  = RefStatic("KS_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2, Dict(""=> EMB.EmptyData()))
-    SD_OverheadLine_50MW  = RefStatic("SD_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2, Dict(""=> EMB.EmptyData()))
+    OB_OverheadLine_50MW   = RefStatic("OB_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix,  2, [])
+    OT_OverheadLine_50MW   = RefStatic("OT_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2, [])
+    OK_OverheadLine_50MW   = RefStatic("OK_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2, [])
+    BT_OverheadLine_50MW   = RefStatic("BT_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2, [])
+    BTN_LNG_Ship_100MW     = RefDynamic("BTN_LNG_100", NG, cap_lng, loss, opex_var, opex_fix, 1, [])
+    BK_OverheadLine_50MW   = RefStatic("BK_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2, [])
+    TTN_OverheadLine_50MW  = RefStatic("TTN_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2, [])
+    KS_OverheadLine_50MW  = RefStatic("KS_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2, [])
+    SD_OverheadLine_50MW  = RefStatic("SD_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2, [])
 
     transmission = [
                 Transmission(areas[1], areas[2], [OB_OverheadLine_50MW]),
@@ -172,21 +172,21 @@ function get_sub_system_data(i,𝒫₀, 𝒫ᵉᵐ₀, products, modeltype;
             GeoAvailability(j+1, 𝒫₀, 𝒫₀),
             EMB.RefSource(j+2, FixedProfile(1e12), FixedProfile(30*mc_scale),
                             FixedProfile(0), Dict(NG => 1),
-                            Dict("" => EMB.EmptyData())),  
+                            []),  
             EMB.RefSource(j+3, FixedProfile(1e12), FixedProfile(9*mc_scale),
                             FixedProfile(0), Dict(Coal => 1),
-                            Dict("" => EMB.EmptyData())),  
+                            []),  
             EMB.RefNetworkEmissions(j+4, FixedProfile(25), FixedProfile(5.5*mc_scale),
                             FixedProfile(0), Dict(NG => 2),
                             Dict(Power => 1, CO2 => 1), 𝒫ᵉᵐ₀, 0.9,
-                            Dict("" => EMB.EmptyData())),  
+                            []),  
             EMB.RefNetwork(j+5, FixedProfile(25), FixedProfile(6*mc_scale),
                             FixedProfile(0),  Dict(Coal => 2.5),
                             Dict(Power => 1),
-                            Dict("" => EMB.EmptyData())),  
+                            []),  
             EMB.RefStorageEmissions(j+6, FixedProfile(20), FixedProfile(600), FixedProfile(9.1),
                             FixedProfile(0),  CO2, Dict(CO2 => 1, Power => 0.02), Dict(CO2 => 1),
-                            Dict("" => EMB.EmptyData())),
+                            []),
             EMB.RefSink(j+7, DynamicProfile(demand),
                             Dict(:Surplus => FixedProfile(0), :Deficit => FixedProfile(1e6)),
                             Dict(Power => 1)),
