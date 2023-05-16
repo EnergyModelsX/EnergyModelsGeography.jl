@@ -1,5 +1,10 @@
 Release notes
 =============
+
+Version 0.5.2 (2023-05-16)
+--------------------------
+* Bugfix in the example which lead to a trivial solution in which no energy has to be converted
+
 Version 0.5.1 (2023-04-30)
 --------------------------
 ### Multiple smaller updates
