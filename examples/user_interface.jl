@@ -20,7 +20,7 @@ function run_model(optimizer=nothing)
    @debug "Run model" optimizer
 
     case, model = read_data()
-    m = create_model(case, model)
+    m = GEO.create_model(case, model)
 
     if !isnothing(optimizer)
         set_optimizer(m, optimizer)
