@@ -15,7 +15,7 @@ function small_graph_linepack()
 
     # Creation of the source and sink module as well as the arrays used for nodes and links
     source = RefSource("-src", FixedProfile(25), OperationalFixedProfile([10, 10, 10, 10, 100, 10, 10, 10, 10, 100]),
-        FixedProfile(0), Dict(H2 => 1), Dict("" => EmptyData()))
+        FixedProfile(0), Dict(H2 => 1), [])
 
     sink = RefSink("-sink", FixedProfile(15),
         Dict(:Surplus => FixedProfile(0), :Deficit => FixedProfile(1e6)), 
@@ -43,7 +43,7 @@ function small_graph_linepack()
         FixedProfile(0.05),   # Opex fixed
         0.1,                  # Storage capacity
         1,
-        Dict("" => EmptyData())
+        []
         )
 
     transmissions = [Transmission(areas[1], areas[2], [pipeline])]

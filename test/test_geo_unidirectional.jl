@@ -14,7 +14,7 @@ function small_graph(source=nothing, sink=nothing)
     # Creation of the source and sink module as well as the arrays used for nodes and links
     if isnothing(source)
         source = RefSource("-src", FixedProfile(25), FixedProfile(10), 
-            FixedProfile(5), Dict(Power => 1), Dict(""=>EmptyData()))
+            FixedProfile(5), Dict(Power => 1), [])
     end
 
     if isnothing(sink)
@@ -31,8 +31,8 @@ function small_graph(source=nothing, sink=nothing)
     areas = [RefArea(1, "Oslo", 10.751, 59.921, nodes[1]), 
              RefArea(2, "Trondheim", 10.398, 63.4366, nodes[2])]        
 
-    transmission_line_1 = GEO.RefStatic("transline1", Power, FixedProfile(100), FixedProfile(0.1), FixedProfile(0.1), FixedProfile(0.1), 1, Dict("" => EmptyData()))
-    transmission_line_2 = GEO.RefStatic("transline2", Power, FixedProfile(100), FixedProfile(0.1), FixedProfile(0.1), FixedProfile(0.1), 1, Dict("" => EmptyData()))
+    transmission_line_1 = GEO.RefStatic("transline1", Power, FixedProfile(100), FixedProfile(0.1), FixedProfile(0.1), FixedProfile(0.1), 1, [])
+    transmission_line_2 = GEO.RefStatic("transline2", Power, FixedProfile(100), FixedProfile(0.1), FixedProfile(0.1), FixedProfile(0.1), 1, [])
     transmissions = [Transmission(areas[1], areas[2], [transmission_line_1]),
                      Transmission(areas[2], areas[1], [transmission_line_2])]
 
@@ -127,7 +127,7 @@ end
                                         prev_tmode.Opex_var,
                                         prev_tmode.Opex_fixed,
                                         prev_tmode.Directions,
-                                        Dict("" => EmptyData()))
+                                        [])
             @assert prev_tmode.Directions == 1 "The Dircetion mode should be 
                                                  unidirectional."
             transmission.Modes[i] = pipeline

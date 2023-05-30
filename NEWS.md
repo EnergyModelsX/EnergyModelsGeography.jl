@@ -1,5 +1,9 @@
 Release notes
 =============
+Version 0.6.0 (2023-05-30)
+--------------------------
+ * Changed the structure in which the extra field `Data` is included in the nodes
+ * It is changed from `Dict{String, Data}` to `Array{data}`
 
 Version 0.5.2 (2023-05-16)
 --------------------------
