@@ -114,8 +114,8 @@ end
         # Check that the linepack level increase equals the difference between inlet and outlet flow
         @test sum(sum(
                 isapprox(
-                    value.(m[:trans_in][pipeline, t])*(1 - pipeline.Trans_loss[t]) - 
-                        value.(m[:trans_out][pipeline, t]),
+                    (value.(m[:trans_in][pipeline, t])*(1 - pipeline.Trans_loss[t]) - 
+                        value.(m[:trans_out][pipeline, t]))*duration(t),
                     value.(m[:linepack_stor_level][pipeline, t]) - 
                         (TS.isfirst(t) ?
                             value.(m[:linepack_stor_level][pipeline, last_operational(t_inv)]) :

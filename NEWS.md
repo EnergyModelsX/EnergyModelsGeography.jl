@@ -1,5 +1,9 @@
 Release notes
 =============
+Version 0.6.1 (2023-06-02)
+--------------------------
+ * Bugfix in linepacking to include multiplication with `duration(t)` for proper energy accounting
+
 Version 0.6.0 (2023-05-30)
 --------------------------
  * Changed the structure in which the extra field `Data` is included in the nodes
