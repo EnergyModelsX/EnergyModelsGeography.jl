@@ -146,11 +146,13 @@ function constraints_trans_balance(m, tm::PipeLinepackSimple, 𝒯::TimeStructur
             @constraint(m, m[:linepack_stor_level][tm, t] ==
                            m[:linepack_stor_level][tm, last_operational(t_inv)] +
                            (m[:trans_in][tm, t] - m[:trans_loss][tm, t] - m[:trans_out][tm, t])
+                           * duration(t)
             )
         else # From one operational period to next.
             @constraint(m, m[:linepack_stor_level][tm, t] ==
                            m[:linepack_stor_level][tm, previous(t, 𝒯)] +
                            (m[:trans_in][tm, t] - m[:trans_loss][tm, t] - m[:trans_out][tm, t])
+                           * duration(t)
             )
         end
     end
