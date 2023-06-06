@@ -74,7 +74,7 @@ end
     m = solve_and_check(case, modeltype, "Trans_cap", "Trans_cap")
 
     # Check objective value
-    @test objective_value(m) == obj_val_no_opex - 1e3 * case[:transmission][1].Modes[1].Trans_cap.vals
+    @test objective_value(m) == obj_val_no_opex - 1e3 * case[:transmission][1].Modes[1].Trans_cap.val
 
     # TEST 4: Repeat TEST 1 with unidirectional transmission mode
 

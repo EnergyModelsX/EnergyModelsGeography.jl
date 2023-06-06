@@ -12,7 +12,7 @@ function bidirectional_case()
     𝒫₀ = Dict(k => 0 for k ∈ products)
 
     # Creation of the time structure and the used global data
-    𝒯 = UniformTwoLevel(1, 1, 1, UniformTimes(1, 2, 1))
+    𝒯 = TwoLevel(1, 1, SimpleTimes(2, 1))
     modeltype = OperationalModel(Dict(CO2 => FixedProfile(1e10),
                                       NG  => FixedProfile(1e6)
                                      ),
@@ -21,17 +21,17 @@ function bidirectional_case()
     # Definition of the invidivual nodes
     demand = [40 40]
     nodes = [
-            GEO.GeoAvailability(1, 𝒫₀, 𝒫₀),
-            RefSource(2, FixedProfile(200), OperationalFixedProfile([10 100]), FixedProfile(0), Dict(NG => 1), []),  
+            EMG.GeoAvailability(1, 𝒫₀, 𝒫₀),
+            RefSource(2, FixedProfile(200), OperationalProfile([10 100]), FixedProfile(0), Dict(NG => 1), []),  
             RefNetwork(3, FixedProfile(100), FixedProfile(5.5), FixedProfile(0), Dict(NG => 2), Dict(Power => 1), []),  
-            RefSink(4, DynamicProfile(demand), 
+            RefSink(4, OperationalProfile(demand), 
                 Dict(:Surplus => FixedProfile(0), :Deficit => FixedProfile(1e6)), 
                 Dict(Power => 1)),
             
-            GEO.GeoAvailability(5, 𝒫₀, 𝒫₀),
-            RefSource(6, FixedProfile(200), OperationalFixedProfile([100 10]), FixedProfile(0), Dict(NG => 1), []),  
+            EMG.GeoAvailability(5, 𝒫₀, 𝒫₀),
+            RefSource(6, FixedProfile(200), OperationalProfile([100 10]), FixedProfile(0), Dict(NG => 1), []),  
             RefNetwork(7, FixedProfile(100), FixedProfile(5.5), FixedProfile(0), Dict(NG => 2), Dict(Power => 1), []),  
-            RefSink(8, DynamicProfile(demand), 
+            RefSink(8, OperationalProfile(demand), 
                 Dict(:Surplus => FixedProfile(0), :Deficit => FixedProfile(1e6)), 
                 Dict(Power => 1)),
             ]

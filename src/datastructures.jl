@@ -47,7 +47,7 @@ Base.show(io::IO, a::Area) = print(io, "$(a.Name)")
 - **`Lon::Real`** is the longitudinal position of the area.\n
 - **`Lat::Real`** is the latitudinal position of the area.\n
 - **`An::Availability`** is the `Availability` node routing different resources within an area.
-- **`ExchangeLimit::Dict{EMB.Resource, Real}`** is the amount of a resource that can be exchanged with other areas
+- **`ExchangeLimit::Dict{EMB.Resource, TimeProfile}`** is the amount of a resource that can be exchanged with other areas
 """
 struct LimitedExchangeArea <: Area
     id
@@ -55,7 +55,7 @@ struct LimitedExchangeArea <: Area
     Lon::Real
     Lat::Real
     An::EMB.Availability
-    Exchange_limit::Dict{EMB.Resource,StrategicFixedProfile}
+    Exchange_limit::Dict{EMB.Resource, TimeProfile}
 end
 
 """ Declaration of the general type for transmission mode transporting resources between areas."""

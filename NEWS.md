@@ -1,5 +1,11 @@
 Release notes
 =============
+Version 0.7.0 (2023-06-06)
+--------------------------
+### Switch to TimeStruct.jl
+ * Switched the time structure representation to [TimeStruct.jl](https://gitlab.sintef.no/julia-one-sintef/timestruct.jl)
+ * TimeStruct.jl is implemented with only the basis features that were available in TimesStructures.jl. This implies that neither operational nor strategic uncertainty is included in the model.
+
 Version 0.6.1 (2023-06-02)
 --------------------------
  * Bugfix in linepacking to include multiplication with `duration(t)` for proper energy accounting

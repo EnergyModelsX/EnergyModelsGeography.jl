@@ -140,17 +140,17 @@ Function for creating the transmission balance for a`PipeLinepackSimple`.
 function constraints_trans_balance(m, tm::PipeLinepackSimple, 𝒯::TimeStructure)
 
     𝒯ᴵⁿᵛ = strategic_periods(𝒯)
-    for t_inv ∈ 𝒯ᴵⁿᵛ, t ∈ t_inv
+    for t_inv ∈ 𝒯ᴵⁿᵛ, (t_prev, t) ∈ withprev(t_inv)
         # Periodicity constraint
-        if t == first_operational(t_inv)
+        if isnothing(t_prev)
             @constraint(m, m[:linepack_stor_level][tm, t] ==
-                           m[:linepack_stor_level][tm, last_operational(t_inv)] +
+                           m[:linepack_stor_level][tm, last(t_inv)] +
                            (m[:trans_in][tm, t] - m[:trans_loss][tm, t] - m[:trans_out][tm, t])
                            * duration(t)
             )
         else # From one operational period to next.
             @constraint(m, m[:linepack_stor_level][tm, t] ==
-                           m[:linepack_stor_level][tm, previous(t, 𝒯)] +
+                           m[:linepack_stor_level][tm, t_prev] +
                            (m[:trans_in][tm, t] - m[:trans_loss][tm, t] - m[:trans_out][tm, t])
                            * duration(t)
             )
@@ -190,12 +190,12 @@ function constraints_opex_var(m, tm::TransmissionMode, 𝒯ᴵⁿᵛ)
     if tm.Directions == 1
         @constraint(m, [t_inv ∈ 𝒯ᴵⁿᵛ],
             m[:trans_opex_var][tm, t_inv] ==
-            sum(m[:trans_out][tm, t] * tm.Opex_var[t] * t.duration for t ∈ t_inv)
+            sum(m[:trans_out][tm, t] * tm.Opex_var[t] * duration(t) for t ∈ t_inv)
         )
     elseif tm.Directions == 2
         @constraint(m, [t_inv ∈ 𝒯ᴵⁿᵛ],
                 m[:trans_opex_var][tm, t_inv] ==
-                sum((m[:trans_pos][tm, t] + m[:trans_neg][tm, t]) * tm.Opex_var[t] * t.duration for t ∈ t_inv)
+                sum((m[:trans_pos][tm, t] + m[:trans_neg][tm, t]) * tm.Opex_var[t] * duration(t) for t ∈ t_inv)
         )
     end
 end

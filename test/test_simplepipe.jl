@@ -34,7 +34,7 @@ function small_graph_co2_1()
         Dict(:Surplus => FixedProfile(0), :Deficit => FixedProfile(1e6)), 
         Dict(CO2_200 => 1))
 
-    nodes = [GeoAvailability(1, 𝒫₀, 𝒫₀), GEO.GeoAvailability(2, 𝒫₀, 𝒫₀), source, 
+    nodes = [GeoAvailability(1, 𝒫₀, 𝒫₀), EMG.GeoAvailability(2, 𝒫₀, 𝒫₀), source, 
         sink, el_sink]
     links = [Direct(31, nodes[3], nodes[1], Linear()),
         Direct(24, nodes[2], nodes[4], Linear()),
@@ -49,8 +49,8 @@ function small_graph_co2_1()
     transmissions = [Transmission(areas[1], areas[2], [pipeline])]
 
     # Creation of the time structure and the used global data
-    T = UniformTwoLevel(1, 4, 1, UniformTimes(1, 4, 1))
-    modeltype = OperationalModel(Dict(CO2 => StrategicFixedProfile([450, 400, 350, 300])),
+    T = TwoLevel(4, 1, SimpleTimes(4, 1))
+    modeltype = OperationalModel(Dict(CO2 => StrategicProfile([450, 400, 350, 300])),
                                       CO2
                                 )
 
@@ -93,7 +93,7 @@ end
     el_sink = 𝒩[5]
 
     transmission = case[:transmission][1]
-    pipeline::GEO.PipeSimple = transmission.Modes[1]
+    pipeline::EMG.PipeSimple = transmission.Modes[1]
     inlet_resource = pipeline.Inlet
     outlet_resource = pipeline.Outlet
 
@@ -107,12 +107,12 @@ end
     @testset "Resource exchange" begin
         # Check that only CO2_150 is exported from the factory area and that only 
         # CO2_200 is imported into the storage area.
-        @test CO2_150 ∈ GEO.exchange_resources(ℒ, area_from)
-        @test pipeline.Consuming ∈ GEO.exchange_resources(ℒ, area_from)
-        @test CO2_200 ∈ GEO.exchange_resources(ℒ, area_to)
+        @test CO2_150 ∈ EMG.exchange_resources(ℒ, area_from)
+        @test pipeline.Consuming ∈ EMG.exchange_resources(ℒ, area_from)
+        @test CO2_200 ∈ EMG.exchange_resources(ℒ, area_to)
         # Both the transported and the consumed resource is exported from the area.
-        @test length(GEO.exchange_resources(ℒ, area_from)) == 2
-        @test length(GEO.exchange_resources(ℒ, area_to)) == 1
+        @test length(EMG.exchange_resources(ℒ, area_from)) == 2
+        @test length(EMG.exchange_resources(ℒ, area_to)) == 1
 
         # The variable :area_exchange should not have values for CO2_200 at the Factory 
         # area, and not for CO2_150 at the receiving area. This should hold for all time 
