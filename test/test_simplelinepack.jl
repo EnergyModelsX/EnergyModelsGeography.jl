@@ -14,14 +14,14 @@ function small_graph_linepack()
 
 
     # Creation of the source and sink module as well as the arrays used for nodes and links
-    source = RefSource("-src", FixedProfile(25), OperationalFixedProfile([10, 10, 10, 10, 100, 10, 10, 10, 10, 100]),
+    source = RefSource("-src", FixedProfile(25), OperationalProfile([10, 10, 10, 10, 100, 10, 10, 10, 10, 100]),
         FixedProfile(0), Dict(H2 => 1), [])
 
     sink = RefSink("-sink", FixedProfile(15),
         Dict(:Surplus => FixedProfile(0), :Deficit => FixedProfile(1e6)), 
         Dict(H2 => 1))
 
-    nodes = [GeoAvailability(1, 𝒫₀, 𝒫₀), GEO.GeoAvailability(2, 𝒫₀, 𝒫₀), source, 
+    nodes = [GeoAvailability(1, 𝒫₀, 𝒫₀), EMG.GeoAvailability(2, 𝒫₀, 𝒫₀), source, 
         sink]
     links = [Direct(31, nodes[3], nodes[1], Linear()),
         Direct(24, nodes[2], nodes[4], Linear()),
@@ -49,7 +49,7 @@ function small_graph_linepack()
     transmissions = [Transmission(areas[1], areas[2], [pipeline])]
 
     # Creation of the time structure and the used global data
-    T = UniformTwoLevel(1, 1, 1, UniformTimes(1, 10, 1))
+    T = TwoLevel(1, 1, SimpleTimes(10, 1))
     modeltype = OperationalModel(Dict(CO2 => FixedProfile(1e4)),
                                       CO2
                                 )
@@ -117,13 +117,13 @@ end
                     (value.(m[:trans_in][pipeline, t])*(1 - pipeline.Trans_loss[t]) - 
                         value.(m[:trans_out][pipeline, t]))*duration(t),
                     value.(m[:linepack_stor_level][pipeline, t]) - 
-                        (TS.isfirst(t) ?
-                            value.(m[:linepack_stor_level][pipeline, last_operational(t_inv)]) :
-                            value.(m[:linepack_stor_level][pipeline, previous(t, 𝒯)])
+                        (isnothing(t_prev) ?
+                            value.(m[:linepack_stor_level][pipeline, last(t_inv)]) :
+                            value.(m[:linepack_stor_level][pipeline, t_prev])
                         ),
                     atol=TEST_ATOL
                     )
-                for t ∈ t_inv) for t_inv ∈ 𝒯ᴵⁿᵛ)  == length(𝒯)
+                for (t_prev, t) ∈ withprev(t_inv)) for t_inv ∈ 𝒯ᴵⁿᵛ)  == length(𝒯)
     end
 
     @testset "Transport accounting" begin

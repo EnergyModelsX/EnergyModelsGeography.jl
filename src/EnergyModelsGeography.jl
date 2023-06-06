@@ -9,7 +9,7 @@ module EnergyModelsGeography
 using Base: Float64
 using JuMP
 using EnergyModelsBase; const EMB = EnergyModelsBase
-using TimeStructures
+using TimeStruct
 
 include("datastructures.jl")
 include("checks.jl")

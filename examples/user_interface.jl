@@ -10,17 +10,16 @@ using EnergyModelsBase
 using EnergyModelsGeography
 using JuMP
 using HiGHS
-using TimeStructures
-
+using TimeStruct
 
 const EMB = EnergyModelsBase
-
+const EMG = EnergyModelsGeography
 
 function run_model(optimizer=nothing)
    @debug "Run model" optimizer
 
     case, model = read_data()
-    m = GEO.create_model(case, model)
+    m = EMG.create_model(case, model)
 
     if !isnothing(optimizer)
         set_optimizer(m, optimizer)
@@ -45,7 +44,7 @@ function read_data()
     
     model = EMB.OperationalModel(
                             Dict(
-                                CO2 => StrategicFixedProfile([160, 140, 120, 100]),
+                                CO2 => StrategicProfile([160, 140, 120, 100]),
                                 NG  => FixedProfile(1e6)
                             ),
                             CO2,
@@ -57,10 +56,11 @@ function read_data()
     gen_scale   = Dict(1=>1.0, 2=>1.0, 3=>1.0, 4=>0.5, 5=>1.0, 6=>1.0, 7=>1.0)
     mc_scale    = Dict(1=>2.0, 2=>2.0, 3=>1.5, 4=>0.5, 5=>0.5, 6=>0.5, 7=>3.0)
 
-    tromsø_demand = [10 10 10 10 35 40 45 45 50 50 60 60 50 45 45 40 35 40 45 40 35 30 30 30;
-                     20 20 20 20 25 30 35 35 40 40 40 40 40 35 35 30 25 30 35 30 25 20 20 20;
-                     20 20 20 20 25 30 35 35 40 40 40 40 40 35 35 30 25 30 35 30 25 20 20 20;
-                     20 20 20 20 25 30 35 35 40 40 40 40 40 35 35 30 25 30 35 30 25 20 20 20]
+    tromsø_demand = [OperationalProfile([10 10 10 10 35 40 45 45 50 50 60 60 50 45 45 40 35 40 45 40 35 30 30 30]);
+                     OperationalProfile([20 20 20 20 25 30 35 35 40 40 40 40 40 35 35 30 25 30 35 30 25 20 20 20]);
+                     OperationalProfile([20 20 20 20 25 30 35 35 40 40 40 40 40 35 35 30 25 30 35 30 25 20 20 20]);
+                     OperationalProfile([20 20 20 20 25 30 35 35 40 40 40 40 40 35 35 30 25 30 35 30 25 20 20 20]);
+                    ]
     demand = Dict(1=>false, 2=>false, 3=>false, 4=>tromsø_demand, 5=>false, 6=>false, 7=>false)
 
     # Create identical areas with index accoriding to input array
@@ -119,7 +119,7 @@ function read_data()
     ]
 
     # Creation of the time structure and global data
-    T = UniformTwoLevel(1, 4, 1, UniformTimes(1, 24, 1))
+    T = TwoLevel(4, 1, SimpleTimes(24, 1))
 
     # WIP data structure
     case = Dict(
@@ -160,10 +160,10 @@ function get_sub_system_data(i,𝒫₀, 𝒫ᵉᵐ₀, products, modeltype;
 
     # Use of standard demand if not provided differently
     if demand == false
-        demand = [20 20 20 20 25 30 35 35 40 40 40 40 40 35 35 30 25 30 35 30 25 20 20 20;
-                  20 20 20 20 25 30 35 35 40 40 40 40 40 35 35 30 25 30 35 30 25 20 20 20;
-                  20 20 20 20 25 30 35 35 40 40 40 40 40 35 35 30 25 30 35 30 25 20 20 20;
-                  20 20 20 20 25 30 35 35 40 40 40 40 40 35 35 30 25 30 35 30 25 20 20 20]
+        demand = [OperationalProfile([20 20 20 20 25 30 35 35 40 40 40 40 40 35 35 30 25 30 35 30 25 20 20 20]);
+                  OperationalProfile([20 20 20 20 25 30 35 35 40 40 40 40 40 35 35 30 25 30 35 30 25 20 20 20]);
+                  OperationalProfile([20 20 20 20 25 30 35 35 40 40 40 40 40 35 35 30 25 30 35 30 25 20 20 20]);
+                  OperationalProfile([20 20 20 20 25 30 35 35 40 40 40 40 40 35 35 30 25 30 35 30 25 20 20 20])]
         demand *= d_scale
     end
 
@@ -187,7 +187,7 @@ function get_sub_system_data(i,𝒫₀, 𝒫ᵉᵐ₀, products, modeltype;
             EMB.RefStorageEmissions(j+6, FixedProfile(20), FixedProfile(600), FixedProfile(9.1),
                             FixedProfile(0),  CO2, Dict(CO2 => 1, Power => 0.02), Dict(CO2 => 1),
                             []),
-            EMB.RefSink(j+7, DynamicProfile(demand),
+            EMB.RefSink(j+7, StrategicProfile(demand),
                             Dict(:Surplus => FixedProfile(0), :Deficit => FixedProfile(1e6)),
                             Dict(Power => 1)),
             ]
@@ -205,9 +205,6 @@ function get_sub_system_data(i,𝒫₀, 𝒫ᵉᵐ₀, products, modeltype;
             ]
     return nodes, links
 end
-
-
-@show "hiasdflhkøasfdlk"
 
 m, case = run_model(HiGHS.Optimizer)
 

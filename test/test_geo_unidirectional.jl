@@ -23,7 +23,7 @@ function small_graph(source=nothing, sink=nothing)
             Dict(Power => 1))
     end
 
-    nodes = [GEO.GeoAvailability(1, 𝒫₀, 𝒫₀), GEO.GeoAvailability(1, 𝒫₀, 𝒫₀), source, sink]
+    nodes = [EMG.GeoAvailability(1, 𝒫₀, 𝒫₀), EMG.GeoAvailability(1, 𝒫₀, 𝒫₀), source, sink]
     links = [Direct(31, nodes[3], nodes[1], Linear())
              Direct(24, nodes[2], nodes[4], Linear())]
     
@@ -31,14 +31,14 @@ function small_graph(source=nothing, sink=nothing)
     areas = [RefArea(1, "Oslo", 10.751, 59.921, nodes[1]), 
              RefArea(2, "Trondheim", 10.398, 63.4366, nodes[2])]        
 
-    transmission_line_1 = GEO.RefStatic("transline1", Power, FixedProfile(100), FixedProfile(0.1), FixedProfile(0.1), FixedProfile(0.1), 1, [])
-    transmission_line_2 = GEO.RefStatic("transline2", Power, FixedProfile(100), FixedProfile(0.1), FixedProfile(0.1), FixedProfile(0.1), 1, [])
+    transmission_line_1 = EMG.RefStatic("transline1", Power, FixedProfile(100), FixedProfile(0.1), FixedProfile(0.1), FixedProfile(0.1), 1, [])
+    transmission_line_2 = EMG.RefStatic("transline2", Power, FixedProfile(100), FixedProfile(0.1), FixedProfile(0.1), FixedProfile(0.1), 1, [])
     transmissions = [Transmission(areas[1], areas[2], [transmission_line_1]),
                      Transmission(areas[2], areas[1], [transmission_line_2])]
 
     # Creation of the time structure and the used global data
-    T = UniformTwoLevel(1, 4, 1, UniformTimes(1, 4, 1))
-    modeltype = OperationalModel(Dict(CO2 => StrategicFixedProfile([450, 400, 350, 300])),
+    T = TwoLevel(4, 1, SimpleTimes(4, 1))
+    modeltype = OperationalModel(Dict(CO2 => StrategicProfile([450, 400, 350, 300])),
                                 CO2,
                                 )
 
@@ -117,7 +117,7 @@ end
     # Replace each TransmissionMode's with a PipeSimple with identical properties.
     for transmission in case[:transmission]
         for (i, prev_tmode) in enumerate(transmission.Modes)
-            pipeline = GEO.PipeSimple(prev_tmode.Name, 
+            pipeline = EMG.PipeSimple(prev_tmode.Name, 
                                         prev_tmode.Resource,
                                         prev_tmode.Resource,
                                         prev_tmode.Resource, # Doesn't matter when Consumption_rate = 0

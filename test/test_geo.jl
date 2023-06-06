@@ -8,10 +8,10 @@ using PlotlyJS, DataFrames, CSV
 import Statistics
 
 ## Run with Geography package and several areas
-import EnergyModelsGeography; const GEO = EnergyModelsGeography
+import EnergyModelsGeography; const EMG = EnergyModelsGeography
 
 # Create and run the model
-m, case = GEO.run_model("", HiGHS.Optimizer)
+m, case = EMG.run_model("", HiGHS.Optimizer)
 
 # Extract the indiviudal data from the model
 𝒯       = case[:T]
@@ -82,7 +82,7 @@ plot(Array{GenericTrace}(trace))
 
 exch = Dict()
 for a ∈ areas
-    for cm ∈ GEO.exchange_resources(ℒᵗʳᵃⁿˢ, a)
+    for cm ∈ EMG.exchange_resources(ℒᵗʳᵃⁿˢ, a)
         exch[a, cm] =  [value.(m[:area_exchange])[a, t, cm] for t ∈ 𝒯]
     end
 end

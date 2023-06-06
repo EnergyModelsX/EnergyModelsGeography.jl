@@ -3,12 +3,12 @@ using JuMP
 using Test
 
 using EnergyModelsBase
-using TimeStructures
+using TimeStruct
 
 
-const TS = TimeStructures
+const TS = TimeStruct
 const EMB = EnergyModelsBase
-const GEO = EnergyModelsGeography
+const EMG = EnergyModelsGeography
 
 const TEST_ATOL = 1e-6
 
