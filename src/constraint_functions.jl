@@ -1,8 +1,3 @@
-
-
-
-
-
 """
 constraints_capacity(m, tm::TransmissionMode, 𝒯::TimeStructure)
 
@@ -25,7 +20,6 @@ function constraints_capacity(m, tm::TransmissionMode, 𝒯::TimeStructure)
         )
     end
 end
-
 
 """
 constraints_capacity(m, tm::PipeMode, 𝒯::TimeStructure)
@@ -119,6 +113,7 @@ function constraints_trans_loss(m, tm::PipeMode, 𝒯::TimeStructure)
 
 end
 
+
 """
 constraints_trans_balance(m, tm::TransmissionMode, 𝒯::TimeStructure)
 
@@ -159,9 +154,6 @@ function constraints_trans_balance(m, tm::PipeLinepackSimple, 𝒯::TimeStructur
 
 end
 
-###
-
-
 
 """
     constraints_opex_fixed(m, tm::TransmissionMode, 𝒯ᴵⁿᵛ)
@@ -176,7 +168,6 @@ function constraints_opex_fixed(m, tm::TransmissionMode, 𝒯ᴵⁿᵛ)
         tm.Opex_fixed[t_inv] * m[:trans_cap][tm, first(t_inv)]
     )
 end
-
 
 
 """

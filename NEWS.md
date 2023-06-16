@@ -1,5 +1,9 @@
 Release notes
 =============
+Version 0.7.1 (2023-06-16)
+--------------------------
+ * Updated the documentation based on the new format
+
 Version 0.7.0 (2023-06-06)
 --------------------------
 ### Switch to TimeStruct.jl

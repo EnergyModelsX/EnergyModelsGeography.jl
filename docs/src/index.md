@@ -15,11 +15,17 @@ The package extends  [`EnergyModelsBase.jl`](https://clean_export.pages.sintef.n
 Pages = [
     "manual/quick-start.md",
     "manual/philosophy.md",
+    "manual/philosophy.md",
     "manual/simple-example.md"
 ]
 ```
 
 ## Library outline
 ```@contents
-Pages = ["library/public.md"]
+Pages = [
+    "library/public.md",
+    "library/internals/optimization-variables.md",
+    "library/internals/constraint-functions.md",
+    "library/internals/reference.md",
+    ]
 ```

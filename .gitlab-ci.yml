@@ -35,6 +35,8 @@ before_script:
     - echo "Run tests"
     - julia -e 'using Pkg; Pkg.Registry.status()'
     - julia --project=. -e 'using Pkg; Pkg.test(; coverage = true)'
+  rules:
+    - when: always
     
 
 test:1.9:
@@ -58,7 +60,8 @@ pages:
     paths:
       - public
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    # Only execute this on the default branch and on merge requests.
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" || $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 
 # Register version
