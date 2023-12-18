@@ -17,7 +17,7 @@ function create_model(case, modeltype)
     𝒯 = case[:T]
 
     # Vector of all `TransmissionMode`s in the corridors
-    ℳ = corridor_modes(ℒᵗʳᵃⁿˢ)
+    ℳ = modes(ℒᵗʳᵃⁿˢ)
 
     # Declaration of variables foir areas and transmission corridors
     variables_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
@@ -40,7 +40,7 @@ end
 """
     variables_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel)
 
-Create variables to track how much energy is exchanged from an area for all 
+Create variables to track how much energy is exchanged from an area for all
 time periods `t ∈ 𝒯`.
 """
 function variables_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel)
@@ -75,7 +75,7 @@ end
 """
     variables_trans_capacity(m, 𝒯, ℳ, modeltype)
 
-Create variables to track how much of installed transmision capacity is used for all 
+Create variables to track how much of installed transmision capacity is used for all
 time periods `t ∈ 𝒯`.
 """
 function variables_trans_capacity(m, 𝒯, ℳ, modeltype)
@@ -86,7 +86,7 @@ function variables_trans_capacity(m, 𝒯, ℳ, modeltype)
     @variable(m, trans_cap[ℳ, 𝒯] >= 0)
 
     for tm ∈ ℳ, t ∈ 𝒯
-        @constraint(m, trans_cap[tm, t] == tm.Trans_cap[t])
+        @constraint(m, trans_cap[tm, t] == capacity(tm, t))
     end
 end
 
@@ -97,14 +97,15 @@ end
 Loop through all `TransmissionMode` types and create variables specific to each type.
 This is done by calling the method [`variables_trans_mode`](@ref) on all modes of each type.
 
-The `TransmissionMode` type representing the widest category will be called first. That is, 
+The `TransmissionMode` type representing the widest category will be called first. That is,
 `variables_trans_mode` will be called on a `TransmissionMode` before it is called on `PipeMode`-nodes.
 """
 function variables_trans_modes(m, 𝒯, ℳ, modeltype::EnergyModel)
 
     # Vector of the unique node types in 𝒩.
     mode_composite_types = unique(map(tm -> typeof(tm), ℳ))
-    # Get all `Node`-types in the type-hierarchy that the transmission modes ℳ represents.
+    # Get all `TransmissionMode`-types in the type-hierarchy that the transmission modes
+    # ℳ represents.
     mode_types = EMB.collect_types(mode_composite_types)
     # Sort the node-types such that a supertype will always come its subtypes.
     mode_types = EMB.sort_types(mode_types)
@@ -134,11 +135,11 @@ are:
 
 * `:trans_in` - inlet flow to transmission mode
 * `:trans_out` - outlet flow from a transmission mode
-* `:trans_loss` - loss during transmission 
+* `:trans_loss` - loss during transmission
 * `:trans_loss_neg` - negative loss during transmission, helper variable if bidirectional
-transport is possible 
+transport is possible
 * `:trans_loss_pos` - positive loss during transmission, helper variable if bidirectional
-transport is possible 
+transport is possible
 """
 function variables_trans_mode(m, 𝒯, ℳˢᵘᵇ::Vector{<:TransmissionMode}, modeltype::EnergyModel)
 
@@ -157,15 +158,10 @@ end
 
 Adds the following special variables for linepacking:
 
-* `:linepack_flow_in`: This is the characteristic throughput of the linepack storage (not of the entire transmission mode)
-* `:linepack_flow_out`: [TBD] this variable is not necessary with current implementation but may be useful for more advanced implementations
 * `:linepack_stor_level` - storage level in linepack
-* `:linepack_cap_inst` - installed storage capacity == cm_lp.Linepack_cap[t]
-* `:linepack_rate_inst` - installed maximum inflow == cm_lp.Linepack_rate_cap[t]
 """
 function variables_trans_mode(m, 𝒯, ℳᴸᴾ::Vector{<:PipeLinepackSimple}, modeltype::EnergyModel)
 
-    𝒯ᴵⁿᵛ = strategic_periods(𝒯)
     @variable(m, linepack_stor_level[ℳᴸᴾ, 𝒯] >= 0)
 
 end
@@ -179,11 +175,13 @@ Keep track of the exchange with other areas in a seperate variable `:area_exchan
 """
 function constraints_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype::EnergyModel)
     for a ∈ 𝒜
+        # Declaration of the required subsets.
+        n = availability_node(a)
+        𝒫ᵉˣ = exchange_resources(ℒᵗʳᵃⁿˢ, a)
+
         # Resource balance within an area
-        n = a.An
-        ex_p = exchange_resources(ℒᵗʳᵃⁿˢ, a)
         for p ∈ 𝒫
-            if p ∈ ex_p
+            if p ∈ 𝒫ᵉˣ
                 @constraint(m, [t ∈ 𝒯],
                     m[:flow_in][n, t, p] == m[:flow_out][n, t, p] - m[:area_exchange][a, t, p])
             else
@@ -194,11 +192,12 @@ function constraints_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype::Ener
 
         # Keep track of exchange with other areas
         ℒᶠʳᵒᵐ, ℒᵗᵒ = trans_sub(ℒᵗʳᵃⁿˢ, a)
-        @constraint(m, [t ∈ 𝒯, p ∈ exchange_resources(ℒᵗʳᵃⁿˢ, a)],
+        @constraint(m, [t ∈ 𝒯, p ∈ 𝒫ᵉˣ],
             m[:area_exchange][a, t, p] +
-            sum(sum(compute_trans_in(m, t, p, tm) for tm in l.Modes) for l in ℒᶠʳᵒᵐ)
+            sum(compute_trans_in(m, t, p, tm) for tm ∈ modes(ℒᶠʳᵒᵐ))
             ==
-            sum(sum(compute_trans_out(m, t, p, tm) for tm in l.Modes) for l in ℒᵗᵒ))
+            sum(compute_trans_out(m, t, p, tm) for tm ∈ modes(ℒᵗᵒ))
+        )
 
         # Limit area exchange
         create_area(m, a, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
@@ -228,15 +227,16 @@ end
 """
     create_area(m, a::LimitedExchangeArea, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
 
-Constraint that limit exchange with other areas based on ExchangeLimit.
+Constraint that limit exchange with other areas based on the specified exchange_limit.
 """
 function create_area(m, a::LimitedExchangeArea, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
-    # n = a.An
-    #@constraint(m, [t ∈ 𝒯, p ∈ exchange_resources(ℒᵗʳᵃⁿˢ, a)],
-    #    m[:area_exchange][a, t, p] <= a.ExchangeLimit[p]) # Import limit
 
-    @constraint(m, [t ∈ 𝒯, p ∈ exchange_resources(ℒᵗʳᵃⁿˢ, a)],
-        m[:area_exchange][a, t, p] >= -1 * a.Exchange_limit[p][t]) # Export limit
+    ## TODO: Consider adding additional types for import or export exchange limits
+    # @constraint(m, [t ∈ 𝒯, p ∈ elimit_resources(a)],
+    #     m[:area_exchange][a, t, p] <= exchange_limit(a, p, t)) # Import limit
+
+    @constraint(m, [t ∈ 𝒯, p ∈ limit_resources(a)],
+        m[:area_exchange][a, t, p] >= -1 * exchange_limit(a, p, t)) # Export limit
 
 end
 
@@ -263,12 +263,12 @@ function update_objective(m, 𝒯, ℳ, modeltype::EnergyModel)
 
     # Extraction of data
     𝒯ᴵⁿᵛ = strategic_periods(𝒯)
-    obj = JuMP.objective_function(m)
+    obj = objective_function(m)
 
     # Update of the cost function for modes with investments
     for t_inv ∈ 𝒯ᴵⁿᵛ, tm ∈ ℳ
-        obj -= t_inv.duration * m[:trans_opex_fixed][tm, t_inv]
-        obj -= t_inv.duration * m[:trans_opex_var][tm, t_inv]
+        obj -= duration(t_inv) * m[:trans_opex_fixed][tm, t_inv]
+        obj -= duration(t_inv) * m[:trans_opex_var][tm, t_inv]
     end
 
     @objective(m, Max, obj)
@@ -281,7 +281,6 @@ end
 Set all constraints for transmission mode. Serves as a fallback option for unspecified subtypes of `TransmissionMode`.
 """
 function create_transmission_mode(m, tm::TransmissionMode, 𝒯)
-
 
     # Defining the required sets
     𝒯ᴵⁿᵛ = strategic_periods(𝒯)

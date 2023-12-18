@@ -11,6 +11,8 @@ const EMB = EnergyModelsBase
 const EMG = EnergyModelsGeography
 
 const TEST_ATOL = 1e-6
+const ROUND_DIGITS = 8
+
 
 @testset "Geography" begin
     include("utils.jl")
