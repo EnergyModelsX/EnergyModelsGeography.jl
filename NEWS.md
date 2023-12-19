@@ -1,13 +1,14 @@
 Release notes
 =============
-Version 0.8.0 (2023-12-xx)
+Version 0.8.0 (2023-12-19)
 --------------------------
 Adjusted to changes in `EnergyModelsBase` v0.6.
 These changes are mainly:
- * All fields of composite types are now lower case
- * An extensive number of functions to access the individual fields were included, allowing for differing definitions of the individual nodes
- * The `GeoAvailability` type does no longer require as input dictionaries for both `input` and `output`. Instead, it is now a single array corresponding to all resources
- * New function `getnodesinarea` to extract nodes connected to the `Availability` node of an area
+ * All fields of composite types are now lower case.
+ * An extensive number of functions to access the individual fields were included, allowing for differing definitions of the individual nodes.
+ * The `GeoAvailability` type does no longer require as input dictionaries for both `input` and `output`. Instead, it is now a single array corresponding to all resources.
+ * New function `getnodesinarea` to extract nodes connected to the `Availability` node of an area.
+ * Changed file structure for simplified understanding of the different types.
 
 Version 0.7.1 (2023-06-16)
 --------------------------

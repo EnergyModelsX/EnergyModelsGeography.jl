@@ -13,7 +13,7 @@ using TimeStruct
 
 include("structures_area.jl")
 include("structures_mode.jl")
-include("structures_corridor.jl")
+include("structures_transmission.jl")
 include("checks.jl")
 include("model.jl")
 include("constraint_functions.jl")
