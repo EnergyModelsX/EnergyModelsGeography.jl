@@ -1,5 +1,15 @@
 Release notes
 =============
+Version 0.8.0 (2023-12-19)
+--------------------------
+Adjusted to changes in `EnergyModelsBase` v0.6.
+These changes are mainly:
+ * All fields of composite types are now lower case.
+ * An extensive number of functions to access the individual fields were included, allowing for differing definitions of the individual nodes.
+ * The `GeoAvailability` type does no longer require as input dictionaries for both `input` and `output`. Instead, it is now a single array corresponding to all resources.
+ * New function `getnodesinarea` to extract nodes connected to the `Availability` node of an area.
+ * Changed file structure for simplified understanding of the different types.
+
 Version 0.7.1 (2023-06-16)
 --------------------------
  * Updated the documentation based on the new format
@@ -40,7 +50,6 @@ Version 0.5.0 (2023-04-27)
 * Constraints formulations are seperated into functions and moved to `src\constraint_functions.jl`, similar to how is is organized in `EnergyModelsBase` commit [26ad8740].
 * Compute functions are moved to seperate file `src\compute_functions.jl`.
 
-
 Version 0.4.0 (2023-02-xx)
 --------------------------
 ### Change of indexing
@@ -64,6 +73,7 @@ Version 0.3.0 (2023-02-02)
 Adjustment to version 0.3.0, namely:
 * The removal of emissions from `Node` type definition that do not require them in all tests
 * Removal of the type `GlobalData` and replacement with fields in the type `OperationalModel` in all tests
+
 Version 0.2.2 (2022-12-12)
 --------------------------
 ### Internal release

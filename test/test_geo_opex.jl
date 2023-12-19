@@ -7,7 +7,7 @@ function solve_and_check(case, modeltype, A_B_t1, B_A_t2)
 
     # Get times and transmission mode
     T = collect(case[:T])
-    tm = case[:transmission][1].Modes[1]
+    tm = modes(case[:transmission][1])[1]
 
 
     if typeof(A_B_t1) == String
@@ -30,13 +30,16 @@ end
     # Reading of the case data
     case, modeltype = bidirectional_case()
 
+    tm = modes(case[:transmission][1])[1]
+    Power = case[:products][2]
+
     t_cap = FixedProfile(30.0)
     t_loss = FixedProfile(0.0)
     t_opex_var = FixedProfile(0.0)
     t_opex_fixed = FixedProfile(0.0)
 
     # increase opex var, but not enough to change the results
-    case[:transmission][1].Modes[1] = RefStatic("Transline", Power, t_cap, t_loss, t_opex_var, t_opex_fixed, 2, [])
+    case[:transmission][1].modes[1] = RefStatic("Transline", Power, t_cap, t_loss, t_opex_var, t_opex_fixed, 2, [])
 
     # Create and solve the model
     m = optimize(case, modeltype)
@@ -48,49 +51,49 @@ end
     gen_fuel_coeff = 2
     marginal_diff = 1
 
-    # TEST 1: Low trans opex does not chage results
+    # TEST 1: Low trans opex does not change results
 
     # Cange transmission mode parameters
     t_opex_var = FixedProfile((fuel_opex_diff - marginal_diff) * gen_fuel_coeff)
-    case[:transmission][1].Modes[1] = RefStatic("Transline", Power, t_cap, t_loss, t_opex_var, t_opex_fixed, 2, [])
+    case[:transmission][1].modes[1] = RefStatic("Transline", Power, t_cap, t_loss, t_opex_var, t_opex_fixed, 2, [])
 
-    m = solve_and_check(case, modeltype, "Trans_cap", "Trans_cap")
+    m = solve_and_check(case, modeltype, "trans_cap", "trans_cap")
 
     # TEST 2: Opex restricts flow in both periods
 
     # increase opex var, so high that transmission in not profitable
     t_opex_var = FixedProfile((fuel_opex_diff + marginal_diff) * gen_fuel_coeff)
-    case[:transmission][1].Modes[1] = RefStatic("Transline", Power, t_cap, t_loss, t_opex_var, t_opex_fixed, 2, [])
+    case[:transmission][1].modes[1] = RefStatic("Transline", Power, t_cap, t_loss, t_opex_var, t_opex_fixed, 2, [])
 
     m = solve_and_check(case, modeltype, 0.0, 0.0)
 
-    # TEST 3: fixed opex does not chage flow, but does change the objective value
+    # TEST 3: fixed opex does not change flow, but does change the objective value
 
     # Cange transmission mode parameters
     t_opex_var = FixedProfile(0.0) # no opex var
     t_opex_fixed = FixedProfile(1e3) # high opex fixed
-    case[:transmission][1].Modes[1] = RefStatic("Transline", Power, t_cap, t_loss, t_opex_var, t_opex_fixed, 2, [])
+    case[:transmission][1].modes[1] = RefStatic("Transline", Power, t_cap, t_loss, t_opex_var, t_opex_fixed, 2, [])
 
-    m = solve_and_check(case, modeltype, "Trans_cap", "Trans_cap")
+    m = solve_and_check(case, modeltype, "trans_cap", "trans_cap")
 
     # Check objective value
-    @test objective_value(m) == obj_val_no_opex - 1e3 * case[:transmission][1].Modes[1].Trans_cap.val
+    @test objective_value(m) == obj_val_no_opex - 1e3 * tm.trans_cap.val
 
     # TEST 4: Repeat TEST 1 with unidirectional transmission mode
 
     # Cange transmission mode parameters
     t_opex_var = FixedProfile((fuel_opex_diff - marginal_diff) * gen_fuel_coeff)
-    case[:transmission][1].Modes[1] = RefStatic("Transline", Power, t_cap, t_loss, t_opex_var, t_opex_fixed, 1, [])
+    case[:transmission][1].modes[1] = RefStatic("Transline", Power, t_cap, t_loss, t_opex_var, t_opex_fixed, 1, [])
 
-    m = solve_and_check(case, modeltype, "Trans_cap", 0.0)
+    m = solve_and_check(case, modeltype, "trans_cap", 0.0)
 
     # TEST 5: Repeat TEST 2 with unidirectional transmission mode
 
     # increase opex var, so high that transmission in not profitable
     t_opex_var = FixedProfile((fuel_opex_diff + marginal_diff) * gen_fuel_coeff)
-    case[:transmission][1].Modes[1] = RefStatic("Transline", Power, t_cap, t_loss, t_opex_var, t_opex_fixed, 1, [])
+    case[:transmission][1].modes[1] = RefStatic("Transline", Power, t_cap, t_loss, t_opex_var, t_opex_fixed, 1, [])
 
-    m = solve_and_check(case, modeltype, 0.0, 0.0)  
+    m = solve_and_check(case, modeltype, 0.0, 0.0)
 
 
 end

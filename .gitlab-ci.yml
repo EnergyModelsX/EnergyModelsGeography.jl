@@ -4,7 +4,7 @@ stages:
 
 
 before_script:
-  # Install git
+  # Install git.
   - apt-get update -qq && apt-get install -y git
 
   # Install ssh-agent and add the private key.
@@ -31,19 +31,34 @@ before_script:
 
 # Below is the template to run the tests in Julia
 .test_template: &test_definition
+  stage: test
   script:
     - echo "Run tests"
     - julia -e 'using Pkg; Pkg.Registry.status()'
     - julia --project=. -e 'using Pkg; Pkg.test(; coverage = true)'
   rules:
     - when: always
-    
+  
 
 test:1.9:
-  stage: test
   image: julia:1.9
   <<: *test_definition
 
+# Test that the pages compile, without making it public. Only runs on merge requests.
+test:pages:
+  image: julia:1.9
+  stage: test
+  script:
+    - cd docs
+    - julia -e 'using Pkg; Pkg.Registry.status()'
+    - julia --project=. -e 'using Pkg; Pkg.add("Documenter")'   # install Documenter
+    - julia --project=. -e 'using Pkg; Pkg.develop(path="..")'  # install the version that is pushed
+    - julia --project=. --color=yes make.jl  # make documentation
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
 # Deploy the documentation.
 pages:
@@ -53,6 +68,7 @@ pages:
     - cd docs
     - julia -e 'using Pkg; Pkg.Registry.status()'
     - julia --project=. -e 'using Pkg; Pkg.add("Documenter")'  # install Documenter
+    - julia --project=. -e 'using Pkg; Pkg.develop(path="..")'  # install the version that is pushed
     - julia --project=. --color=yes make.jl  # make documentation
     - cd ..
     - mv docs/build public  # move to the directory picked up by Gitlab pages
@@ -61,7 +77,7 @@ pages:
       - public
   rules:
     # Only execute this on the default branch and on merge requests.
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event" || $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 
 # Register version
