@@ -23,6 +23,7 @@ availability_node
 limit_resources
 exchange_limit
 exchange_resources
+getnodesinarea
 ```
 
 ## `Transmission`
