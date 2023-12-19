@@ -11,7 +11,9 @@ using JuMP
 using EnergyModelsBase; const EMB = EnergyModelsBase
 using TimeStruct
 
-include("datastructures.jl")
+include("structures_area.jl")
+include("structures_mode.jl")
+include("structures_corridor.jl")
 include("checks.jl")
 include("model.jl")
 include("constraint_functions.jl")
