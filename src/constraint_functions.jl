@@ -1,5 +1,5 @@
 """
-constraints_capacity(m, tm::TransmissionMode, 𝒯::TimeStructure)
+    constraints_capacity(m, tm::TransmissionMode, 𝒯::TimeStructure)
 
 Function for creating the constraint on the maximum capacity of a generic `TransmissionMode`.
 This function serves as fallback option if no other function is specified for a `TransmissionMode`.
@@ -22,7 +22,7 @@ function constraints_capacity(m, tm::TransmissionMode, 𝒯::TimeStructure)
 end
 
 """
-constraints_capacity(m, tm::PipeMode, 𝒯::TimeStructure)
+    constraints_capacity(m, tm::PipeMode, 𝒯::TimeStructure)
 
 Function for creating the constraint on the maximum capacity of a generic `PipeMode`.
 """
@@ -42,7 +42,7 @@ function constraints_capacity(m, tm::PipeMode, 𝒯::TimeStructure)
 end
 
 """
-constraints_capacity(m, tm::PipeLinepackSimple, 𝒯::TimeStructure)
+    constraints_capacity(m, tm::PipeLinepackSimple, 𝒯::TimeStructure)
 
 Function for creating the constraint on the maximum capacity of a `PipeLinepackSimple`.
 """
@@ -71,7 +71,7 @@ end
 
 
 """
-constraints_trans_loss(m, tm::TransmissionMode, 𝒯::TimeStructure)
+    constraints_trans_loss(m, tm::TransmissionMode, 𝒯::TimeStructure)
 
 Function for creating the constraint on the transmission loss of a generic `TransmissionMode`.
 This function serves as fallback option if no other function is specified for a `TransmissionMode`.
@@ -100,7 +100,7 @@ function constraints_trans_loss(m, tm::TransmissionMode, 𝒯::TimeStructure)
 end
 
 """
-constraints_trans_loss(m, tm::PipeMode, 𝒯::TimeStructure)
+    constraints_trans_loss(m, tm::PipeMode, 𝒯::TimeStructure)
 
 Function for creating the constraint on the transmission loss of a generic `PipeMode`.
 """
@@ -119,7 +119,7 @@ end
 
 
 """
-constraints_trans_balance(m, tm::TransmissionMode, 𝒯::TimeStructure)
+    constraints_trans_balance(m, tm::TransmissionMode, 𝒯::TimeStructure)
 
 Function for creating the transmission balance for a generic `TransmissionMode`.
 This function serves as fallback option if no other function is specified for a `TransmissionMode`.
@@ -132,7 +132,7 @@ function constraints_trans_balance(m, tm::TransmissionMode, 𝒯::TimeStructure)
 end
 
 """
-constraints_trans_balance(m, tm::PipeLinepackSimple, 𝒯::TimeStructure)
+    constraints_trans_balance(m, tm::PipeLinepackSimple, 𝒯::TimeStructure)
 
 Function for creating the transmission balance for a`PipeLinepackSimple`.
 """

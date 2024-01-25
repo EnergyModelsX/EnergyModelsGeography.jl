@@ -13,7 +13,7 @@ Generic representation of dynamic transmission modes, using for example truck, s
 - **`trans_loss::TimeProfile`** is the loss of the transported resource during transmission, modelled as a ratio.\n
 - **`opex_var::TimeProfile`** is the variational operational costs per energy unit transported.\n
 - **`opex_fixed::TimeProfile`** is the fixed operational costs per installed capacity.\n
-- **`directions`** is the number of directions the resource can be transported, 1 is unidirectional (A->B) or 2 id bidirectional (A<->B).\n
+- **`directions`** is the number of directions the resource can be transported, 1 is unidirectional (A->B) or 2 is bidirectional (A<->B).\n
 - **`data::Dict{String, Data}`** is the additional data (e.g. for investments).
 """
 struct RefDynamic <: TransmissionMode # E.g. Trucks, ships etc.
@@ -39,7 +39,7 @@ Generic representation of static transmission modes, such as overhead power line
 - **`trans_loss::Real`** is the loss of the transported resource during transmission, modelled as a ratio.\n
 - **`opex_var::TimeProfile`** is the variational operational costs per energy unit transported.\n
 - **`opex_fixed::TimeProfile`** is the fixed operational costs per installed capacity.\n
-- **`directions`** is the number of directions the resource can be transported, 1 is unidirectional (A->B) or 2 id bidirectional (A<->B).\n
+- **`directions`** is the number of directions the resource can be transported, 1 is unidirectional (A->B) or 2 is bidirectional (A<->B).\n
 - **`data::Dict{String, Data}`** is the additional data (e.g. for investments).
 """
 struct RefStatic <: TransmissionMode # E.g. overhead power lines, pipelines etc.

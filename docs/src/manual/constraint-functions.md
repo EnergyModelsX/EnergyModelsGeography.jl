@@ -1,6 +1,6 @@
 # [Constraint functions](@id constraint_functions)
 
-The package provides standard constraint functions that can be use for new developed nodes.
+The package provides standard constraint functions that can be use for new developed `TransmissionMode`s.
 The general approach is similar to `EnergyModelsBase`.
 Bidirectional transport requires at the time being the introduciton of an *if*-loop.
 In later implementation, it is planned to also use dispatch for this analysis as well.
@@ -12,7 +12,7 @@ constraints_capacity(m, tm::TransmissionMode, 𝒯::TimeStructure)
 ```
 
 correponds to the constraints on the capacity usage of a transmission mode ``tm``.
-It is implemented for both the `TransmissionMode`, `PipeMode` and `PipeLinepackSimple` abstract types.
+It is implemented for both the `TransmissionMode` and `PipeMode` abstract types as well as `PipeLinepackSimple` concrete type.
 The key difference between the former two is related that `PipeMode` does not allows for bidirectional transport.
 `PipeLinepackSimple` includes in addition the maximum storage capacity for a pipeline when considering linepacking.
 The implementation is still preliminary and based on a simplified potential for energy storage in a pipeline.
@@ -26,7 +26,7 @@ constraints_trans_loss(m, tm::TransmissionMode, 𝒯ᴵⁿᵛ)
 correponds to the constraints on the energy balance of a transmission mode ``tm``.
 It is implemented for both the `TransmissionMode` and `PipeMode` abstract types.
 The key difference between the two is related that `PipeMode` does not allows for bidirectional transport.
-The loss are calculated as relative loss of the transported energy.
+The loss is calculated for the provided `TransmissionMode`s as relative loss of the transported energy.
 
 ## Balance functions
 
@@ -36,10 +36,16 @@ constraints_trans_balance(m, tm::TransmissionMode, 𝒯ᴵⁿᵛ)
 
 correponds to the constraints on the energy balance of a transmission mode ``tm``.
 It is implemented for both the `TransmissionMode` and `PipeLinepackSimple` abstract types.
-The standard approach 
+The standard approach only relies on the conservation of mass/energy, while storage is not included.
 `PipeLinePackSimple` also includes the overall mass balance for the energy storage within the pipeline.
 
-## Operational cost constraints
+!!! note
+    `PipeLinePackSimple` does not support representative periods correctly.
+    In practice, seasonal energy storage through linepacking is unrealistic due to the small volume.
+    The implementation is working with the assumption that the initial level in a representative period is equal to the final level in the last representative period of a strategic period.
+    This implies that it does not account correctly for the remaining level at the end of a representative period.
+
+## Operational expenditure constraints
 
 ```julia
 constraints_opex_fixed(m, tm::TransmissionMode, 𝒯ᴵⁿᵛ)
