@@ -5,7 +5,7 @@ A geographic corridor where `TransmissionModes` are used to transport resources.
 # Fields
 - **`from::Area`** is the area resources are transported from.\n
 - **`to::Area`** is the area resources are transported to.\n
-- **`modes::Array{TransmissionMode}`** is the transmission modes that are available.\n
+- **`modes::Array{TransmissionMode}`** are the transmission modes that are available.\n
 """
 struct Transmission
     from::Area

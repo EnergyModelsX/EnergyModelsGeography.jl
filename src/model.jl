@@ -126,7 +126,7 @@ function variables_trans_modes(m, 𝒯, ℳ, modeltype::EnergyModel)
     end
 end
 
-""""
+"""
     variables_trans_mode(m, 𝒯, ℳˢᵘᵇ::Vector{<:TransmissionMode}, modeltype::EnergyModel)
 
 Default fallback method when no function is defined for a `TransmissionMode` type.
@@ -153,7 +153,7 @@ function variables_trans_mode(m, 𝒯, ℳˢᵘᵇ::Vector{<:TransmissionMode}, 
 end
 
 
-""""
+"""
     variables_trans_mode(m, 𝒯, ℳᴸᴾ::Vector{<:PipeLinepackSimple}, modeltype::EnergyModel)
 
 Adds the following special variables for linepacking:

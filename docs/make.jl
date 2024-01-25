@@ -2,7 +2,7 @@ using Documenter
 
 using EnergyModelsGeography
 
-const GEO = EnergyModelsGeography
+const EMG = EnergyModelsGeography
 
 DocMeta.setdocmeta!(
     EnergyModelsGeography,
@@ -33,14 +33,15 @@ makedocs(
         "Manual" => Any[
             "Quick Start" => "manual/quick-start.md",
             "Philosophy" => "manual/philosophy.md",
+            "Optimization variables" => "manual/optimization-variables.md",
+            "Constraint functions" => "manual/constraint-functions.md",
+            "TransmissionMode structure" => "manual/transmission-mode.md",
             "Example" => "manual/simple-example.md",
             "Release notes" => "manual/NEWS.md",
         ],
         "Library" => Any[
             "Public" => "library/public.md",
             "Internals" => Any[
-                "Optimization variables" => "library/internals/optimization-variables.md",
-                "Constraint functions" => "library/internals/constraint-functions.md",
                 "Reference" => "library/internals/reference.md"]
         ]
     ]
