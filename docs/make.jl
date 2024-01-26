@@ -11,12 +11,9 @@ DocMeta.setdocmeta!(
     recursive = true,
 )
 
-
 # Copy the NEWS.md file
 news = "docs/src/manual/NEWS.md"
-cp(joinpath(@__DIR__, "NEWS.md"),
-   joinpath(@__DIR__, news), force=true)
-
+cp("NEWS.md", news; force=true)
 
 makedocs(
     modules = [EnergyModelsGeography],
