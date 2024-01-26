@@ -13,18 +13,16 @@ DocMeta.setdocmeta!(
 
 
 # Copy the NEWS.md file
-news = "src/manual/NEWS.md"
-cp(joinpath(@__DIR__, "../NEWS.md"),
+news = "docs/src/manual/NEWS.md"
+cp(joinpath(@__DIR__, "NEWS.md"),
    joinpath(@__DIR__, news), force=true)
 
 
 makedocs(
     modules = [EnergyModelsGeography],
     sitename = "EnergyModelsGeography.jl",
-    repo = "https://gitlab.sintef.no/clean_export/energymodelsgeography.jl/blob/{commit}{path}#{line}",
     format = Documenter.HTML(
         prettyurls = get(ENV, "CI", "false") == "true",
-        canonical = "https://clean_export.pages.sintef.no/energymodelsgeography.jl/",
         edit_link = "main",
         assets = String[],
     ),
@@ -47,9 +45,6 @@ makedocs(
     ]
 )
 
-# Documenter can also automatically deploy documentation to gh-pages.
-# See "Hosting Documentation" and deploydocs() in the Documenter manual
-# for more information.
-#=deploydocs(
-    repo = "<repository url>"
-)=#
+deploydocs(;
+    repo = "github.com/EnergyModelsX/EnergyModelsGeography.jl.git",
+)
