@@ -4,7 +4,7 @@
 EnergyModelsGeography
 ```
 
-The Julia package extends  [`EnergyModelsBase.jl`](https://clean_export.pages.sintef.no/energymodelsbase.jl/) with functionality to set up an energy system consisting of several separate regions, with transmissions between.
+The Julia package extends [`EnergyModelsBase.jl`](https://energymodelsx.github.io/EnergyModelsBase.jl/) with functionality to set up an energy system consisting of several separate regions, with transmissions between.
 
 The extension focuses on overriding the function `EMB.create_model` to add additional types, variables, and constraints to the model.
 

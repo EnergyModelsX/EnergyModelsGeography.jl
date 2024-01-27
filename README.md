@@ -1,17 +1,21 @@
 # EnergyModelsGeography
 
+[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://energymodelsx.github.io/EnergyModelsGeography.jl//stable)
+[![In Development](https://img.shields.io/badge/docs-dev-blue.svg)](https://energymodelsx.github.io/EnergyModelsGeography.jl/dev/)
+
 `EnergyModelsGeography` is a package to add a geographic representation to [`EnergyModelsBase`](https://github.com/EnergyModelsX/EnergyModelsBase.jl).
 `EnergyModelsGeography` follows the same philosophy as `EnergyModelsBase` so that it should be easy to create new transmission options or area descriptions.
 
-> **Note**
-> We migrated recently from an internal Git solution to GitHub, including the package [`TimeStruct`](https://github.com/sintefore/TimeStruct.jl). As both `TimeStruct` and `EnergyModelsBase` are not yet registered, it is not possible to build automatically the documentation or run the tests without significant changes in the CI. Every user is however free to build the documentation from the [`docs`](docs) folder.
+> **Note:**
 >
+> We migrated recently from an internal Git solution to GitHub, including the package [`EnergyModelsBase`](https://github.com/EnergyModelsX/EnergyModelsBase.jl).
+> As `EnergyModelsBase` is not yet registered, it is not possible to run the tests without significant changes in the CI.\> Hence, we plan to wait with creating a release to be certain the tests are running.
+> As a result, the stable docs are not yet available.
+> This may impact as well some links.
+
 ## Usage
 
-The documentation for `EnergyModelsGeography` is currently not uploaded as we migrated recently to GitHub.
-Once `TimeStruct` and `EnergyModelsBase` are registered in the Julia Registry, we will update the README.md  and add the links to the documentation.
-
-See examples of usage of the package and a simple guide for running them in the folder [`examples`](examples).
+The usage of the package is based illustrated through the commented [`examples`](examples).
 
 ## Cite
 
