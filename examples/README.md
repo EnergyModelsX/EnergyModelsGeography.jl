@@ -1,14 +1,11 @@
 # Running the examples
 
-## The package is installed with `] add`
+You have to add the packages `EnergyModelsGeography` to your current project in order to run the examples.
+It is not necessary to add the other used packages, as the example is instantiating itself.
+How to add packages is explained in the *[Quick start](https://energymodelsx.github.io/EnergyModelsGeography.jl/stable/manual/quick-start/)* of the documentation
 
-First, add the [*Clean Export* Julia packages repository](https://gitlab.sintef.no/clean_export/registrycleanexport). Then run 
-```
-~/some/directory/ $ julia           # Starts the Julia REPL
-julia> ]                            # Enter Pkg mode 
-pkg> add EnergyModelsGeography      # Install the package EnergyModelsGeography to the current environment.
-```
-From the Julia REPL, run
+You can run from the Julia REPL the following code:
+
 ```julia
 # Starts the Julia REPL
 julia> using EnergyModelsGeography
@@ -16,11 +13,4 @@ julia> using EnergyModelsGeography
 julia> exdir = joinpath(pkgdir(EnergyModelsGeography), "examples")
 # Include the code into the Julia REPL to run the examples
 julia> include(joinpath(exdir, "network.jl"))
-```
-
-## The code was downloaded with `git clone`
-
-First, add the internal [*Clean Export* Julia package registry](https://gitlab.sintef.no/clean_export/registrycleanexport). The examples can then be run from the terminal with
-```shell script
-~/.../energymodelgeography.jl/examples $ julia network.jl
 ```

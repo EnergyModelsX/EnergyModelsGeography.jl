@@ -17,7 +17,7 @@ Version 0.7.1 (2023-06-16)
 Version 0.7.0 (2023-06-06)
 --------------------------
 ### Switch to TimeStruct.jl
- * Switched the time structure representation to [TimeStruct.jl](https://gitlab.sintef.no/julia-one-sintef/timestruct.jl)
+ * Switched the time structure representation to [TimeStruct.jl](https://github.com/sintefore/TimeStruct.jl)
  * TimeStruct.jl is implemented with only the basis features that were available in TimesStructures.jl. This implies that neither operational nor strategic uncertainty is included in the model.
 
 Version 0.6.1 (2023-06-02)
@@ -56,7 +56,7 @@ Version 0.4.0 (2023-02-xx)
 * Variables are now indexed _via_ the `TransmissionMode` and the time period instead of the using a `SparseAxisArray` and indexing _via_ `Transmission`, time period, and `TransmissionMode`. This also improves model generation time.
 * This adjustment requires the declaration of a new instance for each usage of a `TransmissionMode`, see, _e.g._, the changes in `scr\user_interface.jl`.
 ### Additional changes
-* Change of variable generation for individual transmission modes: Variable generation _via_ the function `variables_trans_mode(s)` is adjusted to follow the concept introduced in `EnergyModelsBase`  commit [c58804ca](https://gitlab.sintef.no/clean_export/energymodelsbase.jl/-/commit/c58804cae6415f9a3da05f2d43cfbf5c78525c91).
+* Change of variable generation for individual transmission modes: Variable generation _via_ the function `variables_trans_mode(s)` is adjusted to follow the concept introduced in `EnergyModelsBase`.
 * Move of the field `Data` from `Transmission` to `TransmissionMode`. This is required for the later application of dispatching in `EnergyModelsInvestments`
 
 Version 0.3.1 (2023-02-16)

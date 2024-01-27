@@ -1,20 +1,21 @@
-# Quick Start
+# [Quick Start]@(id quick_start)
 
->  1. Install the most recent version of *[Julia](https://julialang.org/downloads/)*.
->  2. Add the *[CleanExport internal Julia registry](https://gitlab.sintef.no/clean_export/registrycleanexport)*:
+>  1. Install the most recent version of [Julia](https://julialang.org/downloads/)
+>  2. Install the package [`EnergyModelsBase`](https://energymodelsx.github.io/EnergyModelsBase.jl/) and the time package [`TimeStruct`](https://sintefore.github.io/TimeStruct.jl/), by running:
 >     ```
->     ] registry add git@gitlab.sintef.no:clean_export/registrycleanexport.git
->     ```
->  3. Add the *[SINTEF internal Julia registry](https://gitlab.sintef.no/julia-one-sintef/onesintef)*:
->     ```
->     ] registry add git@gitlab.sintef.no:julia-one-sintef/onesintef.git
->     ```
->  4. Install the base package [`EnergyModelsBase.jl`](https://clean_export.pages.sintef.no/energymodelsbase.jl/) and the time package [`TimeStruct.jl`](https://gitlab.sintef.no/julia-one-sintef/timestruct.jl), and the geography package [`EnergyModelsGeography.jl`](https://clean_export.pages.sintef.no/energymodelsgeography.jl/) by running:
->     ```
->     ] add EnergyModelsBase
->     ] add EnergyModelsGeography
 >     ] add TimeStruct
+>     ] add EnergyModelsBase
 >     ```
->     This will fetch the packages from the CleanExport package and OneSINTEF registries.
+>     These packages are required as we do not only use them internally, but also for building a model.
+>  3. Install the package [`EnergyModelsGeography`](https://energymodelsx.github.io/EnergyModelsGeography.jl/)
+>     ```
+>     ] add EnergyModelsGeography
+>     ```
 
-Once the package is installed, you can start by using an existing model from `EnergyModelsBase`. The only change that is needed is to substitute the `GenAvailabilty` from `EnergyModelsBase` with `GeoAvailability`from `EnergyModelsGeography`. The `GeoAvailability` node from this local system is then connected to an `RefArea`. More areas can be created by repeating this process. `Transmission` can be added in a system with several areas. `Transmission` have one `From` `Area` one `To` `Area`. It also includes an Array of `TransmissionModes`, which describes how resources are tranported.
+!!! note
+    If you receive the error that one of the packages is not yet registered, you have to add the packages using the GitHub repositories through
+    ```
+    ] add https://github.com/EnergyModelsX/EnergyModelsBase.jl
+    ] add https://github.com/EnergyModelsX/EnergyModelsGeography.jl
+    ```
+    Once the packages are registered, this is not required.

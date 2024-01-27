@@ -1,9 +1,9 @@
 using Pkg
-# Activate the test-environment, where PrettyTables and HiGHS are added as dependencies.
+# Activate the test-environment, where HiGHS is added as dependency.
 Pkg.activate(joinpath(@__DIR__, "../test"))
 # Install the dependencies.
 Pkg.instantiate()
-# Add the package EnergyModelsInvestments to the environment.
+# Add the package EnergyModelsGeography to the environment.
 Pkg.develop(path=joinpath(@__DIR__, ".."))
 
 using EnergyModelsBase
