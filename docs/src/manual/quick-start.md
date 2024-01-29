@@ -13,9 +13,8 @@
 >     ```
 
 !!! note
-    If you receive the error that one of the packages is not yet registered, you have to add the packages using the GitHub repositories through
+    If you receive the error that `EnergyModelsGeography` is not yet registered, you have to add the package using the GitHub repository through
     ```
-    ] add https://github.com/EnergyModelsX/EnergyModelsBase.jl
     ] add https://github.com/EnergyModelsX/EnergyModelsGeography.jl
     ```
-    Once the packages are registered, this is not required.
+    Once the package is registered, this is not required.

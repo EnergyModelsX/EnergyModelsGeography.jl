@@ -10,10 +10,12 @@ Generic representation of dynamic transmission modes, using for example truck, s
 - **`id::String`** is the name/identifyer of the transmission mode.\n
 - **`resource::Resource`** is the resource that is transported.\n
 - **`trans_cap::TimeProfile`** is the capacity of the transmission mode.\n
-- **`trans_loss::TimeProfile`** is the loss of the transported resource during transmission, modelled as a ratio.\n
+- **`trans_loss::TimeProfile`** is the loss of the transported resource during \
+transmission, modelled as a ratio.\n
 - **`opex_var::TimeProfile`** is the variational operational costs per energy unit transported.\n
 - **`opex_fixed::TimeProfile`** is the fixed operational costs per installed capacity.\n
-- **`directions`** is the number of directions the resource can be transported, 1 is unidirectional (A->B) or 2 is bidirectional (A<->B).\n
+- **`directions`** is the number of directions the resource can be transported, \
+1 is unidirectional (A->B) or 2 is bidirectional (A<->B).\n
 - **`data::Dict{String, Data}`** is the additional data (e.g. for investments).
 """
 struct RefDynamic <: TransmissionMode # E.g. Trucks, ships etc.
@@ -36,10 +38,12 @@ Generic representation of static transmission modes, such as overhead power line
 - **`id::String`** is the name/identifyer of the transmission mode.\n
 - **`resource::Resource`** is the resource that is transported.\n
 - **`trans_cap::Real`** is the capacity of the transmission mode.\n
-- **`trans_loss::Real`** is the loss of the transported resource during transmission, modelled as a ratio.\n
+- **`trans_loss::Real`** is the loss of the transported resource during transmission, \
+modelled as a ratio.\n
 - **`opex_var::TimeProfile`** is the variational operational costs per energy unit transported.\n
 - **`opex_fixed::TimeProfile`** is the fixed operational costs per installed capacity.\n
-- **`directions`** is the number of directions the resource can be transported, 1 is unidirectional (A->B) or 2 is bidirectional (A<->B).\n
+- **`directions`** is the number of directions the resource can be transported, \
+1 is unidirectional (A->B) or 2 is bidirectional (A<->B).\n
 - **`data::Dict{String, Data}`** is the additional data (e.g. for investments).
 """
 struct RefStatic <: TransmissionMode # E.g. overhead power lines, pipelines etc.
@@ -74,8 +78,8 @@ the pipeline.
 - **`inlet::Resource`** is the `Resource` going into transmission.\n
 - **`outlet::Resource`** is the `Resource` going out of the outlet of the transmission.\n
 - **`consuming::Resource`** is the `Resource` the transmission consumes by operating.\n
-- **`consumption_rate::Real`** the rate of which the resource `Pipeline.consuming` is consumed, as
-    a ratio of the volume of the resource going into the inlet. I.e.:
+- **`consumption_rate::Real`** the rate of which the resource `Pipeline.consuming` is \
+consumed, as a ratio of the volume of the resource going into the inlet. I.e.:
 
         `consumption_rate` = consumed volume / inlet volume (per operational period)\n
 - **`trans_cap::Real`** is the capacity of the transmission mode.\n

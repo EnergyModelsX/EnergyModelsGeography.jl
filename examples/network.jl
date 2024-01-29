@@ -39,6 +39,31 @@ function read_data()
     Power = products[3]
     CO2   = products[4]
 
+    # Variables for the individual entries of the time structure
+    op_duration = 1 # Each operational period has a duration of 2
+    op_number = 24   # There are in total 4 operational periods
+    operational_periods = SimpleTimes(op_number, op_duration)
+
+    # The number of operational periods times the duration of the operational periods, which
+    # can also be extracted using the function `duration` of a `SimpleTimes` structure.
+    # This implies, that a strategic period is 8 times longer than an operational period,
+    # resulting in the values below as "/2h".
+    op_per_strat = duration(operational_periods)
+
+    # Creation of the time structure and global data
+    T = TwoLevel(4, 1, operational_periods; op_per_strat)
+    model = OperationalModel(
+        Dict(
+            CO2 => StrategicProfile([160, 140, 120, 100]),  # CO₂ emission cap in t/24h
+            NG  => FixedProfile(1e6),                       # NG cap in MWh/24h
+        ),
+        Dict(
+            CO2 => FixedProfile(0),                         # CO₂ emission cost in EUR/t
+            NG  => FixedProfile(0),                         # NG emission cost in EUR/t
+        ),
+        CO2,
+    )
+
     # Create input data for the individual areas
     # The input data is based on scaling factors and/or specified demands
     area_ids    = [1, 2, 3, 4, 5, 6, 7]
@@ -122,30 +147,6 @@ function read_data()
                 Transmission(areas[6], areas[7], [SD_OverheadLine_50MW]),
     ]
 
-    # Variables for the individual entries of the time structure
-    op_duration = 1 # Each operational period has a duration of 2
-    op_number = 24   # There are in total 4 operational periods
-    operational_periods = SimpleTimes(op_number, op_duration)
-
-    # The number of operational periods times the duration of the operational periods, which
-    # can also be extracted using the function `duration` which corresponds to the total
-    # duration of the operational periods in a `SimpleTimes` structure
-    op_per_strat = duration(operational_periods)
-
-    # Creation of the time structure and global data
-    T = TwoLevel(4, 1, operational_periods; op_per_strat)
-    model = OperationalModel(
-        Dict(
-            CO2 => StrategicProfile([160, 140, 120, 100]),  # CO2 emission cap in t/24h
-            NG  => FixedProfile(1e6),                        # NG cap in MWh/24h
-        ),
-        Dict(
-            CO2 => FixedProfile(0),                         # CO2 emission cost in EUR/t
-            NG  => FixedProfile(0),                         # NG emission cost in EUR/t
-        ),
-        CO2,
-    )
-
     # WIP data structure
     case = Dict(
                 :areas          => Array{Area}(areas),
@@ -191,7 +192,7 @@ function get_sub_system_data(
     end
 
     # Create the individual test nodes, corresponding to a system with an electricity demand/sink,
-    # coal and nautral gas sources, coal and natural gas (with CCS) power plants and CO2 storage.
+    # coal and nautral gas sources, coal and natural gas (with CCS) power plants and CO₂ storage.
     j=(i-1)*100
     nodes = [
             GeoAvailability(j+1, products),
@@ -220,7 +221,7 @@ function get_sub_system_data(
                 Dict(Power => 1, CO2 => 1), # Output from the node with output ratio
                 # Line above: CO2 is required as output for variable definition, but the
                 # value does not matter
-                [CaptureEnergyEmissions(0.9)], # Additonal data for emissions and CO2 capture
+                [CaptureEnergyEmissions(0.9)], # Additonal data for emissions and CO₂ capture
             ),
             RefNetworkNode(
                 j+5,                        # Node id
@@ -233,15 +234,15 @@ function get_sub_system_data(
             ),
             RefStorage(
                 j+6,                        # Node id
-                FixedProfile(20),           # Rate capacity in MW
-                FixedProfile(600),          # Storage capacity in MWh
-                FixedProfile(9.1),          # Storage variable OPEX for the rate in EUR/MW
-                FixedProfile(0),            # Storage fixed OPEX for the rate in EUR/24h
+                FixedProfile(20),           # Rate capacity in t/h
+                FixedProfile(600),          # Storage capacity in t
+                FixedProfile(9.1),          # Storage variable OPEX for the rate in EUR/t
+                FixedProfile(0),            # Storage fixed OPEX for the rate in EUR/(t/h 24h)
                 CO2,                        # Stored resource
                 Dict(CO2 => 1, Power => 0.02), # Input resource with input ratio
                 # Line above: This implies that storing CO2 requires Power
                 Dict(CO2 => 1),             # Output from the node with output ratio
-                # In practice, for CO2 storage, this is never used.
+                # In practice, for CO₂ storage, this is never used.
                 Array{Data}([]),            # Potential additional data
             ),
             RefSink(

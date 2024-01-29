@@ -17,7 +17,7 @@ julia> include(joinpath(exdir, "network.jl"))
 
 ## The code was downloaded with `git clone`
 
-The examples can then be run from the terminal with
+The examples can be run from the terminal with
 
 ```shell script
 ~/../energymodelsgeography.jl/examples $ julia network.jl

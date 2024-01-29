@@ -57,9 +57,9 @@ A `GeoAvailability` is required if transmission should be included between indiv
 
 # Fields
 - **`id`** is the name/identifier of the node.\n
-- **`input::Array{<:Resource}`** are the input `Resource`s with conversion value `Real`.
+- **`input::Array{<:Resource}`** are the input `Resource`s with conversion value `Real`. \
 The latter are not relevant but included for consistency with other formulations.\n
-- **`output::Array{<:Resource}`** are the generated `Resource`s with conversion value `Real`.
+- **`output::Array{<:Resource}`** are the generated `Resource`s with conversion value `Real`. \
 The latter are not relevant but included for consistency with other formulations.\n
 
 """

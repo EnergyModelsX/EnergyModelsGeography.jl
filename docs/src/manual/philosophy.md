@@ -11,7 +11,7 @@ The `TransmissionModes` can be static infrastructure such as `PipelineMode` or d
 The latter is in the current stage not yet implemented.
 
 The extension of `EnergyModelsBase` is achieved through calling on the function `create_model` within `EnergyModelsGeography`.
-This corresponds to the 2nd bullet point in the list.
+This corresponds to the 2ⁿᵈ bullet point in the list of *[Extensions to the model](https://energymodelsx.github.io/EnergyModelsBase.jl/stable/manual/philosophy/#sec_phil_ext)*.
 
 Each `Area` is assocoiated with corresponding latitude and longitude coordinates.
 These coordinates can be utilized to calculate the distance between two `Area`s.
