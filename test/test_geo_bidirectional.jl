@@ -26,15 +26,15 @@ function bidirectional_case()
     demand = [40 40]
     nodes = [
             EMG.GeoAvailability(1, products),
-            RefSource(2, FixedProfile(200), OperationalProfile([10 100]), FixedProfile(0), Dict(NG => 1), []),
-            RefNetworkNode(3, FixedProfile(100), FixedProfile(5.5), FixedProfile(0), Dict(NG => 2), Dict(Power => 1), []),
+            RefSource(2, FixedProfile(200), OperationalProfile([10 100]), FixedProfile(0), Dict(NG => 1)),
+            RefNetworkNode(3, FixedProfile(100), FixedProfile(5.5), FixedProfile(0), Dict(NG => 2), Dict(Power => 1)),
             RefSink(4, OperationalProfile(demand),
                 Dict(:surplus => FixedProfile(0), :deficit => FixedProfile(1e6)),
                 Dict(Power => 1)),
 
             EMG.GeoAvailability(5, products),
-            RefSource(6, FixedProfile(200), OperationalProfile([100 10]), FixedProfile(0), Dict(NG => 1), []),
-            RefNetworkNode(7, FixedProfile(100), FixedProfile(5.5), FixedProfile(0), Dict(NG => 2), Dict(Power => 1), []),
+            RefSource(6, FixedProfile(200), OperationalProfile([100 10]), FixedProfile(0), Dict(NG => 1)),
+            RefNetworkNode(7, FixedProfile(100), FixedProfile(5.5), FixedProfile(0), Dict(NG => 2), Dict(Power => 1)),
             RefSink(8, OperationalProfile(demand),
                 Dict(:surplus => FixedProfile(0), :deficit => FixedProfile(1e6)),
                 Dict(Power => 1)),
@@ -66,7 +66,6 @@ function bidirectional_case()
         FixedProfile(0.05),
         FixedProfile(0.05),
         2,
-        [],
     )
     transmission = [Transmission(areas[1], areas[2], [transmission_line])]
 

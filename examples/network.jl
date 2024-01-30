@@ -124,15 +124,15 @@ function read_data()
     opex_var = FixedProfile(0.05)   # Variable OPEX in EUR/MWh
     opex_fix = FixedProfile(0.05)   # Fixed OPEX in EUR/24h
 
-    OB_OverheadLine_50MW   = RefStatic("OB_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix,  2, [])
-    OT_OverheadLine_50MW   = RefStatic("OT_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2, [])
-    OK_OverheadLine_50MW   = RefStatic("OK_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2, [])
-    BT_OverheadLine_50MW   = RefStatic("BT_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2, [])
-    BTN_LNG_Ship_100MW     = RefDynamic("BTN_LNG_100", NG, cap_lng, loss, opex_var, opex_fix, 1, [])
-    BK_OverheadLine_50MW   = RefStatic("BK_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2, [])
-    TTN_OverheadLine_50MW  = RefStatic("TTN_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2, [])
-    KS_OverheadLine_50MW  = RefStatic("KS_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2, [])
-    SD_OverheadLine_50MW  = RefStatic("SD_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2, [])
+    OB_OverheadLine_50MW   = RefStatic("OB_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix,  2)
+    OT_OverheadLine_50MW   = RefStatic("OT_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2)
+    OK_OverheadLine_50MW   = RefStatic("OK_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2)
+    BT_OverheadLine_50MW   = RefStatic("BT_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2)
+    BTN_LNG_Ship_100MW     = RefDynamic("BTN_LNG_100", NG, cap_lng, loss, opex_var, opex_fix, 1)
+    BK_OverheadLine_50MW   = RefStatic("BK_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2)
+    TTN_OverheadLine_50MW  = RefStatic("TTN_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2)
+    KS_OverheadLine_50MW  = RefStatic("KS_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2)
+    SD_OverheadLine_50MW  = RefStatic("SD_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2)
 
     # Create the different transmission corridors between the individual areas
     transmission = [
@@ -202,7 +202,6 @@ function get_sub_system_data(
                 FixedProfile(30*mc_scale),  # Variable OPEX in EUR/MW
                 FixedProfile(0),            # Fixed OPEX in EUR/24h
                 Dict(NG => 1),              # Output from the Node, in this gase, NG
-                [],                         # Potential additional data
             ),
             RefSource(
                 j+3,                        # Node id
@@ -210,7 +209,6 @@ function get_sub_system_data(
                 FixedProfile(9*mc_scale),   # Variable OPEX in EUR/MWh
                 FixedProfile(0),            # Fixed OPEX in EUR/24h
                 Dict(Coal => 1),            # Output from the Node, in this gase, coal
-                [],                         # Potential additional data
             ),
             RefNetworkNode(
                 j+4,                        # Node id
@@ -243,7 +241,7 @@ function get_sub_system_data(
                 # Line above: This implies that storing CO2 requires Power
                 Dict(CO2 => 1),             # Output from the node with output ratio
                 # In practice, for CO₂ storage, this is never used.
-                Array{Data}([]),            # Potential additional data
+                Data[]
             ),
             RefSink(
                 j+7,                        # Node id

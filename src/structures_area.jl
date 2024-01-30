@@ -36,8 +36,10 @@ coupled with multiple other areas and the total export capacity should be restri
 - **`name`** is the name of the area.\n
 - **`lon::Real`** is the longitudinal position of the area.\n
 - **`lat::Real`** is the latitudinal position of the area.\n
-- **`node::Availability`** is the `Availability` node routing different resources within an area.
-- **`limit::Dict{EMB.Resource, TimeProfile}`** is the amount of a resource that can be exchanged with other areas
+- **`node::Availability`** is the `Availability` node routing different resources within \
+an area.
+- **`limit::Dict{<:EMB.Resource, <:TimeProfile}`** is the amount of a resource that can \
+be exchanged with other areas
 """
 struct LimitedExchangeArea <: Area
     id
@@ -45,7 +47,7 @@ struct LimitedExchangeArea <: Area
     lon::Real
     lat::Real
     node::EMB.Availability
-    limit::Dict{EMB.Resource, TimeProfile}
+    limit::Dict{<:EMB.Resource, <:TimeProfile}
 end
 
 """

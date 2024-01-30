@@ -8,7 +8,7 @@ function small_graph(source=nothing, sink=nothing)
     # Creation of the source and sink module as well as the arrays used for nodes and links
     if isnothing(source)
         source = RefSource("-src", FixedProfile(25), FixedProfile(10),
-            FixedProfile(5), Dict(Power => 1), [])
+            FixedProfile(5), Dict(Power => 1))
     end
 
     if isnothing(sink)
@@ -33,7 +33,6 @@ function small_graph(source=nothing, sink=nothing)
         FixedProfile(0.1),
         FixedProfile(0.1),
         1,
-        [],
     )
     transmission_line_2 = EMG.RefStatic(
         "transline2",
@@ -43,10 +42,9 @@ function small_graph(source=nothing, sink=nothing)
         FixedProfile(0.1),
         FixedProfile(0.1),
         1,
-        [],
     )
-    transmissions = [Transmission(areas[1], areas[2], [transmission_line_1]),
-                     Transmission(areas[2], areas[1], [transmission_line_2])]
+    transmissions = [Transmission(areas[1], areas[2], Vector{TransmissionMode}([transmission_line_1])),
+                     Transmission(areas[2], areas[1], Vector{TransmissionMode}([transmission_line_2]))]
 
     # Creation of the time structure and the used global data
     T = TwoLevel(4, 1, SimpleTimes(4, 1))
@@ -67,8 +65,6 @@ function small_graph(source=nothing, sink=nothing)
                 )
     return case, modeltype
 end
-
-
 
 function transmission_tests(m, case)
     # Extraction of relevant data from the model
@@ -141,9 +137,9 @@ end
                                         prev_tm.opex_var,
                                         prev_tm.opex_fixed,
                                         directions(prev_tm),
-                                        [])
-            @assert directions(prev_tm) == 1 "The Dircetion mode should be
-                                                 unidirectional."
+                                        Data[]
+                                        )
+            @assert directions(prev_tm) == 1 "The Direction mode should be unidirectional."
             modes(transmission)[i] = pipeline
         end
     end
