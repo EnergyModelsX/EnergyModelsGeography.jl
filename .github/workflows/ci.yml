@@ -17,6 +17,7 @@ jobs:
         # only test on a subset of possible platforms.
         include:
           - version: '1'  # The latest point-release (Linux)
+            os: ubuntu-latest
             arch: x64
           - version: '1'  # The latest point-release (Windows)
             os: windows-latest
