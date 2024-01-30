@@ -5,12 +5,12 @@ A geographic corridor where `TransmissionModes` are used to transport resources.
 # Fields
 - **`from::Area`** is the area resources are transported from.\n
 - **`to::Area`** is the area resources are transported to.\n
-- **`modes::Array{TransmissionMode}`** are the transmission modes that are available.\n
+- **`modes::Vector{<:Transmission}`** are the transmission modes that are available.\n
 """
 struct Transmission
     from::Area
     to::Area
-    modes::Array{TransmissionMode}
+    modes::Vector{<:TransmissionMode}
 end
 Base.show(io::IO, t::Transmission) = print(io, "$(t.from)-$(t.to)")
 
@@ -27,7 +27,7 @@ modes(l::Transmission) = l.modes
 Return an array of all transmission modes present in the different transmission corridors.
 """
 function modes(ℒ::Vector{<:Transmission})
-    tmp = Vector{TransmissionMode}()
+    tmp = TransmissionMode[]
     for l ∈ ℒ
         append!(tmp, modes(l))
     end

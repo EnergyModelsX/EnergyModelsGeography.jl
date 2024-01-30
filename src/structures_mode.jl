@@ -10,11 +10,14 @@ Generic representation of dynamic transmission modes, using for example truck, s
 - **`id::String`** is the name/identifyer of the transmission mode.\n
 - **`resource::Resource`** is the resource that is transported.\n
 - **`trans_cap::TimeProfile`** is the capacity of the transmission mode.\n
-- **`trans_loss::TimeProfile`** is the loss of the transported resource during transmission, modelled as a ratio.\n
+- **`trans_loss::TimeProfile`** is the loss of the transported resource during \
+transmission, modelled as a ratio.\n
 - **`opex_var::TimeProfile`** is the variational operational costs per energy unit transported.\n
 - **`opex_fixed::TimeProfile`** is the fixed operational costs per installed capacity.\n
-- **`directions`** is the number of directions the resource can be transported, 1 is unidirectional (A->B) or 2 is bidirectional (A<->B).\n
-- **`data::Dict{String, Data}`** is the additional data (e.g. for investments).
+- **`directions`** is the number of directions the resource can be transported, \
+1 is unidirectional (A->B) or 2 is bidirectional (A<->B).\n
+- **`data::Vector{Data}`** is the additional data (e.g. for investments). The field \
+`data` is conditional through usage of a constructor.
 """
 struct RefDynamic <: TransmissionMode # E.g. Trucks, ships etc.
     id::String
@@ -24,8 +27,18 @@ struct RefDynamic <: TransmissionMode # E.g. Trucks, ships etc.
     opex_var::TimeProfile
     opex_fixed::TimeProfile
     directions::Int # 1: Unidirectional or 2: Bidirectional
-    #formulation::EMB.Formulation # linear/non-linear etc.
-    data::Array{Data}
+    data::Vector{Data}
+end
+function RefDynamic(
+        id::String,
+        resource::EMB.Resource,
+        trans_cap::TimeProfile,
+        trans_loss::TimeProfile,
+        opex_var::TimeProfile,
+        opex_fixed::TimeProfile,
+        directions::Int,
+    )
+    return RefDynamic(id, resource, trans_cap, trans_loss, opex_var, opex_fixed, directions, Data[])
 end
 
 """ A reference static `TransmissionMode`.
@@ -36,11 +49,14 @@ Generic representation of static transmission modes, such as overhead power line
 - **`id::String`** is the name/identifyer of the transmission mode.\n
 - **`resource::Resource`** is the resource that is transported.\n
 - **`trans_cap::Real`** is the capacity of the transmission mode.\n
-- **`trans_loss::Real`** is the loss of the transported resource during transmission, modelled as a ratio.\n
+- **`trans_loss::Real`** is the loss of the transported resource during transmission, \
+modelled as a ratio.\n
 - **`opex_var::TimeProfile`** is the variational operational costs per energy unit transported.\n
 - **`opex_fixed::TimeProfile`** is the fixed operational costs per installed capacity.\n
-- **`directions`** is the number of directions the resource can be transported, 1 is unidirectional (A->B) or 2 is bidirectional (A<->B).\n
-- **`data::Dict{String, Data}`** is the additional data (e.g. for investments).
+- **`directions`** is the number of directions the resource can be transported, \
+1 is unidirectional (A->B) or 2 is bidirectional (A<->B).\n
+- **`data::Vector{Data}`** is the additional data (e.g. for investments). The field \
+`data` is conditional through usage of a constructor.
 """
 struct RefStatic <: TransmissionMode # E.g. overhead power lines, pipelines etc.
     id::String
@@ -50,8 +66,18 @@ struct RefStatic <: TransmissionMode # E.g. overhead power lines, pipelines etc.
     opex_var::TimeProfile
     opex_fixed::TimeProfile
     directions::Int
-    #formulation::EMB.Formulation
-    data::Array{Data}
+    data::Vector{Data}
+end
+function RefStatic(
+        id::String,
+        resource::EMB.Resource,
+        trans_cap::TimeProfile,
+        trans_loss::TimeProfile,
+        opex_var::TimeProfile,
+        opex_fixed::TimeProfile,
+        directions::Int,
+    )
+    return RefStatic(id, resource, trans_cap, trans_loss, opex_var, opex_fixed, directions, Data[])
 end
 
 
@@ -74,8 +100,8 @@ the pipeline.
 - **`inlet::Resource`** is the `Resource` going into transmission.\n
 - **`outlet::Resource`** is the `Resource` going out of the outlet of the transmission.\n
 - **`consuming::Resource`** is the `Resource` the transmission consumes by operating.\n
-- **`consumption_rate::Real`** the rate of which the resource `Pipeline.consuming` is consumed, as
-    a ratio of the volume of the resource going into the inlet. I.e.:
+- **`consumption_rate::Real`** the rate of which the resource `Pipeline.consuming` is \
+consumed, as a ratio of the volume of the resource going into the inlet. I.e.:
 
         `consumption_rate` = consumed volume / inlet volume (per operational period)\n
 - **`trans_cap::Real`** is the capacity of the transmission mode.\n
@@ -83,7 +109,7 @@ the pipeline.
 - **`opex_var::TimeProfile`** is the variational operational costs per energy unit transported.\n
 - **`opex_fixed::TimeProfile`** is the fixed operational costs per installed capacity.\n
 - **`directions`** specifies that the pipeline is Unidirectional (1) by default.\n
-- **`data::Dict{String, Data}`** is the additional data (e.g. for investments).
+- **`data::Vector{Data}`** is the additional data (e.g. for investments).
 """
 Base.@kwdef struct PipeSimple <: PipeMode
     id::String
@@ -98,9 +124,8 @@ Base.@kwdef struct PipeSimple <: PipeMode
     opex_fixed::TimeProfile
     # TODO remove below field? Should not be relevant for fluid pipeline.
     directions::Int = 1     # 1: Unidirectional only for pipeline
-    data::Array{Data}
+    data::Vector{Data} = Data[]
 end
-
 
 """
     PipeLinepackSimple <: TransmissionMode
@@ -109,7 +134,7 @@ Pipeline model with linepacking implemented as simple storage function.
 # Fields (additional to `PipeSimple`)
 - **`energy_share::Float64`**  - is the storage energy capacity relative to pipeline capacity.\n
 - **`Level_share_init::Float64`**  - is the initial storage level. \n
-- **`data::Dict{String, Data}`** is the additional data (e.g. for investments).
+- **`data::Vector{Data}`** is the additional data (e.g. for investments).
 """
 Base.@kwdef struct PipeLinepackSimple <: PipeMode
     id::String
@@ -123,17 +148,17 @@ Base.@kwdef struct PipeLinepackSimple <: PipeMode
     opex_fixed::TimeProfile
     energy_share::Float64 # Storage energy capacity relative to pipeline capacity
     directions::Int = 1     # 1: Unidirectional only for pipeline
-    data::Array{Data}
+    data::Vector{Data} = Data[]
 end
 
 """
-    modes_sub(ℳ, string::String)
+    modes_sub(ℳ::Vector{<:TransmissionMode}, string::String)
 
 Returns all transmission modes that include in the name the `string`.
 """
-function modes_sub(ℳ, string::String)
+function modes_sub(ℳ::Vector{<:TransmissionMode}, string::String)
 
-    sub_modes = Array{TransmissionMode}([])
+    sub_modes = TransmissionMode[]
     for tm ∈ ℳ
         if isequal(string, tm.id)
             append!(sub_modes, [tm])
@@ -143,14 +168,14 @@ function modes_sub(ℳ, string::String)
     return sub_modes
 end
 """
-    modes_sub(ℳ, string_array::Array{String})
+    modes_sub(ℳ::Vector{<:TransmissionMode}, string_array::Array{String})
 
 Returns all transmission modes that include in the name all entries of
 the array `string_array`.
 """
-function modes_sub(ℳ, string_array::Array{String})
+function modes_sub(ℳ::Vector{<:TransmissionMode}, string_array::Array{String})
 
-    sub_modes = Array{TransmissionMode}([])
+    sub_modes = TransmissionMode[]
     for tm ∈ ℳ
         if all(isequal(string, tm.id) for string ∈ string_array)
             append!(sub_modes, [tm])
@@ -228,11 +253,11 @@ Returns the variable OPEX of transmission mode `tm` as `TimeProfile`.
 """
 EMB.opex_fixed(tm::TransmissionMode) = tm.opex_fixed
 """
-    opex_fixed(tm::TransmissionMode, t)
+    opex_fixed(tm::TransmissionMode, t_inv)
 
-Returns the variable OPEX of transmission mode `tm` at time period `t`.
+Returns the variable OPEX of transmission mode `tm` at strategic period `t_inv`.
 """
-EMB.opex_fixed(tm::TransmissionMode, t) = tm.opex_fixed[t]
+EMB.opex_fixed(tm::TransmissionMode, t_inv) = tm.opex_fixed[t_inv]
 
 """
     loss(tm::TransmissionMode)

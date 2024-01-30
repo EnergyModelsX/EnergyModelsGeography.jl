@@ -1,5 +1,9 @@
 Release notes
 =============
+Version 0.8.1 (2024-01-30)
+--------------------------
+ * Updated the restrictions on the fields of individual types to be more restrictive.
+
 Version 0.8.0 (2023-12-19)
 --------------------------
 Adjusted to changes in `EnergyModelsBase` v0.6.

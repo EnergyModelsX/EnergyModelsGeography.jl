@@ -36,8 +36,10 @@ coupled with multiple other areas and the total export capacity should be restri
 - **`name`** is the name of the area.\n
 - **`lon::Real`** is the longitudinal position of the area.\n
 - **`lat::Real`** is the latitudinal position of the area.\n
-- **`node::Availability`** is the `Availability` node routing different resources within an area.
-- **`limit::Dict{EMB.Resource, TimeProfile}`** is the amount of a resource that can be exchanged with other areas
+- **`node::Availability`** is the `Availability` node routing different resources within \
+an area.
+- **`limit::Dict{<:EMB.Resource, <:TimeProfile}`** is the amount of a resource that can \
+be exchanged with other areas
 """
 struct LimitedExchangeArea <: Area
     id
@@ -45,7 +47,7 @@ struct LimitedExchangeArea <: Area
     lon::Real
     lat::Real
     node::EMB.Availability
-    limit::Dict{EMB.Resource, TimeProfile}
+    limit::Dict{<:EMB.Resource, <:TimeProfile}
 end
 
 """
@@ -57,9 +59,9 @@ A `GeoAvailability` is required if transmission should be included between indiv
 
 # Fields
 - **`id`** is the name/identifier of the node.\n
-- **`input::Array{<:Resource}`** are the input `Resource`s with conversion value `Real`.
+- **`input::Array{<:Resource}`** are the input `Resource`s with conversion value `Real`. \
 The latter are not relevant but included for consistency with other formulations.\n
-- **`output::Array{<:Resource}`** are the generated `Resource`s with conversion value `Real`.
+- **`output::Array{<:Resource}`** are the generated `Resource`s with conversion value `Real`. \
 The latter are not relevant but included for consistency with other formulations.\n
 
 """
