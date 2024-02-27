@@ -40,10 +40,14 @@ function create_model(case, modeltype::EnergyModel, m::JuMP.Model; check_timepro
     variables_trans_opex(m, 𝒯, ℳ, modeltype)
     variables_trans_capacity(m, 𝒯, ℳ, modeltype)
     variables_trans_modes(m, 𝒯, ℳ, modeltype)
+    variables_trans_emission(m, 𝒯, ℳ, 𝒫, modeltype)
 
     # Construction of constraints for areas and transmission corridors
     constraints_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype)
     constraints_transmission(m, 𝒯, ℳ, modeltype)
+
+    # Updates the global constraint on total emissions
+    update_total_emissions(m, 𝒯, ℳ, 𝒫, modeltype)
 
     # Updates the objective function
     update_objective(m, 𝒯, ℳ, modeltype)
@@ -173,6 +177,19 @@ function variables_trans_mode(m, 𝒯, ℳᴸᴾ::Vector{<:PipeLinepackSimple}, 
     @variable(m, linepack_stor_level[ℳᴸᴾ, 𝒯] >= 0)
 end
 
+"""
+    variables_trans_emission(m, 𝒯, ℳ, 𝒫, modeltype)
+
+Creates variables for the modeling of tranmission emissions. These variables
+are only created for transmission modes where emissions are included.
+"""
+function variables_trans_emission(m, 𝒯, ℳ, 𝒫, modeltype)
+    ℳᵉᵐ = filter(m -> hasemissions(m), ℳ)
+    𝒫ᵉᵐ  = EMB.res_sub(𝒫, ResourceEmit)
+    @variable(m, trans_emission[ℳᵉᵐ, 𝒯, 𝒫ᵉᵐ] >= 0)
+end
+
+
 
 """
     constraints_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype::EnergyModel)
@@ -277,6 +294,27 @@ function update_objective(m, 𝒯, ℳ, modeltype::EnergyModel)
     @objective(m, Max, obj)
 end
 
+"""
+    update_total_emissions(m, 𝒯, ℳ, 𝒫, modeltype::EnergyModel)
+
+Update the constraints aggregating total emissions in each time period
+with contributions from transmission emissions.
+"""
+function update_total_emissions(m, 𝒯, ℳ, 𝒫, modeltype::EnergyModel)
+
+    ℳᵉᵐ = filter(m -> hasemissions(m), ℳ)
+    𝒫ᵉᵐ  = EMB.res_sub(𝒫, EMB.ResourceEmit)
+
+    # Modify existing constraints on total emsission by adding contribution from
+    # transmission emissions. Note the coefficient set to -1 since the total constraint
+    # has the variables on the RHS.
+    for tm ∈ ℳᵉᵐ,  p ∈ 𝒫ᵉᵐ, t ∈ 𝒯
+        JuMP.set_normalized_coefficient(m[:con_em_tot][t, p], m[:trans_emission][tm, t, p], -1.0)
+    end
+
+end
+
+
 
 """
     create_transmission_mode(m, tm::TransmissionMode, 𝒯, modeltype::EnergyModel)
@@ -298,6 +336,9 @@ function create_transmission_mode(m, tm::TransmissionMode, 𝒯, modeltype::Ener
 
     # Call of the function for limiting the capacity to the maximum installed capacity
     constraints_capacity(m, tm, 𝒯, modeltype)
+
+    # Call of the functions for tranmission emissions
+    constraints_emission(m, tm, 𝒯)
 
     # Call of the functions for both fixed and variable OPEX constraints introduction
     constraints_opex_fixed(m, tm, 𝒯ᴵⁿᵛ, modeltype)
