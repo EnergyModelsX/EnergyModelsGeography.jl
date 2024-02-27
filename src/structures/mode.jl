@@ -2,6 +2,29 @@
 abstract type TransmissionMode end
 Base.show(io::IO, t::TransmissionMode) = print(io, "$(t.id)")
 
+"""
+    hasemissions(m::TransmissionMode)
+
+Returns whether there are emissions associated with the transmisson mode.
+Default behaviour is no emissions.
+"""
+hasemissions(m::TransmissionMode) = false
+
+"""
+    emit_resources(m::TransmissionMode)
+
+Returns the types of emisssions associated with the transmission mode.
+"""
+emit_resources(m::TransmissionMode) = EMB.ResourceEmit[]
+
+"""
+    emission(m::TransmissionMode, p::EMB.ResourceEmit, t)
+
+Returns the emission of a specific resource in a time period t per unit transmitted.
+"""
+emission(m::TransmissionMode, p::EMB.ResourceEmit, t) = 0
+
+
 """ A reference dynamic `TransmissionMode`.
 
 Generic representation of dynamic transmission modes, using for example truck, ship or railway transport.
