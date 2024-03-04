@@ -180,7 +180,7 @@ function constraints_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype::Ener
         𝒫ᵉˣ = exchange_resources(ℒᵗʳᵃⁿˢ, a)
 
         # Resource balance within an area
-        for p ∈ 𝒫
+        for p ∈ inputs(n)
             if p ∈ 𝒫ᵉˣ
                 @constraint(m, [t ∈ 𝒯],
                     m[:flow_in][n, t, p] == m[:flow_out][n, t, p] - m[:area_exchange][a, t, p])
