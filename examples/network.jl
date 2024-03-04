@@ -1,11 +1,10 @@
 using Pkg
-# Activate the test-environment, where HiGHS is added as dependency.
-Pkg.activate(joinpath(@__DIR__, "../test"))
+# Activate the local environment including EnergyModelsGeography, HiGHS, PrettyTables
+Pkg.activate(@__DIR__)
 # Install the dependencies.
 Pkg.instantiate()
-# Add the package EnergyModelsGeography to the environment.
-Pkg.develop(path=joinpath(@__DIR__, ".."))
 
+# Import the required packages
 using EnergyModelsBase
 using EnergyModelsGeography
 using JuMP
@@ -15,23 +14,18 @@ using TimeStruct
 const EMB = EnergyModelsBase
 const EMG = EnergyModelsGeography
 
-function run_model(optimizer=nothing)
-   @debug "Run model" optimizer
+"""
+    generate_example_data()
 
-    case, model = read_data()
-    m = EMG.create_model(case, model)
+Generate the data for an example consisting of a simple electricity network. The simple \
+network is existing within 5 regions with differing demand. Each region has the same \
+technologies.
 
-    if !isnothing(optimizer)
-        set_optimizer(m, optimizer)
-        optimize!(m)
-    else
-        @info "No optimizer given"
-    end
-    return m, case
-end
-
-function read_data()
-    @debug "Read case data"
+The example is partly based on the provided example `network.jl` in `EnergyModelsBase`.
+"""
+function generate_example_data()
+    @info "Generate case data - Simple network example with 5 regions with the same \
+    technologies"
 
     # Retrieve the products
     products = get_resources()
@@ -47,8 +41,8 @@ function read_data()
     # The number of operational periods times the duration of the operational periods, which
     # can also be extracted using the function `duration` of a `SimpleTimes` structure.
     # This implies, that a strategic period is 8 times longer than an operational period,
-    # resulting in the values below as "/2h".
-    op_per_strat = duration(operational_periods)
+    # resulting in the values below as "/24h".
+    op_per_strat = op_duration * op_number
 
     # Creation of the time structure and global data
     T = TwoLevel(4, 1, operational_periods; op_per_strat)
@@ -267,6 +261,11 @@ function get_sub_system_data(
     return nodes, links
 end
 
-m, case = run_model(HiGHS.Optimizer)
+# Generate the case and model data and run the model
+case, model = generate_example_data()
+optimizer = optimizer_with_attributes(HiGHS.Optimizer, MOI.Silent() => true)
+m = EMG.create_model(case, model)
+set_optimizer(m, optimizer)
+optimize!(m)
 
 solution_summary(m)
