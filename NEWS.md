@@ -3,6 +3,7 @@
 ## Unversioned
 
 * Fixed a bug regarding accessing the field `limit` of a `LimitedExchangeArea`.
+* Moved all files declaring structures to a separate folder for improved readability.
 
 ## Version 0.8.1 (2024-03-04)
 
