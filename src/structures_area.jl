@@ -92,28 +92,28 @@ availability_node(a::Area) = a.node
 Returns the limited resources of a `LimitedExchangeArea` `a`. All other resources are
 considered unlimited.
 """
-limit_resources(a::LimitedExchangeArea) = collect(keys(a.exchange_limit))
+limit_resources(a::LimitedExchangeArea) = collect(keys(a.limit))
 
 """
     exchange_limit(a::LimitedExchangeArea)
 
 Returns the limits of the exchange resources in area `a`.
 """
-exchange_limit(a::LimitedExchangeArea) = a.exchange_limit
+exchange_limit(a::LimitedExchangeArea) = a.limit
 """
     exchange_limit(a::LimitedExchangeArea, p::Resource)
 
 Returns the limit of exchange resource `p` in area `a` a `TimeProfile`.
 """
 exchange_limit(a::LimitedExchangeArea, p::Resource) =
-    haskey(a.exchange_limit, p) ? a.exchange_limit[p] : FixedProfile(0)
+    haskey(a.limit, p) ? a.limit[p] : FixedProfile(0)
 """
     exchange_limit(a::LimitedExchangeArea, p::Resource, t)
 
 Returns the limit of exchange resource `p` in area `a` at time period `t`.
 """
 exchange_limit(a::LimitedExchangeArea, p::Resource, t) =
-    haskey(a.exchange_limit, p) ? a.exchange_limit[p][t] : 0
+    haskey(a.limit, p) ? a.limit[p][t] : 0
 
 """
     trans_sub(ℒ, a::Area)

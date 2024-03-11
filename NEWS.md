@@ -1,5 +1,9 @@
 # Release notes
 
+## Unversioned
+
+* Fixed a bug regarding accessing the field `limit` of a `LimitedExchangeArea`.
+
 ## Version 0.8.1 (2024-03-04)
 
 * Fixed a bug when running the examples from a non-cloned version of `EnergyModelsGeography`.
