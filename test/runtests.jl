@@ -24,4 +24,5 @@ const ROUND_DIGITS = 8
     include("test_simplepipe.jl")
     include("test_simplelinepack.jl")
     include("test_utils.jl")
+    include("test_checks.jl")
 end
