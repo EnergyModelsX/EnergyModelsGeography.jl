@@ -1,14 +1,29 @@
 """
-    create_model(case, modeltype::EnergyModel)
+    create_model(case, modeltype::EnergyModel; check_timeprofiles::Bool=true)
 
-Create the model and call all requried functions based on provided 'modeltype'
-and case data.
+Create the model and call all required functions.
+
+## Input
+- `case` - The case dictionary requiring the keys `:T`, `:nodes`, `:links`, `products` as
+  it is the case for standard `EnergyModelsBase` models. In addition, the keys `:areas` and
+  `:transmission` are required for extending the existing model.
+  If the input is not provided in the correct form, the checks will identify the problem.
+  In the case of a
+- `modeltype::EnergyModel` - Used modeltype, that is a subtype of the type `EnergyModel`.
+- `m` - the empty `JuMP.Model` instance. If it is not provided, then it is assumed that the
+  input is a standard `JuMP.Model`.
+
+## Conditional input
+- `check_timeprofiles::Bool=true` - A boolean indicator whether the time profiles of the individual
+  nodes should be checked or not. It is advised to not deactivate the check, except if you
+  are testing new components. It may lead to unexpected behaviour and potential
+  inconsistencies in the input data, if the time profiles are not checked.
 """
-function create_model(case, modeltype)
+function create_model(case, modeltype::EnergyModel, m::JuMP.Model; check_timeprofiles::Bool=true)
     @debug "Construct model"
     # Call of the basic model
-    m = EMB.create_model(case, modeltype)
-    check_data(case, modeltype)
+    m = EMB.create_model(case, modeltype, m; check_timeprofiles)
+    check_data(case, modeltype, check_timeprofiles)
 
     # Data structure
     𝒜 = case[:areas]
@@ -35,7 +50,10 @@ function create_model(case, modeltype)
 
     return m
 end
-
+function create_model(case, modeltype::EnergyModel; check_timeprofiles::Bool=true)
+    m = JuMP.Model()
+    create_model(case, modeltype, m; check_timeprofiles)
+end
 
 """
     variables_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel)

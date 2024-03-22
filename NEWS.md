@@ -1,11 +1,13 @@
 # Release notes
 
-## Unversioned
+## Version 0.8.3 (2024-03-21)
 
 * Fixed a bug regarding accessing the field `limit` of a `LimitedExchangeArea`.
 * Moved all files declaring structures to a separate folder for improved readability.
+* Allow for jumping over `TimeProfile` checks also from `EnergyModelsGeography`.
+* Added possibility to provide a different type of `JuMP.Model`.
 
-## Version 0.8.1 (2024-03-04)
+## Version 0.8.2 (2024-03-04)
 
 * Fixed a bug when running the examples from a non-cloned version of `EnergyModelsGeography`.
 * This was achieved through a separate Project.toml in the examples.
