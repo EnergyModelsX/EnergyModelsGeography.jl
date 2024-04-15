@@ -1,6 +1,6 @@
 # Examples
 
-For the content of the example, see the *[examples](https://gitlab.sintef.no/clean_export/energymodelsgeography.jl/-/tree/main/examples)* directory in the project repository.
+For the content of the example, see the *[examples](https://github.com/EnergyModelsX/EnergyModelsGeography.jl/tree/main/examples)* directory in the project repository.
 
 ## The package is installed with `] add`
 
