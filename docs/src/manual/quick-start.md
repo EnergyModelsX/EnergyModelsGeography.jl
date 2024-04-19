@@ -11,10 +11,3 @@
 >     ```
 >     ] add EnergyModelsGeography
 >     ```
-
-!!! note
-    If you receive the error that `EnergyModelsGeography` is not yet registered, you have to add the package using the GitHub repository through
-    ```
-    ] add https://github.com/EnergyModelsX/EnergyModelsGeography.jl
-    ```
-    Once the package is registered, this is not required.
