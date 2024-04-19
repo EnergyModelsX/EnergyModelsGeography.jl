@@ -17,7 +17,7 @@ cp("NEWS.md", news; force=true)
 
 makedocs(
     modules = [EnergyModelsGeography],
-    sitename = "EnergyModelsGeography.jl",
+    sitename = "EnergyModelsGeography",
     format = Documenter.HTML(
         prettyurls = get(ENV, "CI", "false") == "true",
         edit_link = "main",
@@ -33,6 +33,9 @@ makedocs(
             "TransmissionMode structure" => "manual/transmission-mode.md",
             "Example" => "manual/simple-example.md",
             "Release notes" => "manual/NEWS.md",
+        ],
+        "How to" => Any[
+            "Contribute to EnergyModelsGeography" => "how-to/contribute.md",
         ],
         "Library" => Any[
             "Public" => "library/public.md",
