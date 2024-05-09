@@ -1,8 +1,9 @@
 # Release notes
 
-## Unversioned
+## Version 0.8.4 (2024-05-09)
 
 * Provided a contribution section in the documentation.
+* Fixed a link in the documentation for the examples.
 
 ## Version 0.8.3 (2024-03-21)
 
