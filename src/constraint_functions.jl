@@ -17,8 +17,14 @@ function constraints_capacity(m, tm::TransmissionMode, 𝒯::TimeStructure)
             m[:trans_in][tm, t] >= -1 * m[:trans_cap][tm, t]
         )
     else
-        @constraint(m, [t ∈ 𝒯], m[:trans_out][tm, t] >= 0)
+        for t ∈ 𝒯
+            set_lower_bound(m[:trans_in][tm, t], 0)
+            set_lower_bound(m[:trans_out][tm, t], 0)
+        end
     end
+
+    # Add constraints for the installed capacity
+    constraints_capacity_installed(m, tm, 𝒯)
 end
 
 """
@@ -32,13 +38,19 @@ function constraints_capacity(m, tm::PipeMode, 𝒯::TimeStructure)
     @constraint(m, [t ∈ 𝒯],
         m[:trans_out][tm, t] <= m[:trans_cap][tm, t]
     )
-    @constraint(m, [t ∈ 𝒯], m[:trans_out][tm, t] >= 0)
+    for t ∈ 𝒯
+        set_lower_bound(m[:trans_out][tm, t], 0)
+        set_lower_bound(m[:trans_in][tm, t], 0)
+    end
 
     # Bi-directional not allowed for PipeMode
     if is_bidirectional(tm)
         @warn "Only uni-directional tranmission is allowed for TransmissionMode of type
         $(typeof(tm)), uni-directional constraints for capacity is implemented for $tm."
     end
+
+    # Add constraints for the installed capacity
+    constraints_capacity_installed(m, tm, 𝒯)
 end
 
 """
@@ -55,8 +67,10 @@ function constraints_capacity(m, tm::PipeLinepackSimple, 𝒯::TimeStructure)
     @constraint(m, [t ∈ 𝒯],
         m[:trans_in][tm, t] - m[:trans_loss][tm, t] <= m[:trans_cap][tm, t]
     )
-    @constraint(m, [t ∈ 𝒯], m[:trans_out][tm, t] >= 0)
-    @constraint(m, [t ∈ 𝒯], m[:trans_in][tm, t] >= 0)
+    for t ∈ 𝒯
+        set_lower_bound(m[:trans_out][tm, t], 0)
+        set_lower_bound(m[:trans_in][tm, t], 0)
+    end
 
     # Linepack storage upper limit
     @constraint(m, [t ∈ 𝒯],
@@ -66,6 +80,22 @@ function constraints_capacity(m, tm::PipeLinepackSimple, 𝒯::TimeStructure)
     if is_bidirectional(tm)
         @warn "Only uni-directional tranmission is allowed for TransmissionMode of type
         $(typeof(tm)), uni-directional constraints for capacity is implemented for $tm."
+    end
+
+    # Add constraints for the installed capacity
+    constraints_capacity_installed(m, tm, 𝒯)
+end
+
+"""
+    constraints_capacity_installed(m, tm::TransmissionMode, 𝒯::TimeStructure)
+
+Function for creating the constraint on the installed capacity of a `TransmissionMode`.
+"""
+function constraints_capacity_installed(m, tm::TransmissionMode, 𝒯::TimeStructure)
+
+    # Fix the installed capacity to the upper bound
+    for t ∈ 𝒯
+        fix(m[:trans_cap][tm, t], capacity(tm, t); force=true)
     end
 end
 
@@ -143,7 +173,7 @@ function constraints_trans_balance(m, tm::PipeLinepackSimple, 𝒯::TimeStructur
         # Periodicity constraint
         if isnothing(t_prev)
             @constraint(m, m[:linepack_stor_level][tm, t] ==
-                           m[:linepack_stor_level][tm, last(t_inv)] +
+                           m[:linepack_stor_level][tm, last(collect(t_inv))] +
                            (m[:trans_in][tm, t] - m[:trans_loss][tm, t] - m[:trans_out][tm, t])
                            * duration(t)
             )

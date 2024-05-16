@@ -180,7 +180,7 @@ function get_sub_system_data(
     NG, Coal, Power, CO2 = products
 
     # Use of standard demand if not provided differently
-    d_standard = OperationalProfile([10, 10, 10, 10, 35, 40, 45, 45, 50, 50, 60, 60, 50, 45, 45, 40, 35, 40, 45, 40, 35, 30, 30, 30])
+    d_standard = OperationalProfile([20, 20, 20, 20, 25, 30, 35, 35, 40, 40, 40, 40, 40, 35, 35, 30, 25, 30, 35, 30, 25, 20, 20, 20])
     if demand == false
         demand = [d_standard; d_standard; d_standard; d_standard]
         demand *= d_scale
@@ -225,12 +225,14 @@ function get_sub_system_data(
                 Dict(Power => 1),           # Output from the node with output ratio
                 [EmissionsEnergy()],        # Additonal data for emissions
             ),
-            RefStorage(
+            RefStorage{AccumulatingEmissions}(
                 j+6,                        # Node id
-                FixedProfile(20),           # Rate capacity in t/h
-                FixedProfile(600),          # Storage capacity in t
-                FixedProfile(9.1),          # Storage variable OPEX for the rate in EUR/t
-                FixedProfile(0),            # Storage fixed OPEX for the rate in EUR/(t/h 24h)
+                StorCapOpex(
+                    FixedProfile(20),       # Charge capacity in t/h
+                    FixedProfile(9.1),      # Storage variable OPEX for the charging in EUR/t
+                    FixedProfile(0),        # Storage fixed OPEX for the charging in EUR/(t/h 8h)
+                ),
+                StorCap(FixedProfile(600)), # Storage capacity in t
                 CO2,                        # Stored resource
                 Dict(CO2 => 1, Power => 0.02), # Input resource with input ratio
                 # Line above: This implies that storing CO2 requires Power

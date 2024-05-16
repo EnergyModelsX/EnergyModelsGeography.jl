@@ -63,24 +63,21 @@ time periods `t ∈ 𝒯`.
 """
 function variables_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel)
     @variable(m, area_exchange[a ∈ 𝒜, 𝒯, p ∈ exchange_resources(ℒᵗʳᵃⁿˢ, a)])
-
 end
 
 
 """
-    variables_trans_capex(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+    variables_trans_capex(m, 𝒯, ℳ, modeltype::EnergyModel)
 
 Create variables for the capital costs for the investments in transmission.
 Empty function to allow for multiple dispatch in the `EnergyModelsInvestment` package.
 """
-function variables_trans_capex(m, 𝒯, ℳ, modeltype::EnergyModel)
-
-end
+function variables_trans_capex(m, 𝒯, ℳ, modeltype::EnergyModel) end
 
 """
-    variables_trans_opex(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+    variables_trans_opex(m, 𝒯, ℳ, modeltype::EnergyModel)
 
-Create variables for the operational costs for the investments in transmission.
+Declaration of variables for the operational costs of the tranmission modes.
 """
 function variables_trans_opex(m, 𝒯, ℳ, modeltype::EnergyModel)
 
@@ -91,21 +88,14 @@ function variables_trans_opex(m, 𝒯, ℳ, modeltype::EnergyModel)
 end
 
 """
-    variables_trans_capacity(m, 𝒯, ℳ, modeltype)
+    variables_trans_capacity(m, 𝒯, ℳ, modeltype::EnergyModel)
 
-Create variables to track how much of installed transmision capacity is used for all
-time periods `t ∈ 𝒯`.
+Declaration of variables for tracking how much of installed transmision capacity is used f
+or all time periods `t ∈ 𝒯` of the tranmission modes.
 """
-function variables_trans_capacity(m, 𝒯, ℳ, modeltype)
-
-    𝒯ᴵⁿᵛ = strategic_periods(𝒯)
-    𝒯ᴵⁿᵛ
+function variables_trans_capacity(m, 𝒯, ℳ, modeltype::EnergyModel)
 
     @variable(m, trans_cap[ℳ, 𝒯] >= 0)
-
-    for tm ∈ ℳ, t ∈ 𝒯
-        @constraint(m, trans_cap[tm, t] == capacity(tm, t))
-    end
 end
 
 
@@ -181,7 +171,6 @@ Adds the following special variables for linepacking:
 function variables_trans_mode(m, 𝒯, ℳᴸᴾ::Vector{<:PipeLinepackSimple}, modeltype::EnergyModel)
 
     @variable(m, linepack_stor_level[ℳᴸᴾ, 𝒯] >= 0)
-
 end
 
 
@@ -228,9 +217,7 @@ end
 Repaces constraints for availability nodes of type GeoAvailability.
 The resource balances are set by the area constraints instead.
 """
-function EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫, modeltype::EnergyModel)
-
-end
+function EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫, modeltype::EnergyModel) end
 
 
 """
@@ -238,9 +225,7 @@ end
 
 Default fallback method when no function is defined for a node type.
 """
-function create_area(m, a::Area, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
-
-end
+function create_area(m, a::Area, 𝒯, ℒᵗʳᵃⁿˢ, modeltype) end
 
 """
     create_area(m, a::LimitedExchangeArea, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
