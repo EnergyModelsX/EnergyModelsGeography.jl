@@ -252,7 +252,7 @@ Create transmission constraints on all transmission corridors.
 function constraints_transmission(m, 𝒯, ℳ, modeltype::EnergyModel)
 
     for tm ∈ ℳ
-        create_transmission_mode(m, tm, 𝒯)
+        create_transmission_mode(m, tm, 𝒯, modeltype)
     end
 end
 
@@ -279,26 +279,27 @@ end
 
 
 """
-    create_transmission_mode(m, 𝒯, tm)
+    create_transmission_mode(m, tm::TransmissionMode, 𝒯, modeltype::EnergyModel)
 
-Set all constraints for transmission mode. Serves as a fallback option for unspecified subtypes of `TransmissionMode`.
+Set all constraints for transmission mode. Serves as a fallback option for unspecified
+subtypes of `TransmissionMode`.
 """
-function create_transmission_mode(m, tm::TransmissionMode, 𝒯)
+function create_transmission_mode(m, tm::TransmissionMode, 𝒯, modeltype::EnergyModel)
 
     # Defining the required sets
     𝒯ᴵⁿᵛ = strategic_periods(𝒯)
 
     # Call of the function for tranmission balance
     # Generic trans in which each output corresponds to the input minus losses
-    constraints_trans_balance(m, tm, 𝒯)
+    constraints_trans_balance(m, tm, 𝒯, modeltype)
 
     # Call of the functions for tranmission losses
-    constraints_trans_loss(m, tm, 𝒯)
+    constraints_trans_loss(m, tm, 𝒯, modeltype)
 
     # Call of the function for limiting the capacity to the maximum installed capacity
-    constraints_capacity(m, tm, 𝒯)
+    constraints_capacity(m, tm, 𝒯, modeltype)
 
     # Call of the functions for both fixed and variable OPEX constraints introduction
-    constraints_opex_fixed(m, tm, 𝒯ᴵⁿᵛ)
-    constraints_opex_var(m, tm, 𝒯ᴵⁿᵛ)
+    constraints_opex_fixed(m, tm, 𝒯ᴵⁿᵛ, modeltype)
+    constraints_opex_var(m, tm, 𝒯ᴵⁿᵛ, modeltype)
 end
