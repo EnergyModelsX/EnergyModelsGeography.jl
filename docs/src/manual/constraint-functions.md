@@ -8,7 +8,7 @@ In later implementation, it is planned to also use dispatch for this analysis as
 ## Capacity constraints
 
 ```julia
-constraints_capacity(m, tm::TransmissionMode, 𝒯::TimeStructure)
+constraints_capacity(m, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EnergyModel)
 ```
 
 correponds to the constraints on the capacity usage of a transmission mode ``tm``.
@@ -17,10 +17,31 @@ The key difference between the former two is related that `PipeMode` does not al
 `PipeLinepackSimple` includes in addition the maximum storage capacity for a pipeline when considering linepacking.
 The implementation is still preliminary and based on a simplified potential for energy storage in a pipeline.
 
+Within this function, the function
+
+```julia
+constraints_capacity_installed(m, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EnergyModel)
+```
+
+is called to limit the variable ``\texttt{trans\_cap\_inst}`` of transmission mode ``tm``.
+This functions is also used to subsequently dispatch on model type for the introduction of investments.
+
+!!! warning
+    As the function `constraints_capacity_installed` is used for including investments for tranmission modes, it is important that it is also called when creating a new mode.
+    It is not possible to only add a function for
+    ```julia
+    constraints_capacity_installed(m, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EnergyModel)
+    ```
+    without adding a function for
+    ```julia
+    constraints_capacity_installed(m, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EMI.AbstractInvestmentModel)
+    ```
+    as this can lead to a method ambiguity error.
+
 ## Transmission loss functions
 
 ```julia
-constraints_trans_loss(m, tm::TransmissionMode, 𝒯ᴵⁿᵛ)
+constraints_trans_loss(m, tm::TransmissionMode, 𝒯ᴵⁿᵛ, modeltype::EnergyModel)
 ```
 
 correponds to the constraints on the energy balance of a transmission mode ``tm``.
@@ -31,7 +52,7 @@ The loss is calculated for the provided `TransmissionMode`s as relative loss of 
 ## Balance functions
 
 ```julia
-constraints_trans_balance(m, tm::TransmissionMode, 𝒯ᴵⁿᵛ)
+constraints_trans_balance(m, tm::TransmissionMode, 𝒯ᴵⁿᵛ, modeltype::EnergyModel)
 ```
 
 correponds to the constraints on the energy balance of a transmission mode ``tm``.
@@ -48,7 +69,7 @@ The standard approach only relies on the conservation of mass/energy, while stor
 ## Operational expenditure constraints
 
 ```julia
-constraints_opex_fixed(m, tm::TransmissionMode, 𝒯ᴵⁿᵛ)
+constraints_opex_fixed(m, tm::TransmissionMode, 𝒯ᴵⁿᵛ, modeltype::EnergyModel)
 ```
 
 corresponds to the constraints calculating the fixed operational costs of a transmission mode `tm`.
@@ -56,7 +77,7 @@ There is currently only a single implemented version.
 It can however be extended, if desirable.
 
 ```julia
-constraints_opex_var(m, tm::TransmissionMode, 𝒯ᴵⁿᵛ)
+constraints_opex_var(m, tm::TransmissionMode, 𝒯ᴵⁿᵛ, modeltype::EnergyModel)
 ```
 
 corresponds to the constraints calculating the variable operational costs of a transmission mode `tm`.
