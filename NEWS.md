@@ -1,5 +1,16 @@
 # Release notes
 
+## Version 0.9.0 (2024-05-24)
+
+### Update on function calls for dispatching on `modeltype`
+
+* Introduced `modeltype` as argument for all create and constraint functions.
+* Moved constraint on installed capacity to function `constraints_capacity_installed` to replicate the dispatch behaviour from `EnergyModelsBase`.
+
+## Version 0.8.5 (2024-05-24)
+
+* Update of dependencies and adjustment to changes in `EnergyModelsBase` v0.7.
+
 ## Version 0.8.4 (2024-05-09)
 
 * Provided a contribution section in the documentation.

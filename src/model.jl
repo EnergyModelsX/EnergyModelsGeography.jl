@@ -63,24 +63,21 @@ time periods `t ∈ 𝒯`.
 """
 function variables_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel)
     @variable(m, area_exchange[a ∈ 𝒜, 𝒯, p ∈ exchange_resources(ℒᵗʳᵃⁿˢ, a)])
-
 end
 
 
 """
-    variables_trans_capex(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+    variables_trans_capex(m, 𝒯, ℳ, modeltype::EnergyModel)
 
 Create variables for the capital costs for the investments in transmission.
 Empty function to allow for multiple dispatch in the `EnergyModelsInvestment` package.
 """
-function variables_trans_capex(m, 𝒯, ℳ, modeltype::EnergyModel)
-
-end
+function variables_trans_capex(m, 𝒯, ℳ, modeltype::EnergyModel) end
 
 """
-    variables_trans_opex(m, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+    variables_trans_opex(m, 𝒯, ℳ, modeltype::EnergyModel)
 
-Create variables for the operational costs for the investments in transmission.
+Declaration of variables for the operational costs of the tranmission modes.
 """
 function variables_trans_opex(m, 𝒯, ℳ, modeltype::EnergyModel)
 
@@ -91,21 +88,14 @@ function variables_trans_opex(m, 𝒯, ℳ, modeltype::EnergyModel)
 end
 
 """
-    variables_trans_capacity(m, 𝒯, ℳ, modeltype)
+    variables_trans_capacity(m, 𝒯, ℳ, modeltype::EnergyModel)
 
-Create variables to track how much of installed transmision capacity is used for all
-time periods `t ∈ 𝒯`.
+Declaration of variables for tracking how much of installed transmision capacity is used f
+or all time periods `t ∈ 𝒯` of the tranmission modes.
 """
-function variables_trans_capacity(m, 𝒯, ℳ, modeltype)
-
-    𝒯ᴵⁿᵛ = strategic_periods(𝒯)
-    𝒯ᴵⁿᵛ
+function variables_trans_capacity(m, 𝒯, ℳ, modeltype::EnergyModel)
 
     @variable(m, trans_cap[ℳ, 𝒯] >= 0)
-
-    for tm ∈ ℳ, t ∈ 𝒯
-        @constraint(m, trans_cap[tm, t] == capacity(tm, t))
-    end
 end
 
 
@@ -181,7 +171,6 @@ Adds the following special variables for linepacking:
 function variables_trans_mode(m, 𝒯, ℳᴸᴾ::Vector{<:PipeLinepackSimple}, modeltype::EnergyModel)
 
     @variable(m, linepack_stor_level[ℳᴸᴾ, 𝒯] >= 0)
-
 end
 
 
@@ -228,9 +217,7 @@ end
 Repaces constraints for availability nodes of type GeoAvailability.
 The resource balances are set by the area constraints instead.
 """
-function EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫, modeltype::EnergyModel)
-
-end
+function EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫, modeltype::EnergyModel) end
 
 
 """
@@ -238,9 +225,7 @@ end
 
 Default fallback method when no function is defined for a node type.
 """
-function create_area(m, a::Area, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
-
-end
+function create_area(m, a::Area, 𝒯, ℒᵗʳᵃⁿˢ, modeltype) end
 
 """
     create_area(m, a::LimitedExchangeArea, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
@@ -267,7 +252,7 @@ Create transmission constraints on all transmission corridors.
 function constraints_transmission(m, 𝒯, ℳ, modeltype::EnergyModel)
 
     for tm ∈ ℳ
-        create_transmission_mode(m, tm, 𝒯)
+        create_transmission_mode(m, tm, 𝒯, modeltype)
     end
 end
 
@@ -294,26 +279,27 @@ end
 
 
 """
-    create_transmission_mode(m, 𝒯, tm)
+    create_transmission_mode(m, tm::TransmissionMode, 𝒯, modeltype::EnergyModel)
 
-Set all constraints for transmission mode. Serves as a fallback option for unspecified subtypes of `TransmissionMode`.
+Set all constraints for transmission mode. Serves as a fallback option for unspecified
+subtypes of `TransmissionMode`.
 """
-function create_transmission_mode(m, tm::TransmissionMode, 𝒯)
+function create_transmission_mode(m, tm::TransmissionMode, 𝒯, modeltype::EnergyModel)
 
     # Defining the required sets
     𝒯ᴵⁿᵛ = strategic_periods(𝒯)
 
     # Call of the function for tranmission balance
     # Generic trans in which each output corresponds to the input minus losses
-    constraints_trans_balance(m, tm, 𝒯)
+    constraints_trans_balance(m, tm, 𝒯, modeltype)
 
     # Call of the functions for tranmission losses
-    constraints_trans_loss(m, tm, 𝒯)
+    constraints_trans_loss(m, tm, 𝒯, modeltype)
 
     # Call of the function for limiting the capacity to the maximum installed capacity
-    constraints_capacity(m, tm, 𝒯)
+    constraints_capacity(m, tm, 𝒯, modeltype)
 
     # Call of the functions for both fixed and variable OPEX constraints introduction
-    constraints_opex_fixed(m, tm, 𝒯ᴵⁿᵛ)
-    constraints_opex_var(m, tm, 𝒯ᴵⁿᵛ)
+    constraints_opex_fixed(m, tm, 𝒯ᴵⁿᵛ, modeltype)
+    constraints_opex_var(m, tm, 𝒯ᴵⁿᵛ, modeltype)
 end
