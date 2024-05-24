@@ -285,8 +285,8 @@ function update_objective(m, 𝒯, ℳ, modeltype::EnergyModel)
 
     # Update of the cost function for modes with investments
     for t_inv ∈ 𝒯ᴵⁿᵛ, tm ∈ ℳ
-        obj -= duration(t_inv) * m[:trans_opex_fixed][tm, t_inv]
-        obj -= duration(t_inv) * m[:trans_opex_var][tm, t_inv]
+        obj -= duration_strat(t_inv) * m[:trans_opex_fixed][tm, t_inv]
+        obj -= duration_strat(t_inv) * m[:trans_opex_var][tm, t_inv]
     end
 
     @objective(m, Max, obj)
