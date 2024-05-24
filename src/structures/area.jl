@@ -7,10 +7,10 @@ abstract type Area end
 A `RefArea` is an area representation with no additional constraints on energy/mass exchange.
 
 # Fields
-- **`id`** is the name/identifier of the area.\n
-- **`name`** is the name of the area.\n
-- **`lon::Real`** is the longitudinal position of the area.\n
-- **`lat::Real`** is the latitudinal position of the area.\n
+- **`id`** is the name/identifier of the area.
+- **`name`** is the name of the area.
+- **`lon::Real`** is the longitudinal position of the area.
+- **`lat::Real`** is the latitudinal position of the area.
 - **`node::Availability`** is the `Availability` node routing different resources within an area.
 
 """
@@ -23,7 +23,6 @@ struct RefArea <: Area
 end
 Base.show(io::IO, a::Area) = print(io, "$(a.name)")
 
-
 """
     LimitedExchangeArea <: Area
 
@@ -32,14 +31,14 @@ operational period for the provided resources. This can be necessary when an are
 coupled with multiple other areas and the total export capacity should be restricted.
 
 # Fields
-- **`id`** is the name/identifier of the area.\n
-- **`name`** is the name of the area.\n
-- **`lon::Real`** is the longitudinal position of the area.\n
-- **`lat::Real`** is the latitudinal position of the area.\n
-- **`node::Availability`** is the `Availability` node routing different resources within \
-an area.
-- **`limit::Dict{<:EMB.Resource, <:TimeProfile}`** is the amount of a resource that can \
-be exchanged with other areas
+- **`id`** is the name/identifier of the area.
+- **`name`** is the name of the area.
+- **`lon::Real`** is the longitudinal position of the area.
+- **`lat::Real`** is the latitudinal position of the area.
+- **`node::Availability`** is the `Availability` node routing different resources within an
+  area.
+- **`limit::Dict{<:EMB.Resource, <:TimeProfile}`** is the amount of a resource that can be
+  exchanged with other areas
 """
 struct LimitedExchangeArea <: Area
     id
@@ -58,12 +57,11 @@ A `GeoAvailability` is required if transmission should be included between indiv
 `Area`s due to a changed mass balance.
 
 # Fields
-- **`id`** is the name/identifier of the node.\n
-- **`input::Array{<:Resource}`** are the input `Resource`s with conversion value `Real`. \
-The latter are not relevant but included for consistency with other formulations.\n
-- **`output::Array{<:Resource}`** are the generated `Resource`s with conversion value `Real`. \
-The latter are not relevant but included for consistency with other formulations.\n
-
+- **`id`** is the name/identifier of the node.
+- **`input::Array{<:Resource}`** are the input `Resource`s with conversion value `Real`.
+  The latter are not relevant but included for consistency with other formulations.
+- **`output::Array{<:Resource}`** are the generated `Resource`s with conversion value `Real`.
+  The latter are not relevant but included for consistency with other formulations.
 """
 struct GeoAvailability <: EMB.Availability
     id
@@ -96,139 +94,74 @@ limit_resources(a::LimitedExchangeArea) = collect(keys(a.limit))
 
 """
     exchange_limit(a::LimitedExchangeArea)
-
-Returns the limits of the exchange resources in area `a`.
-"""
-exchange_limit(a::LimitedExchangeArea) = a.limit
-"""
     exchange_limit(a::LimitedExchangeArea, p::Resource)
-
-Returns the limit of exchange resource `p` in area `a` a `TimeProfile`.
-"""
-exchange_limit(a::LimitedExchangeArea, p::Resource) =
-    haskey(a.limit, p) ? a.limit[p] : FixedProfile(0)
-"""
     exchange_limit(a::LimitedExchangeArea, p::Resource, t)
 
-Returns the limit of exchange resource `p` in area `a` at time period `t`.
+Returns the limits of the exchange resources in area `a` as dictionary, the value of
+resource `p` as `TimeProfile`, or the value of resource p in operational period `t`.
+
+If the resource `p` is not included, the function returns either a `FixedProfile(0)` or a
+value of 0.
 """
+exchange_limit(a::LimitedExchangeArea) = a.limit
+exchange_limit(a::LimitedExchangeArea, p::Resource) =
+    haskey(a.limit, p) ? a.limit[p] : FixedProfile(0)
 exchange_limit(a::LimitedExchangeArea, p::Resource, t) =
     haskey(a.limit, p) ? a.limit[p][t] : 0
 
 """
-    trans_sub(ℒ, a::Area)
+    trans_sub(ℒᵗʳᵃⁿˢ, a::Area)
 
-Return connected transmission corridors for a given area.
+Return connected transmission corridors for a given area `a`.
 """
-function trans_sub(ℒ, a::Area)
-    return [filter(x -> x.from == a, ℒ),
-        filter(x -> x.to == a, ℒ)]
+function trans_sub(ℒᵗʳᵃⁿˢ, a::Area)
+    return [filter(x -> x.from == a, ℒᵗʳᵃⁿˢ),
+        filter(x -> x.to == a, ℒᵗʳᵃⁿˢ)]
 end
 
-"""
-    corr_from(from::String, ℒᵗʳᵃⁿˢ)
-
-Returns all transmission corridors that orginate in the `Area` with the name `from`.
-"""
-function corr_from(from::String, ℒᵗʳᵃⁿˢ)
-
-    sub_corr = Array{Transmission}([])
-    for l ∈ ℒᵗʳᵃⁿˢ
-        if isequal(from, l.from.name)
-            append!(sub_corr, [l])
-        end
-    end
-
-    return sub_corr
-end
 """
     corr_from(from::Area, ℒᵗʳᵃⁿˢ)
+    corr_from(from::String, ℒᵗʳᵃⁿˢ)
 
-Returns all transmission corridors that orginate in `Area` `from`.
+Returns all transmission corridors in `ℒᵗʳᵃⁿˢ` that orginate in the [`Area`](@ref) `from`.
+If `from` is provided as `String`, it returns the corridors in which the name is equal to
+`from`
 """
-function corr_from(from::Area, ℒᵗʳᵃⁿˢ)
+corr_from(from::Area, ℒᵗʳᵃⁿˢ) = filter(x -> x.from == from, ℒᵗʳᵃⁿˢ)
+corr_from(from::String, ℒᵗʳᵃⁿˢ) = filter(x -> name(x.from) == from, ℒᵗʳᵃⁿˢ)
 
-    sub_corr = Array{Transmission}([])
-    for l ∈ ℒᵗʳᵃⁿˢ
-        if from == l.from
-            append!(sub_corr, [l])
-        end
-    end
-
-    return sub_corr
-end
-
-"""
-    corr_to(to::String, ℒᵗʳᵃⁿˢ)
-
-Returns all transmission corridors that end in the `Area` with the name `to`.
-"""
-function corr_to(to::String, ℒᵗʳᵃⁿˢ)
-
-    sub_corr = Array{Transmission}([])
-    for l ∈ ℒᵗʳᵃⁿˢ
-        if isequal(to, l.to.name)
-            append!(sub_corr, [l])
-        end
-    end
-
-    return sub_corr
-end
 """
     corr_to(to::Area, ℒᵗʳᵃⁿˢ)
+    corr_to(to::String, ℒᵗʳᵃⁿˢ)
 
-Returns all transmission corridors that end in `Area` `to`.
+Returns all transmission corridors in `ℒᵗʳᵃⁿˢ` that end in the [`Area`](@ref) `to`.
+If `to` is provided as `String`, it returns the corridors in which the name is equal to
+`to`
 """
-function corr_to(to::Area, ℒᵗʳᵃⁿˢ)
+corr_to(to::Area, ℒᵗʳᵃⁿˢ) = filter(x -> x.to == to, ℒᵗʳᵃⁿˢ)
+corr_to(to::String, ℒᵗʳᵃⁿˢ) = filter(x -> name(x.to) == to, ℒᵗʳᵃⁿˢ)
 
-    sub_corr = Array{Transmission}([])
-    for l ∈ ℒᵗʳᵃⁿˢ
-        if to == l.to
-            append!(sub_corr, [l])
-        end
-    end
+"""
+    corr_from_to(from::Union{Area,String}, to::Union{Area,String}, ℒᵗʳᵃⁿˢ)
 
-    return sub_corr
+Returns the transmission corridor that orginate in the [`Area`](@ref) `from` and end in the
+[`Area`](@ref) `to`.
+
+The function accepts both inputs as `String` and `Area` as well as a combination of both
+"""
+function corr_from_to(from::Union{Area,String}, to::Union{Area,String}, ℒᵗʳᵃⁿˢ)
+    ℒᶠʳᵒᵐ = corr_from(from, ℒᵗʳᵃⁿˢ)
+    return  corr_to(to, ℒᶠʳᵒᵐ)
 end
 
 """
-    corr_from_to(from::String, to::String, ℒᵗʳᵃⁿˢ)
+    extract_resources(ℒᵗʳᵃⁿˢ, resource_method)
 
-Returns the transmission corridor that orginate in the `Area` with the id `from`
-and end in the `Area` with the id `to`.
+Return the resources transported/consumed by the transmission corridors in `ℒᵗʳᵃⁿˢ`.
 """
-function corr_from_to(from::String, to::String, ℒᵗʳᵃⁿˢ)
-
-    for l ∈ ℒᵗʳᵃⁿˢ
-        if isequal(from, l.from.name) && isequal(to, l.to.name)
-            return l
-        end
-    end
-end
-
-"""
-    corr_from_to(from::Area, to::Area, ℒᵗʳᵃⁿˢ)
-
-Returns the transmission corridor that orginate in the `Area` with the id `from`
-and end in the `Area` with the id `to`.
-"""
-function corr_from_to(from::Area, to::Area, ℒᵗʳᵃⁿˢ)
-
-    for l ∈ ℒᵗʳᵃⁿˢ
-        if from == l.from && to == l.to
-            return l
-        end
-    end
-end
-
-"""
-    extract_resources(ℒ, resource_method)
-
-Return the resources transported/consumed by the transmission corridors in ℒ.
-"""
-function extract_resources(ℒ, resource_method)
+function extract_resources(ℒᵗʳᵃⁿˢ, resource_method)
     resources = []
-    for l ∈ ℒ
+    for l ∈ ℒᵗʳᵃⁿˢ
         for transmission_mode ∈ modes(l)
             append!(resources, resource_method(transmission_mode))
         end
@@ -238,32 +171,33 @@ end
 
 
 """
-    import_resources(ℒ, a::Area)
+    import_resources(ℒᵗʳᵃⁿˢ, a::Area)
 
-Return the resources imported into area `a` on the transmission corridors in `ℒ`.
+Return the resources imported into area `a` on the transmission corridors in `ℒᵗʳᵃⁿˢ`.
 """
-function import_resources(ℒ, a::Area)
-    ℒᵗᵒ = filter(x -> x.to == a, ℒ)
+function import_resources(ℒᵗʳᵃⁿˢ, a::Area)
+    ℒᵗᵒ = filter(x -> x.to == a, ℒᵗʳᵃⁿˢ)
     return extract_resources(ℒᵗᵒ, outputs)
 end
 
 
 """
-    export_resources(ℒ, a::Area)
+    export_resources(ℒᵗʳᵃⁿˢ, a::Area)
 
-Return the resources exported from area `a` on the transmission corridors in `ℒ`.
+Return the resources exported from area `a` on the transmission corridors in `ℒᵗʳᵃⁿˢ`.
 """
-function export_resources(ℒ, a::Area)
-    ℒᶠʳᵒᵐ = filter(x -> x.from == a, ℒ)
+function export_resources(ℒᵗʳᵃⁿˢ, a::Area)
+    ℒᶠʳᵒᵐ = filter(x -> x.from == a, ℒᵗʳᵃⁿˢ)
     return extract_resources(ℒᶠʳᵒᵐ, inputs)
 end
 
 """
-    exchange_resources(ℒ, a::Area)
+    exchange_resources(ℒᵗʳᵃⁿˢ, a::Area)
 
-Return the resources exchanged (import and export) from area a on the transmission corridors in ℒ.
+Return the resources exchanged (import and export) from area `a` on the transmission
+corridors in `ℒᵗʳᵃⁿˢ`.
 """
-function exchange_resources(ℒ, a::Area)
-    l_exch = vcat(import_resources(ℒ, a), export_resources(ℒ, a))
+function exchange_resources(ℒᵗʳᵃⁿˢ, a::Area)
+    l_exch = vcat(import_resources(ℒᵗʳᵃⁿˢ, a), export_resources(ℒᵗʳᵃⁿˢ, a))
     return unique(l_exch)
 end

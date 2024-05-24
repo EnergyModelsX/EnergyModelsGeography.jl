@@ -52,9 +52,9 @@ function EMG.variables_trans_capex(m, 𝒯, ℳ, modeltype::EMB.AbstractInvestme
 
     # Add transmission specific investment variables for each strategic period:
     @variable(m, trans_cap_capex[ℳᴵⁿᵛ,  𝒯ᴵⁿᵛ] >= 0)
-    @variable(m, trans_cap_current[ℳᴵⁿᵛ, 𝒯ᴵⁿᵛ] >= 0)    # Installed capacity
-    @variable(m, trans_cap_add[ℳᴵⁿᵛ, 𝒯ᴵⁿᵛ] >= 0)        # Add capacity
-    @variable(m, trans_cap_rem[ℳᴵⁿᵛ, 𝒯ᴵⁿᵛ] >= 0)        # Remove capacity
+    @variable(m, trans_cap_current[ℳᴵⁿᵛ, 𝒯ᴵⁿᵛ] >= 0)
+    @variable(m, trans_cap_add[ℳᴵⁿᵛ, 𝒯ᴵⁿᵛ] >= 0)
+    @variable(m, trans_cap_rem[ℳᴵⁿᵛ, 𝒯ᴵⁿᵛ] >= 0)
     @variable(m, trans_cap_invest_b[ℳᴵⁿᵛ, 𝒯ᴵⁿᵛ]; container=IndexedVarArray)
     @variable(m, trans_cap_remove_b[ℳᴵⁿᵛ, 𝒯ᴵⁿᵛ]; container=IndexedVarArray)
 end
@@ -71,9 +71,9 @@ When the modeltype is an investment model, the function introduces the related c
 for the capacity expansion. The investment mode and lifetime mode are used for adding
 constraints.
 
-The default function only accepts nodes with [`SingleInvData`](@extref EnergyModelsBase.SingleInvData). If you have several
-capacities for investments, you have to dispatch specifically on the function. This is
-implemented for `Storage` nodes.
+The default function only accepts nodes with
+[`SingleInvData`](@extref EnergyModelsBase.SingleInvData). If you have several capacities
+for investments, you have to dispatch specifically on the function.
 """
 function EMG.constraints_capacity_installed(
     m,

@@ -1,9 +1,13 @@
 
 """
     compute_trans_in(m, t, p, tm::TransmissionMode)
+    compute_trans_in(m, t, p, tm::PipeMode)
 
-Return the amount of resources going into transmission corridor `l` by a generic
-`TransmissionMode`
+Return the amount of resource `p` going into transmission mode `tm` in operational period
+`t`.
+
+The function is declared for both a generic [`TransmissionMode`](@ref) and for a
+[`PipeMode`](@ref).
 """
 function compute_trans_in(m, t, p, tm::TransmissionMode)
     exp = 0
@@ -12,12 +16,6 @@ function compute_trans_in(m, t, p, tm::TransmissionMode)
     end
     return exp
 end
-
-"""
-    compute_trans_in(m, t, p, tm::PipeMode)
-
-Return the amount of resources going into transmission corridor `l` by a `PipeMode`.
-"""
 function compute_trans_in(m, t, p, tm::PipeMode)
     exp = 0
     if inputs(tm)[1] == p
@@ -31,9 +29,13 @@ end
 
 """
     compute_trans_out(m, t, p, tm::TransmissionMode)
+    compute_trans_out(m, t, p, tm::PipeMode)
 
-Return the amount of resources going out of transmission corridor `l` by a generic
-`TransmissionMode`
+Return the amount of resource `p` going out of transmission mode `tm` in operational period
+`t`.
+
+The function is declared for both a generic [`TransmissionMode`](@ref) and for a
+[`PipeMode`](@ref).
 """
 function compute_trans_out(m, t, p, tm::TransmissionMode)
     exp = 0
@@ -42,12 +44,6 @@ function compute_trans_out(m, t, p, tm::TransmissionMode)
     end
     return exp
 end
-
-"""
-    compute_trans_out(m, t, p, tm::PipeMode)
-
-Return the amount of resources going out of transmission corridor `l` by a `PipeMode`.
-"""
 function compute_trans_out(m, t, p, tm::PipeMode)
     exp = 0
     if outputs(tm)[1] == p
