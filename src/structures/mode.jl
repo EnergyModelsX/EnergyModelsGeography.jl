@@ -12,8 +12,8 @@ Generic representation of dynamic transmission modes, using for example truck, s
 - **`trans_cap::TimeProfile`** is the capacity of the transmission mode.\n
 - **`trans_loss::TimeProfile`** is the loss of the transported resource during \
 transmission, modelled as a ratio.\n
-- **`opex_var::TimeProfile`** is the variational operational costs per energy unit transported.\n
-- **`opex_fixed::TimeProfile`** is the fixed operational costs per installed capacity.\n
+- **`opex_var::TimeProfile`** is the variable operating expense per energy unit transported.\n
+- **`opex_fixed::TimeProfile`** is the fixed operating expense per installed capacity.\n
 - **`directions`** is the number of directions the resource can be transported, \
 1 is unidirectional (A->B) or 2 is bidirectional (A<->B).\n
 - **`data::Vector{Data}`** is the additional data (e.g. for investments). The field \
@@ -51,8 +51,8 @@ Generic representation of static transmission modes, such as overhead power line
 - **`trans_cap::Real`** is the capacity of the transmission mode.\n
 - **`trans_loss::Real`** is the loss of the transported resource during transmission, \
 modelled as a ratio.\n
-- **`opex_var::TimeProfile`** is the variational operational costs per energy unit transported.\n
-- **`opex_fixed::TimeProfile`** is the fixed operational costs per installed capacity.\n
+- **`opex_var::TimeProfile`** is the variable operating expense per energy unit transported.\n
+- **`opex_fixed::TimeProfile`** is the fixed operating expense per installed capacity.\n
 - **`directions`** is the number of directions the resource can be transported, \
 1 is unidirectional (A->B) or 2 is bidirectional (A<->B).\n
 - **`data::Vector{Data}`** is the additional data (e.g. for investments). The field \
@@ -106,8 +106,8 @@ consumed, as a ratio of the volume of the resource going into the inlet. I.e.:
         `consumption_rate` = consumed volume / inlet volume (per operational period)\n
 - **`trans_cap::Real`** is the capacity of the transmission mode.\n
 - **`trans_loss::Real`** is the loss of the transported resource during transmission, modelled as a ratio.\n
-- **`opex_var::TimeProfile`** is the variational operational costs per energy unit transported.\n
-- **`opex_fixed::TimeProfile`** is the fixed operational costs per installed capacity.\n
+- **`opex_var::TimeProfile`** is the variable operating expense per energy unit transported.\n
+- **`opex_fixed::TimeProfile`** is the fixed operating expense per installed capacity.\n
 - **`directions`** specifies that the pipeline is Unidirectional (1) by default.\n
 - **`data::Vector{Data}`** is the additional data (e.g. for investments).
 """

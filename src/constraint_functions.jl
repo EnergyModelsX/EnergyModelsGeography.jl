@@ -173,7 +173,7 @@ function constraints_trans_balance(m, tm::PipeLinepackSimple, 𝒯::TimeStructur
         # Periodicity constraint
         if isnothing(t_prev)
             @constraint(m, m[:linepack_stor_level][tm, t] ==
-                           m[:linepack_stor_level][tm, last(collect(t_inv))] +
+                           m[:linepack_stor_level][tm, last(t_inv)] +
                            (m[:trans_in][tm, t] - m[:trans_loss][tm, t] - m[:trans_out][tm, t])
                            * duration(t)
             )

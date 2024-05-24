@@ -123,7 +123,7 @@ end
                         value.(m[:trans_out][pipeline, t]))*duration(t),
                     value.(m[:linepack_stor_level][pipeline, t]) -
                         (isnothing(t_prev) ?
-                            value.(m[:linepack_stor_level][pipeline, last(collect(t_inv))]) :
+                            value.(m[:linepack_stor_level][pipeline, last(t_inv)]) :
                             value.(m[:linepack_stor_level][pipeline, t_prev])
                         ),
                     atol=TEST_ATOL
