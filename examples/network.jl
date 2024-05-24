@@ -64,10 +64,11 @@ function generate_example_data()
     d_scale     = Dict(1=>3.0, 2=>1.5, 3=>1.0, 4=>0.5, 5=>0.5, 6=>0.0, 7=>3.0)
     mc_scale    = Dict(1=>2.0, 2=>2.0, 3=>1.5, 4=>0.5, 5=>0.5, 6=>0.5, 7=>3.0)
 
-    tromsø_demand = [OperationalProfile([10 10 10 10 35 40 45 45 50 50 60 60 50 45 45 40 35 40 45 40 35 30 30 30]);
-                     OperationalProfile([20 20 20 20 25 30 35 35 40 40 40 40 40 35 35 30 25 30 35 30 25 20 20 20]);
-                     OperationalProfile([20 20 20 20 25 30 35 35 40 40 40 40 40 35 35 30 25 30 35 30 25 20 20 20]);
-                     OperationalProfile([20 20 20 20 25 30 35 35 40 40 40 40 40 35 35 30 25 30 35 30 25 20 20 20]);
+    op_data = OperationalProfile([10, 10, 10, 10, 35, 40, 45, 45, 50, 50, 60, 60, 50, 45, 45, 40, 35, 40, 45, 40, 35, 30, 30, 30])
+    tromsø_demand = [op_data;
+                     op_data;
+                     op_data;
+                     op_data;
                     ]
     demand = Dict(1=>false, 2=>false, 3=>false, 4=>tromsø_demand, 5=>false, 6=>false, 7=>false)
 
@@ -179,7 +180,7 @@ function get_sub_system_data(
     NG, Coal, Power, CO2 = products
 
     # Use of standard demand if not provided differently
-    d_standard = OperationalProfile([20 20 20 20 25 30 35 35 40 40 40 40 40 35 35 30 25 30 35 30 25 20 20 20])
+    d_standard = OperationalProfile([10, 10, 10, 10, 35, 40, 45, 45, 50, 50, 60, 60, 50, 45, 45, 40, 35, 40, 45, 40, 35, 30, 30, 30])
     if demand == false
         demand = [d_standard; d_standard; d_standard; d_standard]
         demand *= d_scale
