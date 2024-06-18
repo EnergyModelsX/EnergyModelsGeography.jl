@@ -1,5 +1,9 @@
 # Release notes
 
+## Unversioned
+
+* Use dev version of EMG for examples when running as part of tests, similar to [PR #33 of EMB](https://github.com/EnergyModelsX/EnergyModelsBase.jl/pull/33).
+
 ## Version 0.9.0 (2024-05-24)
 
 ### Update on function calls for dispatching on `modeltype`
