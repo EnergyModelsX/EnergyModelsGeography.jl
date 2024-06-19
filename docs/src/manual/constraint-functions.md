@@ -34,7 +34,7 @@ This functions is also used to subsequently dispatch on model type for the intro
     ```
     without adding a function for
     ```julia
-    constraints_capacity_installed(m, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EMI.AbstractInvestmentModel)
+    constraints_capacity_installed(m, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EMB.AbstractInvestmentModel)
     ```
     as this can lead to a method ambiguity error.
 
