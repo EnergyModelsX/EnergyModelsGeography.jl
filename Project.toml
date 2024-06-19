@@ -18,6 +18,7 @@ EMIExt = "EnergyModelsInvestments"
 [compat]
 EnergyModelsBase = "^0.8"
 EnergyModelsInvestments = "0.7"
+SparseVariables = "0.7.3"
 JuMP = "1.5"
 TimeStruct = "^0.8"
 julia = "1.9"
