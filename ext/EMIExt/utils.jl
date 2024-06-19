@@ -18,3 +18,7 @@ EMI.investment_data(tm::EMG.TransmissionMode) =
     tm.data[findfirst(data -> typeof(data) <: InvestmentData, tm.data)]
 
 EMI.investment_data(n::EMG.TransmissionMode, field::Symbol) = getproperty(investment_data(n), field)
+
+
+EMI.start_cap(tm::EMG.TransmissionMode, t_inv, inv_data::NoStartInvData, cap) =
+    capacity(tm, t_inv)
