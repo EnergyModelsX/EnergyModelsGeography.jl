@@ -15,7 +15,7 @@ function EMG.update_objective(m, 𝒯, ℳ, modeltype::EMB.AbstractInvestmentMod
     𝒯ᴵⁿᵛ = strategic_periods(𝒯)
     ℳᴵⁿᵛ = filter(has_investment, ℳ)
     obj  = JuMP.objective_function(m)
-    disc = Discounter(discount_rate(modeltype), 𝒯)
+    disc = Discounter(EMB.discount_rate(modeltype), 𝒯)
 
     # Update of the cost function for modes with investments
     for t_inv ∈  𝒯ᴵⁿᵛ, tm ∈ ℳ
@@ -83,7 +83,7 @@ function EMG.constraints_capacity_installed(
 )
     if has_investment(tm)
         # Extract the investment data and the discount rate
-        disc_rate = discount_rate(modeltype)
+        disc_rate = EMB.discount_rate(modeltype)
         inv_data = EMI.investment_data(tm, :cap)
         𝒯ᴵⁿᵛ = strategic_periods(𝒯)
 
