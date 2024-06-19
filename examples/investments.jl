@@ -34,7 +34,7 @@ function generate_example_data_geo()
     @info "Generate data coded dummy model for now (Investment Model)"
 
     # Retrieve the products
-    products = get_resources()
+    products = get_resources_inv()
     NG = products[1]
     Power = products[3]
     CO2 = products[4]
@@ -51,7 +51,7 @@ function generate_example_data_geo()
     nodes = []
     links = []
     for a_id in area_ids
-        n, l = get_sub_system_data(
+        n, l = get_sub_system_data_inv(
             a_id,
             products;
             gen_scale = gen_scale[a_id],
@@ -182,7 +182,7 @@ function generate_example_data_geo()
 end
 
 
-function get_resources()
+function get_resources_inv()
 
     # Define the different resources
     NG = ResourceEmit("NG", 0.2)
@@ -195,7 +195,7 @@ function get_resources()
 end
 
 
-function get_sub_system_data(
+function get_sub_system_data_inv(
     i,
     products;
     gen_scale::Float64 = 1.0,
