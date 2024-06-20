@@ -14,5 +14,6 @@ const TS = TimeStruct
 
 include("model.jl")
 include("utils.jl")
+include("legacy_constructor.jl")
 
 end
