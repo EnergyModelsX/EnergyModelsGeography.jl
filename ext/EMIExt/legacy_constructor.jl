@@ -17,7 +17,7 @@ The new storage descriptions allows now for a reduction in functions which is us
 to make `EnergModelsInvestments` less dependent on `EnergyModelsBase`.
 
 The core changes to the existing structure is the move of the required parameters to the
-type [`Investment`](@ref) (_e.g._, the minimum and maximum added capacity is only required
+type Investment (_e.g._, the minimum and maximum added capacity is only required
 for investment mdodes that require these parameters) as well as moving the `lifetime` to the
 type [`LifetimeMode`], when required.
 
