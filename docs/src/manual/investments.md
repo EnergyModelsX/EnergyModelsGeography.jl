@@ -16,7 +16,7 @@ Transmission mode investments utilize the same data type [`SingleInvData`] as th
 This type inludes as fields [`AbstractInvData`](@extref EnergyModelsInvestments.AbstractInvData) which can be either in the form of [`StartInvData`](@extref EnergyModelsInvestments.StartInvData) or [`NoStartInvData`](@extref EnergyModelsInvestments.NoStartInvData).
 The exact description of the individual investment data and their fields can be found in the *[public library]* of `EnergyModelsInvestments`.
 
-Investments require the application of an [`InvestmentModel`](@ref) instead of an [`OperationalModel`](@ref).
+Investments require the application of an [`InvestmentModel`](@extref) instead of an [`OperationalModel`](@extref EnergyModelsBase.OperationalModel).
 This allows us to provide two core functions with new methods, `constraints_capacity_installed` (as described on *[Constraint functions]*), `variables_trans_capex`, a function previously not declaring any variables, and the update to the objective functoin `update_objective`.
 
 ## [Added variables](@id man-emi-var)

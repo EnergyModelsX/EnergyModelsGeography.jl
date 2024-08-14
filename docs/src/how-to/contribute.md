@@ -1,8 +1,8 @@
-# Contribute to EnergyModelsGeography
+# [Contribute to EnergyModelsGeography](@id how_to-con)
 
 Contributing to `EnergyModelsGeography` can be achieved in several different ways.
 
-## Creating new extensions
+## [Create new extensions](@id how_to-con-ext)
 
 The main focus of `EnergyModelsGeography` is to provide [`EnergyModelsBase`](https://energymodelsx.github.io/EnergyModelsBase.jl/stable/) with geographical representation using the concepts of [`Area`](@ref)s, [`Transmission`](@ref) corridors, or [`TransmissionMode`](@ref)s.
 Hence, a first approach to contributing to `EnergyModelsGeography` is to create a new package with, _e.g._, the introduction of new `Area`, `Transmission`, or `TransmissionMode` descriptions.
@@ -12,9 +12,9 @@ These descriptions can, _e.g._, include constraints for an `Area` or provide the
     We are currently working on guidelines for the best approach for `EnergyModelsGeography`, similar to the section [_Extensions to the model_](https://energymodelsx.github.io/EnergyModelsBase.jl/stable/manual/philosophy/#sec_phil_ext) in `EnergyModelsBase`.
     This section will provide you eventually with additional information regarding to how you can develop new `Area`, `Transmission`, or `TransmissionMode` descriptions.
 
-## File a bug report
+## [File a bug report](@id how_to-con-bug_rep)
 
-Another approach to contributing to `EnergyModelsGeography` is through filing a bug report as an _[issue](https://github.com/EnergyModelsX/EnergyModelsGeography.jl/issues/new)_ when unexpected behaviour is occuring.
+Another approach to contributing to `EnergyModelsGeography` is through filing a bug report as an [_issue_](https://github.com/EnergyModelsX/EnergyModelsGeography.jl/issues/new) when unexpected behaviour is occuring.
 
 When filing a bug report, please follow the following guidelines:
 
@@ -39,10 +39,10 @@ When filing a bug report, please follow the following guidelines:
 
     In order to improve the code, we welcome any reports of potential method ambiguities to help us improving the structure of the framework.
 
-## Feature requests
+## [Feature requests](@id how_to-feat_req)
 
 Although `EnergyModelsGeography` was designed with the aim of flexibility, it sometimes still requires additional features to account for potential extensions.
-Feature requests for `EnergyModelsGeography` should follow the guidelines developed for [`EnergyModelsBase`](https://energymodelsx.github.io/EnergyModelsBase.jl/stable/how-to/contribute/).
+Feature requests for `EnergyModelsGeography` should follow the guidelines developed for [_`EnergyModelsBase`_](https://energymodelsx.github.io/EnergyModelsBase.jl/stable/how-to/contribute/).
 
 !!! note
     `EnergyModelsGeography` should not include everything.

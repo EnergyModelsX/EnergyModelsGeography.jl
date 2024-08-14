@@ -1,11 +1,11 @@
-# [Constraint functions](@id constraint_functions)
+# [Constraint functions](@id man-con)
 
 The package provides standard constraint functions that can be use for new developed `TransmissionMode`s.
 The general approach is similar to `EnergyModelsBase`.
 Bidirectional transport requires at the time being the introduciton of an *if*-loop.
 In later implementation, it is planned to also use dispatch for this analysis as well.
 
-## Capacity constraints
+## [Capacity constraints](@id man-con-cap)
 
 ```julia
 constraints_capacity(m, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EnergyModel)
@@ -38,7 +38,7 @@ This functions is also used to subsequently dispatch on model type for the intro
     ```
     as this can lead to a method ambiguity error.
 
-## Transmission loss functions
+## [Transmission loss functions](@id man-con-trans_loss)
 
 ```julia
 constraints_trans_loss(m, tm::TransmissionMode, 𝒯ᴵⁿᵛ, modeltype::EnergyModel)
@@ -49,7 +49,7 @@ It is implemented for both the `TransmissionMode` and `PipeMode` abstract types.
 The key difference between the two is related that `PipeMode` does not allows for bidirectional transport.
 The loss is calculated for the provided `TransmissionMode`s as relative loss of the transported energy.
 
-## Balance functions
+## [Balance functions](@id man-con-balance)
 
 ```julia
 constraints_trans_balance(m, tm::TransmissionMode, 𝒯ᴵⁿᵛ, modeltype::EnergyModel)
@@ -66,7 +66,7 @@ The standard approach only relies on the conservation of mass/energy, while stor
     The implementation is working with the assumption that the initial level in a representative period is equal to the final level in the last representative period of a strategic period.
     This implies that it does not account correctly for the remaining level at the end of a representative period.
 
-## Operational expenditure constraints
+## [Operational expenditure constraints](@id man-con-opex)
 
 ```julia
 constraints_opex_fixed(m, tm::TransmissionMode, 𝒯ᴵⁿᵛ, modeltype::EnergyModel)
