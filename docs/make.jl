@@ -1,8 +1,20 @@
 using Documenter
+using DocumenterInterLinks
 
 using EnergyModelsGeography
+using EnergyModelsBase
+using EnergyModelsInvestments
 
 const EMG = EnergyModelsGeography
+
+# Copy the NEWS.md file
+cp("NEWS.md", "docs/src/manual/NEWS.md"; force=true)
+
+links = InterLinks(
+    "TimeStruct" => "https://sintefore.github.io/TimeStruct.jl/stable/",
+    "EnergyModelsBase" => "https://energymodelsx.github.io/EnergyModelsBase.jl/stable/",
+    "EnergyModelsInvestments" => "https://energymodelsx.github.io/EnergyModelsInvestments.jl/stable/",
+)
 
 DocMeta.setdocmeta!(
     EnergyModelsGeography,
@@ -11,18 +23,19 @@ DocMeta.setdocmeta!(
     recursive = true,
 )
 
-# Copy the NEWS.md file
-news = "docs/src/manual/NEWS.md"
-cp("NEWS.md", news; force=true)
-
 makedocs(
-    modules = [EnergyModelsGeography],
     sitename = "EnergyModelsGeography",
     format = Documenter.HTML(
         prettyurls = get(ENV, "CI", "false") == "true",
         edit_link = "main",
         assets = String[],
     ),
+    modules = [
+        EMG,
+        isdefined(Base, :get_extension) ?
+        Base.get_extension(EMG, :EMIExt) :
+        EMG.EMIExt
+    ],
     pages = [
         "Home" => "index.md",
         "Manual" => Any[
@@ -39,10 +52,13 @@ makedocs(
         ],
         "Library" => Any[
             "Public" => "library/public.md",
-            "Internals" => Any[
-                "Reference" => "library/internals/reference.md"]
-        ]
-    ]
+            "Internals"=>Any[
+                "Reference"=>"library/internals/reference.md",
+                "Reference EMIExt"=>"library/internals/reference_EMIExt.md",
+            ],
+        ],
+    ],
+    plugins=[links],
 )
 
 deploydocs(;
