@@ -45,6 +45,7 @@ makedocs(
             "Constraint functions" => "manual/constraint-functions.md",
             "TransmissionMode structure" => "manual/transmission-mode.md",
             "Example" => "manual/simple-example.md",
+            "Investment options"=>"manual/investments.md",
             "Release notes" => "manual/NEWS.md",
         ],
         "How to" => Any[
