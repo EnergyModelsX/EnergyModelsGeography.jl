@@ -1,5 +1,15 @@
 # Release notes
 
+## Version 0.8.6 (2024-08-19)
+
+### Bugfix
+
+* The variable OPEX for unidirectional transmission modes was wrongly calculated as it did not take into account the scaling provided through the optional keyword argument `op_per_strat` of `TimeStruct`.
+
+## Version 0.8.5 (2024-05-24)
+
+* Update of dependencies and adjustment to changes in `EnergyModelsBase` v0.7.
+
 ## Version 0.8.4 (2024-05-09)
 
 * Provided a contribution section in the documentation.
