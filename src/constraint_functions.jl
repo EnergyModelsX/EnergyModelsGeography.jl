@@ -204,7 +204,7 @@ function constraints_opex_fixed(m, tm::TransmissionMode, 𝒯ᴵⁿᵛ, modeltyp
 
     @constraint(m, [t_inv ∈ 𝒯ᴵⁿᵛ],
         m[:trans_opex_fixed][tm, t_inv] ==
-        opex_fixed(tm, t_inv) * m[:trans_cap][tm, first(t_inv)]
+            opex_fixed(tm, t_inv) * m[:trans_cap][tm, first(t_inv)]
     )
 end
 
@@ -221,14 +221,13 @@ function constraints_opex_var(m, tm::TransmissionMode, 𝒯ᴵⁿᵛ, modeltype:
         @constraint(m, [t_inv ∈ 𝒯ᴵⁿᵛ],
             m[:trans_opex_var][tm, t_inv] ==
                 opex_var(tm, t_inv) *
-                sum((m[:trans_pos][tm, t] + m[:trans_neg][tm, t]) *
-                    duration(t) * multiple_strat(t_inv, t) * probability(t)
+                    sum((m[:trans_pos][tm, t] + m[:trans_neg][tm, t]) * EMB.multiple(t_inv, t)
                 for t ∈ t_inv)
         )
     else
         @constraint(m, [t_inv ∈ 𝒯ᴵⁿᵛ],
             m[:trans_opex_var][tm, t_inv] ==
-            sum(m[:trans_out][tm, t] * opex_var(tm, t) * duration(t) for t ∈ t_inv)
+                sum(m[:trans_out][tm, t] * opex_var(tm, t) * EMB.multiple(t_inv, t) for t ∈ t_inv)
         )
     end
 end

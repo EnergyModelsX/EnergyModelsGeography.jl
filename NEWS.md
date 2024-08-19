@@ -1,6 +1,12 @@
 # Release notes
 
-## Unversioned
+## Version 0.9.1 (2024-05-24)
+
+### Bugfix
+
+* The variable OPEX for unidirectional transmission modes was wrongly calculated as it did not take into account the scaling provided through the optional keyword argument `op_per_strat` of `TimeStruct`.
+
+### Other
 
 * Use dev version of EMG for examples when running as part of tests, similar to [PR #33 of EMB](https://github.com/EnergyModelsX/EnergyModelsBase.jl/pull/33).
 
