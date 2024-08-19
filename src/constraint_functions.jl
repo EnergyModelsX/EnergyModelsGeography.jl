@@ -236,19 +236,23 @@ function constraints_opex_var(m, tm::TransmissionMode, 𝒯ᴵⁿᵛ, modeltype:
 end
 
 """
-    constraints_emission(m, tm::TransmissionMode, 𝒯)
+    constraints_emission(m, tm::TransmissionMode, 𝒯, modeltype::EnergyModel)
 
-Function for creating the constraints on the emissions of a generic `TransmissionMode`.
-This function serves as fallback option if no other function is specified for a `TransmissionMode`.
+Function for creating the constraints on the emissions of a generic `TransmissionMode` `tm`.
+This function serves as fallback option if no other function is specified for a
+`TransmissionMode`.
 """
-function constraints_emission(m, tm::TransmissionMode, 𝒯)
-    for t ∈ 𝒯
-        for p ∈ emit_resources(tm)
-            if directions(tm) == 1
-                @constraint(m, m[:trans_emission][tm, t, p] == emission(tm, p, t) * m[:trans_out][tm, t])
-            elseif  directions(tm) == 2
-                @constraint(m, m[:trans_emission][tm, t, p] == emission(tm, p, t) * (m[:trans_pos][tm, t] + m[:trans_neg][tm, t]))
-            end
-        end
+function constraints_emission(m, tm::TransmissionMode, 𝒯, modeltype::EnergyModel)
+
+    if is_bidirectional(tm)
+        @constraint(m, [t ∈ 𝒯, p_em ∈ emit_resources(tm)],
+            m[:emissions_trans][tm, t, p_em] ==
+                emission(tm, p_em, t) * (m[:trans_pos][tm, t] + m[:trans_neg][tm, t])
+        )
+    else
+        @constraint(m, [t ∈ 𝒯, p_em ∈ emit_resources(tm)],
+            m[:emissions_trans][tm, t, p_em] ==
+                emission(tm, p_em, t) * m[:trans_out][tm, t]
+        )
     end
 end

@@ -2,28 +2,6 @@
 abstract type TransmissionMode end
 Base.show(io::IO, t::TransmissionMode) = print(io, "$(t.id)")
 
-"""
-    hasemissions(m::TransmissionMode)
-
-Returns whether there are emissions associated with the transmisson mode.
-Default behaviour is no emissions.
-"""
-hasemissions(m::TransmissionMode) = false
-
-"""
-    emit_resources(m::TransmissionMode)
-
-Returns the types of emisssions associated with the transmission mode.
-"""
-emit_resources(m::TransmissionMode) = EMB.ResourceEmit[]
-
-"""
-    emission(m::TransmissionMode, p::EMB.ResourceEmit, t)
-
-Returns the emission of a specific resource in a time period t per unit transmitted.
-"""
-emission(m::TransmissionMode, p::EMB.ResourceEmit, t) = 0
-
 
 """ A reference dynamic `TransmissionMode`.
 
@@ -301,6 +279,36 @@ loss(tm::TransmissionMode, t) = tm.trans_loss[t]
 Returns the directions of transmission mode `tm`.
 """
 directions(tm::TransmissionMode) = tm.directions
+
+"""
+    has_emissions(tm::TransmissionMode)
+
+Returns whether there are emissions associated with transmisson mode `tm`.
+Default behaviour is no emissions.
+"""
+has_emissions(tm::TransmissionMode) = false
+
+"""
+    emit_resources(m::TransmissionMode)
+
+Returns the types of emisssions associated with transmission mode `tm`.
+"""
+emit_resources(tm::TransmissionMode) = EMB.ResourceEmit[]
+
+"""
+    emission(tm::TransmissionMode, p::EMB.ResourceEmit)
+
+Returns the emission of tasmission mode `tm` of a specific resource `p` as `TimeProfile`
+"""
+emission(tm::TransmissionMode, p::EMB.ResourceEmit) = 0
+
+"""
+    emission(tm::TransmissionMode, p::EMB.ResourceEmit, t)
+
+Returns the emission of tasmission mode `tm` of a specific resource `p` at time period `t`
+per unit transmitted.
+"""
+emission(tm::TransmissionMode, p::EMB.ResourceEmit, t) = 0
 
 """
     consumption_rate(tm::PipeMode)

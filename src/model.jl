@@ -182,14 +182,22 @@ end
 
 Creates variables for the modeling of tranmission emissions. These variables
 are only created for transmission modes where emissions are included.
+All emission resources that are not included for a type are fixed to a value of 0.
+
+The emission variables are differentiated in:
+* `:emissions_node` - emissions of a transmission mode in an operational period,
 """
 function variables_trans_emission(m, 𝒯, ℳ, 𝒫, modeltype)
-    ℳᵉᵐ = filter(m -> hasemissions(m), ℳ)
+    ℳᵉᵐ = filter(m -> has_emissions(m), ℳ)
     𝒫ᵉᵐ  = EMB.res_sub(𝒫, ResourceEmit)
-    @variable(m, trans_emission[ℳᵉᵐ, 𝒯, 𝒫ᵉᵐ] >= 0)
+
+    @variable(m, emissions_trans[ℳᵉᵐ, 𝒯, 𝒫ᵉᵐ] >= 0)
+
+    # Fix of unused emission variables to avoid free variables
+    for tm ∈ ℳᵉᵐ, p_em ∈ setdiff(𝒫ᵉᵐ, emit_resources(tm)), t ∈ 𝒯
+        fix(m[:emissions_trans][tm, t, p_em], 0; force = true)
+    end
 end
-
-
 
 """
     constraints_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, 𝒫, modeltype::EnergyModel)
@@ -301,17 +309,15 @@ Update the constraints aggregating total emissions in each time period
 with contributions from transmission emissions.
 """
 function update_total_emissions(m, 𝒯, ℳ, 𝒫, modeltype::EnergyModel)
-
-    ℳᵉᵐ = filter(m -> hasemissions(m), ℳ)
+    ℳᵉᵐ = filter(m -> has_emissions(m), ℳ)
     𝒫ᵉᵐ  = EMB.res_sub(𝒫, EMB.ResourceEmit)
 
     # Modify existing constraints on total emsission by adding contribution from
     # transmission emissions. Note the coefficient set to -1 since the total constraint
     # has the variables on the RHS.
     for tm ∈ ℳᵉᵐ,  p ∈ 𝒫ᵉᵐ, t ∈ 𝒯
-        JuMP.set_normalized_coefficient(m[:con_em_tot][t, p], m[:trans_emission][tm, t, p], -1.0)
+        JuMP.set_normalized_coefficient(m[:con_em_tot][t, p], m[:emissions_trans][tm, t, p], -1.0)
     end
-
 end
 
 
@@ -338,7 +344,7 @@ function create_transmission_mode(m, tm::TransmissionMode, 𝒯, modeltype::Ener
     constraints_capacity(m, tm, 𝒯, modeltype)
 
     # Call of the functions for tranmission emissions
-    constraints_emission(m, tm, 𝒯)
+    constraints_emission(m, tm, 𝒯, modeltype)
 
     # Call of the functions for both fixed and variable OPEX constraints introduction
     constraints_opex_fixed(m, tm, 𝒯ᴵⁿᵛ, modeltype)
