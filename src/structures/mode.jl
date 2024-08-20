@@ -283,7 +283,7 @@ directions(tm::TransmissionMode) = tm.directions
 """
     has_emissions(tm::TransmissionMode)
 
-Returns whether there are emissions associated with transmisson mode `tm`.
+Returns whether there are emissions associated with transmission mode `tm`.
 Default behaviour is no emissions.
 """
 has_emissions(tm::TransmissionMode) = false
@@ -291,21 +291,21 @@ has_emissions(tm::TransmissionMode) = false
 """
     emit_resources(m::TransmissionMode)
 
-Returns the types of emisssions associated with transmission mode `tm`.
+Returns the types of emissions associated with transmission mode `tm`.
 """
 emit_resources(tm::TransmissionMode) = EMB.ResourceEmit[]
 
 """
     emission(tm::TransmissionMode, p::EMB.ResourceEmit)
 
-Returns the emission of tasmission mode `tm` of a specific resource `p` as `TimeProfile`
+Returns the emission of transmission mode `tm` of a specific resource `p` as `TimeProfile`
 """
 emission(tm::TransmissionMode, p::EMB.ResourceEmit) = 0
 
 """
     emission(tm::TransmissionMode, p::EMB.ResourceEmit, t)
 
-Returns the emission of tasmission mode `tm` of a specific resource `p` at time period `t`
+Returns the emission of transmission mode `tm` of a specific resource `p` at time period `t`
 per unit transmitted.
 """
 emission(tm::TransmissionMode, p::EMB.ResourceEmit, t) = 0

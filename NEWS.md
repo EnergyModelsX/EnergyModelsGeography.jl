@@ -1,6 +1,6 @@
 # Release notes
 
-## Version 0.10.0 (2024-08-20)
+## Unversioned
 
 ### Introduced `EnergyModelsInvestments` as extension
 

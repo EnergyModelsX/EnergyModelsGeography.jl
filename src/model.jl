@@ -312,10 +312,10 @@ function update_total_emissions(m, 𝒯, ℳ, 𝒫, modeltype::EnergyModel)
     ℳᵉᵐ = filter(m -> has_emissions(m), ℳ)
     𝒫ᵉᵐ  = EMB.res_sub(𝒫, EMB.ResourceEmit)
 
-    # Modify existing constraints on total emsission by adding contribution from
-    # transmission emissions. Note the coefficient set to -1 since the total constraint
+    # Modify existing constraints on total emissions by adding contribution from
+    # transmission emissions. Note the coefficient is set to -1 since the total constraint
     # has the variables on the RHS.
-    for tm ∈ ℳᵉᵐ,  p ∈ 𝒫ᵉᵐ, t ∈ 𝒯
+    for tm ∈ ℳᵉᵐ, p ∈ 𝒫ᵉᵐ, t ∈ 𝒯
         JuMP.set_normalized_coefficient(m[:con_em_tot][t, p], m[:emissions_trans][tm, t, p], -1.0)
     end
 end
@@ -343,7 +343,7 @@ function create_transmission_mode(m, tm::TransmissionMode, 𝒯, modeltype::Ener
     # Call of the function for limiting the capacity to the maximum installed capacity
     constraints_capacity(m, tm, 𝒯, modeltype)
 
-    # Call of the functions for tranmission emissions
+    # Call of the functions for transmission emissions
     constraints_emission(m, tm, 𝒯, modeltype)
 
     # Call of the functions for both fixed and variable OPEX constraints introduction
