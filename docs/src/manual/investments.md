@@ -12,16 +12,16 @@ Investment options are added separately to each individual transmission mode thr
 This is similar to the approach used in
 Hence, it is possible to use different prices for the same technology in different regions or allow investments only in a limited subset of technologies.
 
-Transmission mode investments utilize the same data type [`SingleInvData`] as the majority of the node investments.
+Transmission mode investments utilize the same data type [`SingleInvData`](@extref EnergyModelsBase.SingleInvData) as the majority of the node investments.
 This type inludes as fields [`AbstractInvData`](@extref EnergyModelsInvestments.AbstractInvData) which can be either in the form of [`StartInvData`](@extref EnergyModelsInvestments.StartInvData) or [`NoStartInvData`](@extref EnergyModelsInvestments.NoStartInvData).
-The exact description of the individual investment data and their fields can be found in the *[public library]* of `EnergyModelsInvestments`.
+The exact description of the individual investment data and their fields can be found in the *[public library](@extref EnergyModelsInvestments lib-pub)* of `EnergyModelsInvestments`.
 
 Investments require the application of an [`InvestmentModel`](@extref) instead of an [`OperationalModel`](@extref EnergyModelsBase.OperationalModel).
-This allows us to provide two core functions with new methods, `constraints_capacity_installed` (as described on *[Constraint functions]*), `variables_trans_capex`, a function previously not declaring any variables, and the update to the objective functoin `update_objective`.
+This allows us to provide two core functions with new methods, `constraints_capacity_installed` (as described on *[Constraint functions](@ref man-con)*), `variables_trans_capex`, a function previously not declaring any variables, and the update to the objective functoin `update_objective`.
 
 ## [Added variables](@id man-emi-var)
 
 Investment options increase the number of variables.
-The individual variables are described in the *[documentation of `EnergyModelsInvestments`]*.
+The individual variables are described in the *[documentation of `EnergyModelsInvestments`](@extref EnergyModelsInvestments man-opt_var)*.
 
 All transmission modes with investments use the prefix `:trans`.
