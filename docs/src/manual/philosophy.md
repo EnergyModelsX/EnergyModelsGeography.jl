@@ -1,6 +1,6 @@
-# Philosophy
+# [Philosophy](@id man-phil)
 
-## General design philosophy
+## [General design philosophy](@id man-phil-gen)
 
 This package extends `EnergyModelsBase` with geographical functionalities.
 The geographical representation is achieved through individual `Area`s coupled with `Transmission` corridors.
@@ -24,7 +24,7 @@ This can be beneficial for the case of power lines *vs.* pipelines which may req
 We included in an internal version one approach to extend the emission constraints, but are not yet satisfied with the exact implementation.
 This implies that including emissions in mass/energy transport is on the agenda for future improvements.
 
-## Extensions to the model
+## [Extensions to the model](@id man-phil-ext)
 
 `EnergyModelsGeography` is also designed to be extended by the user.
 Extensions of `EnergyModelsGeography` are possible through
@@ -32,14 +32,14 @@ Extensions of `EnergyModelsGeography` are possible through
 1. specialized [`Area`](@ref)s (like the [`LimitedExchangeArea`](@ref)) and
 2. new [`TransmissionMode`](@ref)s.
 
-### Specialized `Area`s
+### [Specialized `Area`s](@id man-phil-ext-area)
 
 Specialized [`Area`](@ref)s are areas with additional constraints.
 In general, it is possible to import and export as much as possible through the connected `Transmission` corridors.
 Introducing specialized [`Area`](@ref)s allow the introduciton of additional constraints within an `Area`.
 These constraints can include, among others, limits on the CO₂ emissions within an `Area`, export limits both on, *e.g.* operational or strategic periods as well as many other modifications.
 
-### New [`TransmissionMode`](@ref)s
+### [New [`TransmissionMode`](@ref)s](@id man-phil-ext-transmissioN_mode)
 
 New [`TransmissionMode`](@ref)s may be relevant for describing a dynamic transport mechanism or for adding a distinctive description for an energy carrier.
 [`TransmissionMode`](@ref)s can be developed similar to new `Node`s as described in `EnergyModelsBase`.

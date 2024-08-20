@@ -14,6 +14,7 @@ using TimeStruct
 include(joinpath("structures", "area.jl"))
 include(joinpath("structures", "mode.jl"))
 include(joinpath("structures", "transmission.jl"))
+include(joinpath("structures", "data.jl"))
 include("checks.jl")
 include("model.jl")
 include("constraint_functions.jl")
@@ -27,6 +28,9 @@ export GeoAvailability
 export Transmission, TransmissionMode
 export RefStatic, RefDynamic
 export PipeMode, PipeSimple, PipeLinepackSimple
+
+# Export the legacy constructor for transmission investment data
+export TransInvData
 
 # Export commonly used functions for extracting fields in `Area`s
 export name, availability_node, limit_resources, exchange_limit, exchange_resources

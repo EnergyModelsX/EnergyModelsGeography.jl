@@ -17,6 +17,7 @@ Pages = [
     "manual/optimization-variables.md",
     "manual/constraint-functions.md",
     "manual/transmission-mode.md",
+    "manual/investments.md",
     "manual/simple-example.md"
 ]
 Depth = 1

@@ -1,4 +1,4 @@
-# [Optimization variables](@id optimization_variables)
+# [Optimization variables](@id man-opt_var)
 
 `EnergyModelsGeography` adds additional variables to `EnergyModelsBase`.
 These variables are required for being able to extend the model with geographic information.
@@ -9,7 +9,7 @@ The additional variables can be differentiated between `Area` variables and `Tra
     Variables that are energy/mass based have that property highlighted in the documentation below.
     This is only the case for the storage level in a `PipeLinepackSimple`.
 
-## [`Area`](@ref)
+## [`Area`](@id man-opt_var-area)
 
 `Area`s create only a single additional variable:
 
@@ -21,14 +21,14 @@ The exchange resources are automatically deduced from the coupled `TransmissionM
 The area exchange is negative when exporting energy/mass and positive when importing.
 This implies that for ``\texttt{area\_exchange}[a, t, p_\texttt{ex}] > 0``, the area imports product ``p``, and for ``\texttt{area\_exchange}[a, t, p_\texttt{ex}] < 0``, the area exports product ``p_\texttt{ex}``.
 
-## [`TransmissionMode`](@ref)
+## [`TransmissionMode`](@id man-opt_var-transmission_mode)
 
 !!! warning "'Inheritance' of optimization variables"
     Note that for all subtypes of [`TransmissionMode`](@ref) the variables created for the parent `TransmissionMode`-type will be created, in addition to the variables created for that type.
 
     This means that the type [`PipeLinepackSimple`](@ref) will not only have access to the optimization variable ``\texttt{linepack\_stor\_level}[m, t]``, but also all the optimization variables created for [`TransmissionMode`](@ref).
 
-### General variables for all `TransmissionMode`
+### [General variables for all `TransmissionMode`](@id man-opt_var-transmission_mode-gen)
 
 All variables described in this section are included for all subtypes of [`TransmissionMode`](@ref).
 In general, we can differentiate between capacity variables, flow variables, cost variables, and helper variables.
@@ -67,7 +67,7 @@ In addition, both ``\texttt{trans\_in}[m, t]`` and ``\texttt{trans\_out}[m, t]``
 
     If the energy/mass is transported  **opposite to the direction** of the `Transmission` corridor, then both variables are negative and ``\texttt{trans\_in}[m, t]`` corresponds to the **outlet** to the `TransmissionMode`.
 
-### [`PipeLinepackSimple`](@ref) <: `Pipeline` <: `TransmissionMode`
+### [[`PipeLinepackSimple`](@ref) <: `Pipeline` <: `TransmissionMode`](@id man-opt_var-transmission_mode-linepack)
 
 `PipeLinepackSimple` adds one additional variable:
 

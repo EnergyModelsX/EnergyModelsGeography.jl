@@ -1,5 +1,13 @@
 # Release notes
 
+## Unversioned
+
+### Introduced `EnergyModelsInvestments` as extension
+
+* `EnergyModelsInvestments` was switched to be an independent package in [PR #28](https://github.com/EnergyModelsX/EnergyModelsInvestments.jl/pull/28).
+* This approach required `EnergyModelsGeography` to include all functions and type declarations internally.
+* An extension was introduced to handle these problems.
+
 ## Version 0.9.1 (2024-05-24)
 
 ### Bugfix
