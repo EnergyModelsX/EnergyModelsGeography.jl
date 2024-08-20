@@ -71,7 +71,7 @@ When the modeltype is an investment model, the function introduces the related c
 for the capacity expansion. The investment mode and lifetime mode are used for adding
 constraints.
 
-The default function only accepts nodes with [`SingleInvData`](@ref). If you have several
+The default function only accepts nodes with [`SingleInvData`](@extref EnergyModelsBase.SingleInvData). If you have several
 capacities for investments, you have to dispatch specifically on the function. This is
 implemented for `Storage` nodes.
 """
