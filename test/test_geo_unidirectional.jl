@@ -127,19 +127,16 @@ end
     # Replace each TransmissionMode's with a PipeSimple with identical properties.
     for transmission in case[:transmission]
         for (i, prev_tm) ∈ enumerate(modes(transmission))
-            pipeline = EMG.PipeSimple(repr(prev_tm),
+            pipeline = PipeSimple(repr(prev_tm),
                                         inputs(prev_tm)[1],
                                         inputs(prev_tm)[1],
                                         inputs(prev_tm)[1], # Doesn't matter when Consumption_rate = 0
                                         FixedProfile(0),
-                                        prev_tm.trans_cap,
-                                        prev_tm.trans_loss,
-                                        prev_tm.opex_var,
-                                        prev_tm.opex_fixed,
-                                        directions(prev_tm),
-                                        Data[]
+                                        capacity(prev_tm),
+                                        loss(prev_tm),
+                                        opex_var(prev_tm),
+                                        opex_fixed(prev_tm),
                                         )
-            @assert directions(prev_tm) == 1 "The Direction mode should be unidirectional."
             modes(transmission)[i] = pipeline
         end
     end
