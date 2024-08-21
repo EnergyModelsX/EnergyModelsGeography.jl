@@ -1,6 +1,6 @@
 # Release notes
 
-## Version 0.10.0 (2024-05-24)
+## Version 0.10.0 (2024-08-21)
 
 ### Changed `PipeSimple` and `PipeLinepackSimple` types
 
