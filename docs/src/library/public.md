@@ -103,7 +103,7 @@ energy_share
 
 ### [`InvestmentData` types](@id lib-pub-inv_data-types)
 
-Transmission mode investmentments utilize the same investment data type ([`SingleInvData](@extref EnergyModelsBase.SingleInvData)) as investments in node capacities.
+Transmission mode investments utilize the same investment data type ([`SingleInvData`](@extref EnergyModelsBase.SingleInvData)) as investments in node capacities.
 
 ### [Legacy constructors](@id lib-pub-inv_data-leg)
 
