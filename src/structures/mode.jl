@@ -163,7 +163,8 @@ struct PipeSimple <: PipeMode
             opex_var,
             opex_fixed,
             1,
-            data)
+            data,
+            )
     end
 end
 function PipeSimple(
@@ -187,7 +188,8 @@ function PipeSimple(
         trans_loss,
         opex_var,
         opex_fixed,
-        Data[])
+        Data[],
+        )
 end
 
 """
@@ -237,7 +239,7 @@ struct PipeLinepackSimple <: PipeMode
         opex_var::TimeProfile,
         opex_fixed::TimeProfile,
         energy_share::Float64,
-        data::Vector{<:Data}
+        data::Vector{<:Data},
     )
         new(
             id,
@@ -251,7 +253,7 @@ struct PipeLinepackSimple <: PipeMode
             opex_fixed,
             energy_share,
             1,
-            data
+            data,
         )
     end
 end
