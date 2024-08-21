@@ -45,8 +45,6 @@ function small_graph_linepack()
         FixedProfile(0.05),   # Opex var
         FixedProfile(0.05),   # Opex fixed
         0.1,                  # Storage capacity
-        1,
-        Data[]
         )
 
     transmissions = [Transmission(areas[1], areas[2], [pipeline])]

@@ -1,5 +1,5 @@
 """
-    create_model(case, modeltype::EnergyModel; check_timeprofiles::Bool=true)
+    create_model(case, modeltype::EnergyModel, m::JuMP.Model; check_timeprofiles::Bool=true)
 
 Create the model and call all required functions.
 
@@ -69,7 +69,6 @@ function variables_area(m, 𝒜, 𝒯, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel)
     @variable(m, area_exchange[a ∈ 𝒜, 𝒯, p ∈ exchange_resources(ℒᵗʳᵃⁿˢ, a)])
 end
 
-
 """
     variables_trans_capex(m, 𝒯, ℳ, modeltype::EnergyModel)
 
@@ -101,7 +100,6 @@ function variables_trans_capacity(m, 𝒯, ℳ, modeltype::EnergyModel)
 
     @variable(m, trans_cap[ℳ, 𝒯] >= 0)
 end
-
 
 """
     variables_trans_modes(m, 𝒯, ℳ, modeltype::EnergyModel)
@@ -149,9 +147,9 @@ are:
 * `:trans_out` - outlet flow from a transmission mode
 * `:trans_loss` - loss during transmission
 * `:trans_loss_neg` - negative loss during transmission, helper variable if bidirectional
-transport is possible
+  transport is possible
 * `:trans_loss_pos` - positive loss during transmission, helper variable if bidirectional
-transport is possible
+  transport is possible
 """
 function variables_trans_mode(m, 𝒯, ℳˢᵘᵇ::Vector{<:TransmissionMode}, modeltype::EnergyModel)
 
@@ -163,7 +161,6 @@ function variables_trans_mode(m, 𝒯, ℳˢᵘᵇ::Vector{<:TransmissionMode}, 
     @variable(m, trans_neg[ℳ2, 𝒯] >= 0)
     @variable(m, trans_pos[ℳ2, 𝒯] >= 0)
 end
-
 
 """
     variables_trans_mode(m, 𝒯, ℳᴸᴾ::Vector{<:PipeLinepackSimple}, modeltype::EnergyModel)
@@ -194,7 +191,7 @@ function variables_trans_emission(m, 𝒯, ℳ, 𝒫, modeltype)
     @variable(m, emissions_trans[ℳᵉᵐ, 𝒯, 𝒫ᵉᵐ] >= 0)
 
     # Fix of unused emission variables to avoid free variables
-    for tm ∈ ℳᵉᵐ, p_em ∈ setdiff(𝒫ᵉᵐ, emit_resources(tm)), t ∈ 𝒯
+    for tm ∈ ℳᵉᵐ, t ∈ 𝒯, p_em ∈ setdiff(𝒫ᵉᵐ, emit_resources(tm))
         fix(m[:emissions_trans][tm, t, p_em], 0; force = true)
     end
 end
@@ -244,7 +241,6 @@ The resource balances are set by the area constraints instead.
 """
 function EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫, modeltype::EnergyModel) end
 
-
 """
     create_area(m, a::Area, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
 
@@ -268,7 +264,6 @@ function create_area(m, a::LimitedExchangeArea, 𝒯, ℒᵗʳᵃⁿˢ, modeltyp
 
 end
 
-
 """
     constraints_transmission(m, 𝒯, ℳ, modeltype::EnergyModel)
 
@@ -280,7 +275,6 @@ function constraints_transmission(m, 𝒯, ℳ, modeltype::EnergyModel)
         create_transmission_mode(m, tm, 𝒯, modeltype)
     end
 end
-
 
 """
     update_objective(m, 𝒩, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel)
@@ -319,8 +313,6 @@ function update_total_emissions(m, 𝒯, ℳ, 𝒫, modeltype::EnergyModel)
         JuMP.set_normalized_coefficient(m[:con_em_tot][t, p], m[:emissions_trans][tm, t, p], -1.0)
     end
 end
-
-
 
 """
     create_transmission_mode(m, tm::TransmissionMode, 𝒯, modeltype::EnergyModel)

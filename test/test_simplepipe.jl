@@ -43,7 +43,7 @@ function small_graph_co2_1()
 
     pipeline = PipeSimple(
         "pipeline", CO2_150, CO2_200, Power, FixedProfile(0.1), FixedProfile(100),
-        FixedProfile(0.05), FixedProfile(0.05), FixedProfile(0.05), 1, Data[])
+        FixedProfile(0.05), FixedProfile(0.05), FixedProfile(0.05))
 
     transmissions = [Transmission(areas[1], areas[2], [pipeline])]
 
@@ -94,7 +94,7 @@ end
     el_sink = 𝒩[5]
 
     transmission = case[:transmission][1]
-    pipeline::EMG.PipeSimple = modes(transmission)[1]
+    pipeline = modes(transmission)[1]
     inlet_resource = pipeline.inlet
     outlet_resource = pipeline.outlet
 

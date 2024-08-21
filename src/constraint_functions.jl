@@ -43,12 +43,6 @@ function constraints_capacity(m, tm::PipeMode, 𝒯::TimeStructure, modeltype::E
         set_lower_bound(m[:trans_in][tm, t], 0)
     end
 
-    # Bi-directional not allowed for PipeMode
-    if is_bidirectional(tm)
-        @warn "Only uni-directional tranmission is allowed for TransmissionMode of type
-        $(typeof(tm)), uni-directional constraints for capacity is implemented for $tm."
-    end
-
     # Add constraints for the installed capacity
     constraints_capacity_installed(m, tm, 𝒯, modeltype)
 end
@@ -76,12 +70,6 @@ function constraints_capacity(m, tm::PipeLinepackSimple, 𝒯::TimeStructure, mo
     @constraint(m, [t ∈ 𝒯],
         m[:linepack_stor_level][tm, t] <= energy_share(tm) * m[:trans_cap][tm, t])
 
-    # Bi-directional not allowed for PipeMode
-    if is_bidirectional(tm)
-        @warn "Only uni-directional tranmission is allowed for TransmissionMode of type
-        $(typeof(tm)), uni-directional constraints for capacity is implemented for $tm."
-    end
-
     # Add constraints for the installed capacity
     constraints_capacity_installed(m, tm, 𝒯, modeltype)
 end
@@ -99,7 +87,6 @@ function constraints_capacity_installed(m, tm::TransmissionMode, 𝒯::TimeStruc
     end
 end
 
-
 """
     constraints_trans_loss(m, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EnergyModel)
 
@@ -115,8 +102,8 @@ function constraints_trans_loss(m, tm::TransmissionMode, 𝒯::TimeStructure, mo
                 loss(tm, t) * (m[:trans_pos][tm, t] + m[:trans_neg][tm, t])
         )
 
-        # The positive and negative conponents of flow on a transmission mode
-        # (depends on the dicrestion a mode is defined)
+        # The positive and negative conponents of flow of a transmission mode
+        # depends on the direction a mode is defined
         @constraint(m, [t ∈ 𝒯],
             m[:trans_pos][tm, t] - m[:trans_neg][tm, t] ==
                 0.5 * (m[:trans_in][tm, t] + m[:trans_out][tm, t])
@@ -126,7 +113,6 @@ function constraints_trans_loss(m, tm::TransmissionMode, 𝒯::TimeStructure, mo
             m[:trans_loss][tm, t] == loss(tm, t) * m[:trans_in][tm, t]
         )
     end
-
 end
 
 """
@@ -136,17 +122,9 @@ Function for creating the constraint on the transmission loss of a generic `Pipe
 """
 function constraints_trans_loss(m, tm::PipeMode, 𝒯::TimeStructure, modeltype::EnergyModel)
 
-
     @constraint(m, [t ∈ 𝒯],
         m[:trans_loss][tm, t] == loss(tm, t) * m[:trans_in][tm, t])
-
-    if is_bidirectional(tm)
-        @warn "Only uni-directional tranmission is allowed for TransmissionMode of type
-        $(typeof(tm)), uni-directional constraint for loss is implemented for $tm."
-    end
-
 end
-
 
 """
     constraints_trans_balance(m, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EnergyModel)
@@ -193,7 +171,6 @@ function constraints_trans_balance(m, tm::PipeLinepackSimple, 𝒯::TimeStructur
 
 end
 
-
 """
     constraints_opex_fixed(m, tm::TransmissionMode, 𝒯ᴵⁿᵛ, modeltype::EnergyModel)
 
@@ -207,7 +184,6 @@ function constraints_opex_fixed(m, tm::TransmissionMode, 𝒯ᴵⁿᵛ, modeltyp
             opex_fixed(tm, t_inv) * m[:trans_cap][tm, first(t_inv)]
     )
 end
-
 
 """
     constraints_opex_var(m, tm::TransmissionMode, 𝒯ᴵⁿᵛ, modeltype::EnergyModel)

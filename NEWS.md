@@ -1,6 +1,11 @@
 # Release notes
 
-## Unversioned
+## Version 0.10.0 (2024-05-24)
+
+### Changed `PipeSimple` and `PipeLinepackSimple` types
+
+* Moved away from `@kwdef` to avoid having to specify potentially all field names.
+* Included an inner constructor for limiting the field directions to 1 to avoid issues in the calculations.
 
 ### Introduced `EnergyModelsInvestments` as extension
 
@@ -14,7 +19,7 @@
 * The clean approach was not achieved within a certain timeframe, hence, a limited approach is implemented based on the initial provided branches in both [`EMB`](https://github.com/EnergyModelsX/EnergyModelsBase.jl/tree/0.7/emissions) and [`EMG`](https://github.com/EnergyModelsX/EnergyModelsGeography.jl/tree/0.9/emissions).
 * The implementation is **not** tested!
 
-## Version 0.9.1 (2024-05-24)
+## Version 0.9.1 (2024-08-19)
 
 ### Bugfix
 
