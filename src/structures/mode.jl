@@ -10,7 +10,7 @@ A reference dynamic `TransmissionMode`.
 Generic representation of dynamic transmission modes, using for example truck, ship or railway transport.
 
 # Fields
-- **`id::String`** is the name/identifyer of the transmission mode.
+- **`id::String`** is the name/identifier of the transmission mode.
 - **`resource::Resource`** is the resource that is transported.
 - **`trans_cap::TimeProfile`** is the capacity of the transmission mode.
 - **`trans_loss::TimeProfile`** is the loss of the transported resource during
@@ -52,7 +52,7 @@ A reference static `TransmissionMode`.
 Generic representation of static transmission modes, such as overhead power lines or pipelines.
 
 # Fields
-- **`id::String`** is the name/identifyer of the transmission mode.
+- **`id::String`** is the name/identifier of the transmission mode.
 - **`resource::Resource`** is the resource that is transported.
 - **`trans_cap::Real`** is the capacity of the transmission mode.
 - **`trans_loss::Real`** is the loss of the transported resource during transmission,
