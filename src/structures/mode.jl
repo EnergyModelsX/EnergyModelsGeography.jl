@@ -2,6 +2,7 @@
 abstract type TransmissionMode end
 Base.show(io::IO, t::TransmissionMode) = print(io, "$(t.id)")
 
+
 """ A reference dynamic `TransmissionMode`.
 
 Generic representation of dynamic transmission modes, using for example truck, ship or railway transport.
@@ -278,6 +279,36 @@ loss(tm::TransmissionMode, t) = tm.trans_loss[t]
 Returns the directions of transmission mode `tm`.
 """
 directions(tm::TransmissionMode) = tm.directions
+
+"""
+    has_emissions(tm::TransmissionMode)
+
+Returns whether there are emissions associated with transmission mode `tm`.
+Default behaviour is no emissions.
+"""
+has_emissions(tm::TransmissionMode) = false
+
+"""
+    emit_resources(m::TransmissionMode)
+
+Returns the types of emissions associated with transmission mode `tm`.
+"""
+emit_resources(tm::TransmissionMode) = EMB.ResourceEmit[]
+
+"""
+    emission(tm::TransmissionMode, p::EMB.ResourceEmit)
+
+Returns the emission of transmission mode `tm` of a specific resource `p` as `TimeProfile`
+"""
+emission(tm::TransmissionMode, p::EMB.ResourceEmit) = 0
+
+"""
+    emission(tm::TransmissionMode, p::EMB.ResourceEmit, t)
+
+Returns the emission of transmission mode `tm` of a specific resource `p` at time period `t`
+per unit transmitted.
+"""
+emission(tm::TransmissionMode, p::EMB.ResourceEmit, t) = 0
 
 """
     consumption_rate(tm::PipeMode)

@@ -8,6 +8,12 @@
 * This approach required `EnergyModelsGeography` to include all functions and type declarations internally.
 * An extension was introduced to handle these problems.
 
+### Introduced potential for emissions of `TransmissionMode`s
+
+* As outlined in [Issue 9](https://github.com/EnergyModelsX/EnergyModelsGeography.jl/issues/9), there is a requirement for potential emissions from `TransmissionMode`s.
+* The clean approach was not achieved within a certain timeframe, hence, a limited approach is implemented based on the initial provided branches in both [`EMB`](https://github.com/EnergyModelsX/EnergyModelsBase.jl/tree/0.7/emissions) and [`EMG`](https://github.com/EnergyModelsX/EnergyModelsGeography.jl/tree/0.9/emissions).
+* The implementation is **not** tested!
+
 ## Version 0.9.1 (2024-05-24)
 
 ### Bugfix
