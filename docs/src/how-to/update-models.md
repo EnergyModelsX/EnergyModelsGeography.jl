@@ -9,9 +9,9 @@ We will as well implement information regarding the adjustment of extension pack
 
 ### [Key changes for transmission mode descriptions](@id how_to-update-06-mode)
 
-Version 0.10 removed the keywrod definition of [`PipeSimple`](@ref) and [`PipeLinepackSimple`](@ref).
+Version 0.10 removed the keyword definition of [`PipeSimple`](@ref) and [`PipeLinepackSimple`](@ref).
 A key aim behind this removal is to avoid having to specify the fields if one does not provide a value to the data or the directions field.
-THis was solved through
+This was solved through:
 
 1. an internal constructor only allowing for unidirectional pipelines and
 2. an external constructor for cases in which the field `data` is not specified.
