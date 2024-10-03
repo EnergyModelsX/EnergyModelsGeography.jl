@@ -49,6 +49,9 @@ makedocs(
             "Investment options"=>"manual/investments.md",
             "Release notes" => "manual/NEWS.md",
         ],
+        "Areas and Modes" => Any[
+            "Areas" => "area_mode/area.md",
+        ],
         "How to" => Any[
             "Update models" => "how-to/update-models.md",
             "Contribute to EnergyModelsGeography" => "how-to/contribute.md",

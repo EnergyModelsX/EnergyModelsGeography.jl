@@ -12,7 +12,6 @@ A `RefArea` is an area representation with no additional constraints on energy/m
 - **`lon::Real`** is the longitudinal position of the area.
 - **`lat::Real`** is the latitudinal position of the area.
 - **`node::Availability`** is the `Availability` node routing different resources within an area.
-
 """
 struct RefArea <: Area
     id
@@ -38,7 +37,7 @@ coupled with multiple other areas and the total export capacity should be restri
 - **`node::Availability`** is the `Availability` node routing different resources within an
   area.
 - **`limit::Dict{<:EMB.Resource, <:TimeProfile}`** is the amount of a resource that can be
-  exchanged with other areas
+  exchanged with other areas.
 """
 struct LimitedExchangeArea <: Area
     id

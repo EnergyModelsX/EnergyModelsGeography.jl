@@ -23,6 +23,15 @@ Pages = [
 Depth = 1
 ```
 
+## Description of the areas and transmission modes
+
+```@contents
+Pages = [
+    "area_-_mode/area.md",
+]
+Depth = 1
+```
+
 ## How to guides
 
 ```@contents
