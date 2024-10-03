@@ -1,9 +1,13 @@
-""" Declaration of the general type for transmission mode transporting resources between areas."""
+"""
+    abstract type TransmissionMode
+
+Declaration of the general type for transmission mode stransporting resources between areas.
+"""
 abstract type TransmissionMode end
 Base.show(io::IO, t::TransmissionMode) = print(io, "$(t.id)")
 
 """
-    RefDynamic <: TransmissionMode
+    struct RefDynamic <: TransmissionMode
 
 A reference dynamic `TransmissionMode`.
 
@@ -19,10 +23,10 @@ Generic representation of dynamic transmission modes, using for example truck, s
 - **`opex_fixed::TimeProfile`** is the fixed operating expense per installed capacity.
 - **`directions`** is the number of directions the resource can be transported,
   1 is unidirectional (A->B) or 2 is bidirectional (A<->B).
-- **`data::Vector{Data}`** is the additional data (e.g. for investments). The field `data`
+- **`data::Vector{Data}`** is the additional data (*e.g.*, for investments). The field `data`
   is conditional through usage of a constructor.
 """
-struct RefDynamic <: TransmissionMode # E.g. Trucks, ships etc.
+struct RefDynamic <: TransmissionMode # *e.g.*, Trucks, ships etc.
     id::String
     resource::EMB.Resource
     trans_cap::TimeProfile
@@ -45,7 +49,7 @@ function RefDynamic(
 end
 
 """
-    RefStatic <: TransmissionMode
+    struct RefStatic <: TransmissionMode
 
 A reference static `TransmissionMode`.
 
@@ -61,7 +65,7 @@ Generic representation of static transmission modes, such as overhead power line
 - **`opex_fixed::TimeProfile`** is the fixed operating expense per installed capacity.
 - **`directions`** is the number of directions the resource can be transported,
   1 is unidirectional (A->B) or 2 is bidirectional (A<->B).
-- **`data::Vector{Data}`** is the additional data (e.g. for investments). The field `data`
+- **`data::Vector{Data}`** is the additional data (*e.g.*, for investments). The field `data`
   is conditional through usage of a constructor.
 """
 struct RefStatic <: TransmissionMode # E.g. overhead power lines, pipelines etc.
@@ -88,18 +92,18 @@ end
 
 
 """
-    PipeMode <: TransmissionMode
+    abstract type PipeMode <: TransmissionMode
 
 `TransmissionMode` mode for additional variable potential.
 """
 abstract type PipeMode <: TransmissionMode end
 
 """
-    PipeSimple <: PipeMode
+    struct PipeSimple <: PipeMode
 
 This `TransmissionMode` allows for altering the transported `Resource`.
 
-A usage of this could e.g. be by defining a subtype struct of `Resource` with the field
+A usage of this could be, *e.g.*, by defining a subtype struct of `Resource` with the field
 'pressure'. This PipelineMode can then take `SomeSubtype<:Resource` with pressure p₁ at the
 inlet, and pressure p₂ at the outlet.
 
@@ -117,7 +121,7 @@ be consumed at the wrong `Area`.
 - **`outlet::Resource`** is the `Resource` going out of the outlet of the transmission.
 - **`consuming::Resource`** is the `Resource` the transmission consumes by operating.
 - **`consumption_rate::Real`** the rate of which the resource `Pipeline.consuming` is
-  consumed, as a ratio of the volume of the resource going into the inlet, i.e.:
+  consumed, as a ratio of the volume of the resource going into the inlet, *i.e.*:
 
         `consumption_rate` = consumed volume / inlet volume (per operational period)
 - **`trans_cap::Real`** is the capacity of the transmission mode.
@@ -125,7 +129,7 @@ be consumed at the wrong `Area`.
   modelled as a ratio.
 - **`opex_var::TimeProfile`** is the variable operating expense per energy unit transported.
 - **`opex_fixed::TimeProfile`** is the fixed operating expense per installed capacity.
-- **`data::Vector{Data}`** is the additional data (e.g. for investments). The field `data`
+- **`data::Vector{Data}`** is the additional data (*e.g.*, for investments). The field `data`
   is conditional through usage of a constructor.
 """
 struct PipeSimple <: PipeMode
@@ -194,7 +198,7 @@ function PipeSimple(
 end
 
 """
-    PipeLinepackSimple <: PipeMode
+    struct PipeLinepackSimple <: PipeMode
 
 Pipeline model with linepacking implemented as simple storage function.
 
@@ -204,7 +208,7 @@ Pipeline model with linepacking implemented as simple storage function.
 - **`outlet::Resource`** is the `Resource` going out of the outlet of the transmission.
 - **`consuming::Resource`** is the `Resource` the transmission consumes by operating.
 - **`consumption_rate::Real`** the rate of which the resource `Pipeline.consuming` is
-  consumed, as a ratio of the volume of the resource going into the inlet, i.e.:\n
+  consumed, as a ratio of the volume of the resource going into the inlet, *i.e.*:\n
         `consumption_rate` = consumed volume / inlet volume (per operational period)
 - **`trans_cap::Real`** is the capacity of the transmission mode.
 - **`trans_loss::Real`** is the loss of the transported resource during transmission,
@@ -212,7 +216,7 @@ Pipeline model with linepacking implemented as simple storage function.
 - **`opex_var::TimeProfile`** is the variable operating expense per energy unit transported.
 - **`opex_fixed::TimeProfile`** is the fixed operating expense per installed capacity.
 - **`energy_share::Float64`** is the storage energy capacity relative to pipeline capacity.
-- **`data::Array{<:Data}`** is the additional data (e.g. for investments). The field `data`
+- **`data::Array{<:Data}`** is the additional data (*e.g.*, for investments). The field `data`
   is conditional through usage of a constructor.
 """
 struct PipeLinepackSimple <: PipeMode
@@ -449,6 +453,13 @@ energy_share(tm::PipeLinepackSimple) = tm.energy_share
 """
     is_bidirectional(tm::TransmissionMode)
 
-Checks whether TransmissionMode `tm` is bidirectional.
+Checks whether transmission mode `tm` is bidirectional.
 """
 is_bidirectional(tm::TransmissionMode) = tm.directions == 2
+
+"""
+    mode_data(tm::TransmissionMode)
+
+Returns the [`Data`](@extref EnergyModelsBase.Data) array of transmission mode `tm`.
+"""
+mode_data(tm::TransmissionMode) = tm.data

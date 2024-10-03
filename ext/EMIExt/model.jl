@@ -1,7 +1,8 @@
 """
-    EMG.update_objective(m, 𝒩, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, modeltype::EMB.AbstractInvestmentModel)
+    EMG.update_objective(m, 𝒯, ℳ, modeltype::EMB.AbstractInvestmentModel)
 
-Create objective function overloading the default from EMB for EMB.AbstractInvestmentModel.
+Create objective function overloading the default from `EnergyModelsBase` for
+[`AbstractInvestmentModel`](@extref EnergyModelsBase.AbstractInvestmentModel).
 
 Maximize Net Present Value from revenues, investments (CAPEX) and operations (OPEX)
 

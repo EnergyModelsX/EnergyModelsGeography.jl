@@ -41,6 +41,6 @@ export getnodesinarea
 
 # Export commonly used functions for extracting fields in `TransmissionMode`s
 export map_trans_resource, exchange_resources
-export loss, directions, consumption_rate, energy_share
+export loss, directions, mode_data, consumption_rate, energy_share
 
 end # module

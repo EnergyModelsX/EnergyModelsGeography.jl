@@ -24,7 +24,7 @@ type [`LifetimeMode`], when required.
 See the _[documentation](https://energymodelsx.github.io/EnergyModelsInvestments.jl/stable/how-to/update-models)_
 for further information regarding how you can translate your existing model to the new model.
 """
-function TransInvData(;
+function EMG.TransInvData(;
     capex_trans::TimeProfile,
     trans_max_inst::TimeProfile,
     trans_max_add::TimeProfile,

@@ -8,7 +8,6 @@ Create the model and call all required functions.
   it is the case for standard `EnergyModelsBase` models. In addition, the keys `:areas` and
   `:transmission` are required for extending the existing model.
   If the input is not provided in the correct form, the checks will identify the problem.
-  In the case of a
 - `modeltype::EnergyModel` - Used modeltype, that is a subtype of the type `EnergyModel`.
 - `m` - the empty `JuMP.Model` instance. If it is not provided, then it is assumed that the
   input is a standard `JuMP.Model`.
@@ -18,12 +17,23 @@ Create the model and call all required functions.
   individual nodes should be checked or not. It is advised to not deactivate the check,
   except if you are testing new components. It may lead to unexpected behaviour and
   potential inconsistencies in the input data, if the time profiles are not checked.
+- `check_any_data::Bool=true` - A boolean indicator whether the input data is checked or not.
+  It is advised to not deactivate the check, except if you are testing new features.
+  It may lead to unexpected behaviour and even infeasible models.
 """
-function create_model(case, modeltype::EnergyModel, m::JuMP.Model; check_timeprofiles::Bool=true)
+function create_model(
+    case,
+    modeltype::EnergyModel,
+    m::JuMP.Model;
+    check_timeprofiles::Bool=true,
+    check_any_data::Bool = true,
+)
     @debug "Construct model"
     # Call of the basic model
-    m = EMB.create_model(case, modeltype, m; check_timeprofiles)
-    check_data(case, modeltype, check_timeprofiles)
+    m = EMB.create_model(case, modeltype, m; check_timeprofiles, check_any_data)
+    if check_any_data
+        check_data(case, modeltype, check_timeprofiles)
+    end
 
     # Data structure
     𝒜 = case[:areas]
@@ -54,9 +64,14 @@ function create_model(case, modeltype::EnergyModel, m::JuMP.Model; check_timepro
 
     return m
 end
-function create_model(case, modeltype::EnergyModel; check_timeprofiles::Bool=true)
+function create_model(
+    case,
+    modeltype::EnergyModel;
+    check_timeprofiles::Bool = true,
+    check_any_data::Bool = true,
+)
     m = JuMP.Model()
-    create_model(case, modeltype, m; check_timeprofiles)
+    create_model(case, modeltype, m; check_timeprofiles, check_any_data)
 end
 
 """
@@ -282,7 +297,7 @@ function constraints_transmission(m, 𝒯, ℳ, modeltype::EnergyModel)
 end
 
 """
-    update_objective(m, 𝒩, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, modeltype::EnergyModel)
+    update_objective(m, 𝒯, ℳ, modeltype::EnergyModel)
 
 Update the objective function with costs related to geography (areas and energy transmission).
 """
