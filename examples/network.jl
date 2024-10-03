@@ -198,14 +198,14 @@ function get_sub_system_data(
                 FixedProfile(1e12),         # Capacity in MW
                 FixedProfile(30*mc_scale),  # Variable OPEX in EUR/MW
                 FixedProfile(0),            # Fixed OPEX in EUR/24h
-                Dict(NG => 1),              # Output from the Node, in this gase, NG
+                Dict(NG => 1),              # Output from the Node, in this case, NG
             ),
             RefSource(
                 j+3,                        # Node id
                 FixedProfile(1e12),         # Capacity in MW
                 FixedProfile(9*mc_scale),   # Variable OPEX in EUR/MWh
                 FixedProfile(0),            # Fixed OPEX in EUR/24h
-                Dict(Coal => 1),            # Output from the Node, in this gase, coal
+                Dict(Coal => 1),            # Output from the Node, in this case, coal
             ),
             RefNetworkNode(
                 j+4,                        # Node id

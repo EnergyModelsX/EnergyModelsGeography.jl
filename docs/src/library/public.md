@@ -2,7 +2,7 @@
 
 ## [`Area`](@id lib-pub-area)
 
-A geographical `Area` consist of a location and a connection to a local energy system *via* a specialized `Availability` node called `GeoAvailability`.
+A geographical `Area` consist of a location and a connection to a local energy system **via** a specialized `Availability` node called `GeoAvailability`.
 The specialized `Availability` node is required to modify the energy/mass balance to allow for imports and exports.
 Constraints related to the area keep track of a resource's export and import to the local system and exchange with other areas.
 Multiple dispatch is used on the `Area` type for imposing specific constraints.
@@ -95,6 +95,7 @@ The following functions are defined and exported for accessing fields from a `Tr
 map_trans_resource
 loss
 directions
+mode_data
 consumption_rate
 energy_share
 ```

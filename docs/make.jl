@@ -5,6 +5,7 @@ using EnergyModelsGeography
 using EnergyModelsBase
 using EnergyModelsInvestments
 
+const EMB = EnergyModelsBase
 const EMG = EnergyModelsGeography
 
 # Copy the NEWS.md file
@@ -55,8 +56,9 @@ makedocs(
         "Library" => Any[
             "Public" => "library/public.md",
             "Internals"=>Any[
-                "Reference"=>"library/internals/reference.md",
-                "Reference EMIExt"=>"library/internals/reference_EMIExt.md",
+                "Functions"=>"library/internals/functions.md",
+                "Methods `EnergyModelsBase`"=>"library/internals/methods_EMB.md",
+                "Methods `EnergyModelsInvestments`"=>"library/internals/methods_EMIExt.md",
             ],
         ],
     ],

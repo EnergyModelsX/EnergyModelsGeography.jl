@@ -39,7 +39,7 @@ When filing a bug report, please follow the following guidelines:
 
     In order to improve the code, we welcome any reports of potential method ambiguities to help us improving the structure of the framework.
 
-## [Feature requests](@id how_to-feat_req)
+## [Feature requests](@id how_to-con-feat_req)
 
 Although `EnergyModelsGeography` was designed with the aim of flexibility, it sometimes still requires additional features to account for potential extensions.
 Feature requests for `EnergyModelsGeography` should follow the guidelines developed for [_`EnergyModelsBase`_](https://energymodelsx.github.io/EnergyModelsBase.jl/stable/how-to/contribute/).
