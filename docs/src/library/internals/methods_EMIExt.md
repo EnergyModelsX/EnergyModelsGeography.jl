@@ -27,4 +27,6 @@ EMG.variables_trans_capex(m, 𝒯, ℳ, modeltype::EMB.AbstractInvestmentModel)
 
 ```@docs
 EMI.get_var_inst
+EMI.has_investment
+EMI.investment_data
 ```
