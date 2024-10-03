@@ -35,9 +35,22 @@ Depth = 1
 
 ## Library outline
 
+### Public library
+
 ```@contents
 Pages = [
-    "library/public.md",
+    "library/public/area.md",
+    "library/public/transmission.md",
+    "library/public/mode.md",
+    "library/public/emi_extension.md",
+    ]
+Depth = 1
+```
+
+### Internal library
+
+```@contents
+Pages = [
     "library/internals/functions.md",
     "library/internals/methods_EMB.md",
     "library/internals/methods_EMIExt.md",

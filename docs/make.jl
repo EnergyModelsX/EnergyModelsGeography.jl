@@ -54,7 +54,12 @@ makedocs(
             "Contribute to EnergyModelsGeography" => "how-to/contribute.md",
         ],
         "Library" => Any[
-            "Public" => "library/public.md",
+            "Public" => Any[
+                "Areas"=>"library/public/area.md",
+                "Transmission"=>"library/public/transmission.md",
+                "TransmissionMode"=>"library/public/mode.md",
+                "EMI extension"=>"library/public/emi_extension.md",
+            ],
             "Internals"=>Any[
                 "Functions"=>"library/internals/functions.md",
                 "Methods `EnergyModelsBase`"=>"library/internals/methods_EMB.md",
