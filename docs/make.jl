@@ -44,7 +44,6 @@ makedocs(
             "Philosophy" => "manual/philosophy.md",
             "Optimization variables" => "manual/optimization-variables.md",
             "Constraint functions" => "manual/constraint-functions.md",
-            "TransmissionMode structure" => "manual/transmission-mode.md",
             "Example" => "manual/simple-example.md",
             "Investment options"=>"manual/investments.md",
             "Release notes" => "manual/NEWS.md",
@@ -52,6 +51,7 @@ makedocs(
         "Areas and Modes" => Any[
             "Areas" => "area_mode/area.md",
             "Transmission corridor" => "area_mode/corridor.md",
+            "Transmission modes" => "area_mode/mode.md",
         ],
         "How to" => Any[
             "Update models" => "how-to/update-models.md",

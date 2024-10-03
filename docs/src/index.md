@@ -16,7 +16,6 @@ Pages = [
     "manual/philosophy.md",
     "manual/optimization-variables.md",
     "manual/constraint-functions.md",
-    "manual/transmission-mode.md",
     "manual/investments.md",
     "manual/simple-example.md"
 ]
@@ -27,8 +26,9 @@ Depth = 1
 
 ```@contents
 Pages = [
-    "area_-_mode/area.md",
-    "area_-_mode/corridor.md",
+    "area-mode/area.md",
+    "area-mode/corridor.md",
+    "area-mode/mode.md",
 ]
 Depth = 1
 ```
