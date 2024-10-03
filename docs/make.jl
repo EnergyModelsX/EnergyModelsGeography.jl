@@ -51,6 +51,7 @@ makedocs(
         ],
         "Areas and Modes" => Any[
             "Areas" => "area_mode/area.md",
+            "Transmission corridor" => "area_mode/corridor.md",
         ],
         "How to" => Any[
             "Update models" => "how-to/update-models.md",

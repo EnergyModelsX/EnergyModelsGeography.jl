@@ -28,6 +28,7 @@ Depth = 1
 ```@contents
 Pages = [
     "area_-_mode/area.md",
+    "area_-_mode/corridor.md",
 ]
 Depth = 1
 ```
