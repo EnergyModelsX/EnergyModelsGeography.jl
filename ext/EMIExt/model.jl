@@ -18,19 +18,22 @@ function EMG.update_objective(m, 𝒯, ℳ, modeltype::EMB.AbstractInvestmentMod
     obj  = JuMP.objective_function(m)
     disc = Discounter(discount_rate(modeltype), 𝒯)
 
-    # Update of the cost function for modes with investments
-    for t_inv ∈  𝒯ᴵⁿᵛ, tm ∈ ℳ
-        if tm ∈ ℳᴵⁿᵛ
-            obj -= objective_weight(t_inv, disc) * m[:trans_cap_capex][tm, t_inv]
-        end
-        obj -= duration_strat(t_inv) * objective_weight(t_inv, disc, type="avg") *
-            m[:trans_opex_fixed][tm, t_inv]
-        obj -= duration_strat(t_inv) * objective_weight(t_inv, disc, type="avg") *
-            m[:trans_opex_var][tm, t_inv]
-    end
-
-    @objective(m, Max, obj)
-
+    # Calculate the CAPEX cost contribution
+    capex = @expression(m, [t_inv ∈ 𝒯ᴵⁿᵛ],
+        sum(m[:trans_cap_capex][tm, t_inv] for tm ∈ ℳᴵⁿᵛ)
+    )
+    # Calculate the OPEX cost contribution
+    opex = @expression(m, [t_inv ∈ 𝒯ᴵⁿᵛ],
+        sum(m[:trans_opex_var][tm, t_inv] + m[:trans_opex_fixed][tm, t_inv] for tm ∈ ℳ)
+    )
+    # Update the objective
+    @objective(m, Max,
+        obj -
+        sum(
+            opex[t_inv] * duration_strat(t_inv) * objective_weight(t_inv, disc, type="avg") +
+            capex[t_inv] * objective_weight(t_inv, disc)
+        for t_inv ∈ 𝒯ᴵⁿᵛ)
+    )
 end
 
 """

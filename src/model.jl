@@ -307,13 +307,14 @@ function update_objective(m, 𝒯, ℳ, modeltype::EnergyModel)
     𝒯ᴵⁿᵛ = strategic_periods(𝒯)
     obj = objective_function(m)
 
-    # Update of the cost function for modes with investments
-    for t_inv ∈ 𝒯ᴵⁿᵛ, tm ∈ ℳ
-        obj -= duration_strat(t_inv) * m[:trans_opex_fixed][tm, t_inv]
-        obj -= duration_strat(t_inv) * m[:trans_opex_var][tm, t_inv]
-    end
-
-    @objective(m, Max, obj)
+    # Calculate the OPEX cost contribution
+    opex = @expression(m, [t_inv ∈ 𝒯ᴵⁿᵛ],
+        sum(m[:trans_opex_var][tm, t_inv] + m[:trans_opex_fixed][tm, t_inv] for tm ∈ ℳ)
+    )
+    # Update the objective
+    @objective(m, Max,
+        obj - sum(opex[t_inv] * duration_strat(t_inv) for t_inv ∈ 𝒯ᴵⁿᵛ)
+    )
 end
 
 """
