@@ -5,6 +5,7 @@
 ### Minor updates
 
 * Reworked the tests and included the tests for investments.
+* Included an option to deactive the checks entirely with printing a warning, similarly to `EnergyModelsBase`.
 
 ### Rework of documentation
 
