@@ -1,5 +1,18 @@
 # Release notes
 
+## Unversioned
+
+### Minor updates
+
+* Reworked the tests and included the tests for investments.
+
+### Rework of documentation
+
+* The documentation received a significant rework.
+  The rework consists of:
+  * Provide webpages for the descriptions of `Area`s, `Transmission`, and `TransmissionMode` in which the fields are described more in detail as well as a description of the math.
+  * Restructured both the public and internal libraries
+
 ## Version 0.10.0 (2024-08-21)
 
 ### Changed `PipeSimple` and `PipeLinepackSimple` types
