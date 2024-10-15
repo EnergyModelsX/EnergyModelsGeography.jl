@@ -1,3 +1,7 @@
+const TEST_ATOL = 1e-6
+const ROUND_DIGITS = 8
+⪆(x, y) = x > y || isapprox(x, y; atol = TEST_ATOL)
+
 using HiGHS
 
 function optimize(case, modeltype)
@@ -8,7 +12,6 @@ function optimize(case, modeltype)
     optimize!(m)
     return m
 end
-
 
 function general_tests(m)
     # Check if the solution is optimal.

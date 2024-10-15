@@ -81,35 +81,31 @@ function bidirectional_case()
     return case, modeltype
 end
 
-@testset "Bidirectional transmission" begin
+# Reading of the case data
+case, modeltype = bidirectional_case()
 
-    # Reading of the case data
-    case, modeltype = bidirectional_case()
+# Create and solve the model
+m = optimize(case, modeltype)
 
-    # Create and solve the model
-    m = optimize(case, modeltype)
+# Run of the generalized tests
+general_tests(m)
 
-    # Run of the generalized tests
-    general_tests(m)
+# Reassigning the case data
+𝒯   = case[:T]
+l   = case[:transmission][1]
+tm  = modes(l)[1]
 
-    # Reassigning the case data
-    𝒯   = case[:T]
-    l   = case[:transmission][1]
-    tm  = modes(l)[1]
+# The sign should be the same for both directions
+@test sum(sign(value.(m[:trans_in])[tm, t])
+            == sign(value.(m[:trans_out])[tm, t]) for t ∈ 𝒯) == length(𝒯)
 
-    # The sign should be the same for both directions
-    @test sum(sign(value.(m[:trans_in])[tm, t])
-              == sign(value.(m[:trans_out])[tm, t]) for t ∈ 𝒯) == length(𝒯)
-
-    # Depending on the direction, check on the individual flows
-    for t ∈ 𝒯
-        if value.(m[:trans_in])[tm, t] <= 0
-            @test abs(value.(m[:trans_in])[tm, t]) <= abs(value.(m[:trans_out])[tm, t])
-            @test abs(value.(m[:trans_in])[tm, t]) == capacity(tm, t)
-        else
-            @test value.(m[:trans_out])[tm, t] <= value.(m[:trans_in])[tm, t]
-            @test value.(m[:trans_out])[tm, t] == capacity(tm, t)
-        end
+# Depending on the direction, check on the individual flows
+for t ∈ 𝒯
+    if value.(m[:trans_in])[tm, t] <= 0
+        @test abs(value.(m[:trans_in])[tm, t]) <= abs(value.(m[:trans_out])[tm, t])
+        @test abs(value.(m[:trans_in])[tm, t]) == capacity(tm, t)
+    else
+        @test value.(m[:trans_out])[tm, t] <= value.(m[:trans_in])[tm, t]
+        @test value.(m[:trans_out])[tm, t] == capacity(tm, t)
     end
-
 end

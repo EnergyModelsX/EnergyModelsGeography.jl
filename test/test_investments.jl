@@ -1,21 +1,99 @@
-"""
-    optimize_geo(case)
+using EnergyModelsInvestments
+const EMI = EnergyModelsInvestments
 
-Optimize the `case`.
+# Declaration of the required resources
+CO2 = ResourceEmit("CO2", 1.0)
+Power = ResourceCarrier("Power", 0.0)
+products = [Power, CO2]
+
 """
-function optimize_geo(case, modeltype)
-    m = EMG.create_model(case, modeltype)
-    set_optimizer(m, OPTIMIZER)
-    optimize!(m)
-    return m
+    small_graph_geo()
+
+Creates a simple geography test case with the potential for investments in transmission
+    infrastructure if provided with transmission investments through the argument `inv_data`.
+"""
+function small_graph_geo(; source = nothing, sink = nothing, inv_data = nothing)
+
+    # Creation of the source and sink module as well as the arrays used for nodes and links
+    if isnothing(source)
+        source = RefSource(
+            "-src",
+            FixedProfile(50),
+            FixedProfile(10),
+            FixedProfile(5),
+            Dict(Power => 1),
+            Array{Data}([]),
+        )
+    end
+
+    if isnothing(sink)
+        sink = RefSink(
+            "-snk",
+            StrategicProfile([20, 25, 30, 35]),
+            Dict(:surplus => FixedProfile(0), :deficit => FixedProfile(1e6)),
+            Dict(Power => 1),
+        )
+    end
+
+    nodes = [GeoAvailability(1, products), GeoAvailability(2, products), source, sink]
+    links = [
+        Direct(31, nodes[3], nodes[1], Linear())
+        Direct(24, nodes[2], nodes[4], Linear())
+    ]
+
+    # Creation of the two areas and potential transmission lines
+    areas = [
+        RefArea(1, "Oslo", 10.751, 59.921, nodes[1]),
+        RefArea(2, "Trondheim", 10.398, 63.4366, nodes[2]),
+    ]
+
+    if isnothing(inv_data)
+        inv_data = Data[]
+    else
+        inv_data = [inv_data]
+    end
+    transmission_line = RefStatic(
+        "transline",
+        Power,
+        FixedProfile(10),
+        FixedProfile(0.1),
+        FixedProfile(0.0),
+        FixedProfile(0.0),
+        1,
+        inv_data,
+    )
+
+    transmissions = [Transmission(areas[1], areas[2], [transmission_line])]
+
+    # Creation of the time structure and the used global data
+    T = TwoLevel(4, 1, SimpleTimes(1, 1))
+    modeltype = InvestmentModel(
+        Dict(CO2 => StrategicProfile([450, 400, 350, 300])),
+        Dict(CO2 => StrategicProfile([0, 0, 0, 0])),
+        CO2,
+        0.07,
+    )
+
+    # Creation of the case dictionary
+    case = Dict(
+        :nodes => nodes,
+        :links => links,
+        :products => products,
+        :areas => areas,
+        :transmission => transmissions,
+        :T => T,
+    )
+
+    return case, modeltype
 end
+
 
 # Test set for analysing the proper behaviour when no investment was included
 @testset "Unidirectional transmission without investments" begin
 
     # Creation and run of the optimization problem
     case, modeltype = small_graph_geo()
-    m               = optimize_geo(case, modeltype)
+    m               = optimize(case, modeltype)
 
     general_tests(m)
 
@@ -51,7 +129,7 @@ end
     )
 
     case, modeltype = small_graph_geo(;inv_data)
-    m               = optimize_geo(case, modeltype)
+    m               = optimize(case, modeltype)
 
     general_tests(m)
 
@@ -103,7 +181,7 @@ end
     )
 
     case, modeltype = small_graph_geo(;inv_data)
-    m               = optimize_geo(case, modeltype)
+    m               = optimize(case, modeltype)
 
     general_tests(m)
 
@@ -178,7 +256,7 @@ end
     )
 
     case, modeltype = small_graph_geo(;inv_data)
-    m               = optimize_geo(case, modeltype)
+    m               = optimize(case, modeltype)
 
     general_tests(m)
 
@@ -256,7 +334,7 @@ end
     )
 
     case, modeltype = small_graph_geo(;inv_data)
-    m               = optimize_geo(case, modeltype)
+    m               = optimize(case, modeltype)
 
     general_tests(m)
 
