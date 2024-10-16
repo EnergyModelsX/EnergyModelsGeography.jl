@@ -55,7 +55,7 @@ function small_graph_geo(; source = nothing, sink = nothing, inv_data = nothing)
     transmission_line = RefStatic(
         "transline",
         Power,
-        FixedProfile(10),
+        FixedProfile(0),
         FixedProfile(0.1),
         FixedProfile(0.0),
         FixedProfile(0.0),
@@ -124,7 +124,7 @@ end
     inv_data = SingleInvData(
         FixedProfile(10),       # capex [€/kW]
         FixedProfile(250),      # max installed capacity [kW]
-        0,                      # initial capacity [kW]
+        FixedProfile(0),        # initial capacity [kW]
         ContinuousInvestment(FixedProfile(0), FixedProfile(30)),
     )
 
@@ -151,7 +151,7 @@ end
                 for t ∈ t_inv
                     @test (
                         value.(m[:trans_cap_add][tm, t_inv]) ≈
-                        capacity(sink, t) - inv_data.initial
+                        capacity(sink, t) - EMI.start_cap(tm, t_inv, inv_data, nothing)
                     ) atol = TEST_ATOL
                 end
             end
@@ -176,7 +176,7 @@ end
     inv_data = SingleInvData(
         FixedProfile(10),       # capex [€/kW]
         FixedProfile(250),      # max installed capacity [kW]
-        0,                      # initial capacity [kW]
+        FixedProfile(0),        # initial capacity [kW]
         SemiContinuousInvestment(FixedProfile(10), FixedProfile(30)),
     )
 
@@ -204,7 +204,7 @@ end
                     for t ∈ t_inv
                         @test (
                             value.(m[:trans_cap_add][tm, t_inv]) >= max(
-                                capacity(sink, t) - inv_data.initial,
+                                capacity(sink, t)  - EMI.start_cap(tm, t_inv, inv_data, nothing),
                                 EMI.min_add(inv_data, t) *
                                 value.(m[:trans_cap_invest_b][tm, t_inv]),
                             )
@@ -247,7 +247,6 @@ end
     inv_data = SingleInvData(
         FixedProfile(10),       # capex [€/kW]
         FixedProfile(250),      # max installed capacity [kW]
-        0,                      # initial capacity [kW]
         SemiContinuousOffsetInvestment(
             FixedProfile(10),
             FixedProfile(30),
@@ -279,8 +278,8 @@ end
                 if isnothing(t_inv_prev)
                     for t ∈ t_inv
                         @test (
-                            value.(m[:trans_cap_add][tm, t_inv]) >= max(
-                                capacity(sink, t) - inv_data.initial,
+                            value.(m[:trans_cap_add][tm, t_inv]) ⪆ max(
+                                capacity(sink, t) - EMI.start_cap(tm, t_inv, inv_data, nothing),
                                 EMI.min_add(inv_data, t) *
                                 value.(m[:trans_cap_invest_b][tm, t_inv]),
                             )
@@ -329,7 +328,7 @@ end
     inv_data = SingleInvData(
         FixedProfile(10),       # capex [€/kW]
         FixedProfile(250),      # max installed capacity [kW]
-        0,                      # initial capacity [kW]
+        FixedProfile(0),        # initial capacity [kW]
         DiscreteInvestment(FixedProfile(5)),
     )
 

@@ -77,28 +77,28 @@ function generate_example_data_geo()
     inv_data_12 = SingleInvData(
         FixedProfile(500),
         FixedProfile(50),
-        0,
+        FixedProfile(0),
         BinaryInvestment(FixedProfile(50.0)),
     )
 
     inv_data_13 = SingleInvData(
         FixedProfile(10),
         FixedProfile(100),
-        0,
+        FixedProfile(0),
         SemiContinuousInvestment(FixedProfile(10), FixedProfile(100)),
     )
 
     inv_data_23 = SingleInvData(
         FixedProfile(10),
         FixedProfile(50),
-        20,
+        FixedProfile(20),
         DiscreteInvestment(FixedProfile(6)),
     )
 
     inv_data_34 = SingleInvData(
         FixedProfile(10),
         FixedProfile(50),
-        0,
+        FixedProfile(0),
         ContinuousInvestment(FixedProfile(1), FixedProfile(100)),
     )
 
@@ -349,7 +349,7 @@ function get_sub_system_data_inv(
                 SingleInvData(
                     FixedProfile(1000), # capex [€/kW]
                     FixedProfile(200),  # max installed capacity [kW]
-                    0,
+                    FixedProfile(0),
                     ContinuousInvestment(FixedProfile(10), FixedProfile(200)), # investment mode
                 ),
             ],

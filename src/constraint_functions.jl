@@ -218,14 +218,14 @@ function constraints_opex_var(m, tm::TransmissionMode, 𝒯ᴵⁿᵛ, modeltype:
             m[:trans_opex_var][tm, t_inv] ==
                     sum(
                         (m[:trans_pos][tm, t] + m[:trans_neg][tm, t]) *
-                        opex_var(tm, t_inv) * EMB.multiple(t_inv, t)
+                        opex_var(tm, t_inv) * scale_op_sp(t_inv, t)
                     for t ∈ t_inv)
         )
     else
         @constraint(m, [t_inv ∈ 𝒯ᴵⁿᵛ],
             m[:trans_opex_var][tm, t_inv] ==
                 sum(
-                    m[:trans_out][tm, t] * opex_var(tm, t) * EMB.multiple(t_inv, t)
+                    m[:trans_out][tm, t] * opex_var(tm, t) * scale_op_sp(t_inv, t)
                 for t ∈ t_inv)
         )
     end

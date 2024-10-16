@@ -120,7 +120,7 @@ This constraint is given by
 
 The [`GeoAvailability`](@ref) node is introduced to allow the energy balance of an area being handled on the [`Area`](@ref) level.
 It is in itself equivalent to the to [`GenAvailability`](@extref EnergyModelsBase.GenAvailability) node with respect to introduced fields and variables.
-*[Availability node]* provides a detailed description of availability nodes.
+*[Availability node](@extref EnergyModelsBase nodes-availability)* provides a detailed description of availability nodes.
 
 !!! warning "Energy exchange"
     All energy exchange between different areas is routed through a [`GeoAvailability`](@ref) node.
