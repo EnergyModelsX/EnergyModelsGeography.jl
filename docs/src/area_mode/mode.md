@@ -226,7 +226,7 @@ The following standard constraints are implemented for a [`TransmissionMode`](@r
   \begin{aligned}
   \texttt{trans\_opex\_var}[tm, t_{inv}] = \sum_{t \in t_{inv}} & opex\_var(tm, t) \times \\ &
   \texttt{trans\_out}[tm, t] \times \\ &
-  scale_op_sp(t_{inv}, t)
+  scale\_op\_sp(t_{inv}, t)
   \end{aligned}
   ```
 
@@ -236,12 +236,12 @@ The following standard constraints are implemented for a [`TransmissionMode`](@r
   \begin{aligned}
   \texttt{trans\_opex\_var}[tm, t_{inv}] = \sum_{t \in t_{inv}} & opex\_var(tm, t) \times \\ &
   \left(\texttt{trans\_pos}[tm, t] + \texttt{trans\_neg}[tm, t]\right) \times \\ &
-  scale_op_sp(t_{inv}, t)
+  scale\_op\_sp(t_{inv}, t)
   \end{aligned}
   ```
 
   !!! tip "The function `EMB.scale_op_sp`"
-      The function [``scale_op_sp(t_{inv}, t)``](@ref EnergyModelsBase.scale_op_sp) calculates the scaling factor between operational and strategic periods.
+      The function [``scale\_op\_sp(t_{inv}, t)``](@ref EnergyModelsBase.scale_op_sp) calculates the scaling factor between operational and strategic periods.
       It also takes into account potential operational scenarios and their probability as well as representative periods.
 
 - `constraints_emissions`:
