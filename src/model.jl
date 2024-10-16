@@ -30,7 +30,7 @@ function create_model(
 )
     @debug "Construct model"
     # Call of the basic model
-    m = EMB.create_model(case, modeltype, m; check_timeprofiles, check_any_data)
+    m = EMB.create_model(case, modeltype, m; check_timeprofiles)
     if check_any_data
         check_data(case, modeltype, check_timeprofiles)
     end
