@@ -1,7 +1,7 @@
 # [Transmission corridors](@id area_mode-trans_corr)
 
 The concept of transmission corridors is used to provide a common umbrella for individual transmission options between areas.
-The do not have any direct application within the mathematical description, but simplify the overall framework structure.
+They do not have any direct application within the mathematical description, but simplify the overall framework structure.
 
 ## [Introduced type and its fields](@id area_mode-trans_corr-fields)
 
@@ -13,7 +13,7 @@ The fields of the type are given as:
 - **`from::Area`** and **`to::Area`**:\
   The field `from` denotes the area in which the corridor is originating while field `to` denotes the area to which resources are transported in the corridor.
   This is especially important for unidirectional transmission.
-  It does not have a meaning in the case of bidirectional transmission,.
+  It does not have a meaning in the case of bidirectional transmission.
 - **`modes::Vector{<:Transmission}`**:\
   It is in general possible to include an arbitray number of *[transmission modes](@ref lib-pub-mode)* within a single corridor.
   As an example, you could consider both AC and DC power flow between area 1 and area 2.

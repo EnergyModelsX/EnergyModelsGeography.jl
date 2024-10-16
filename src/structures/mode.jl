@@ -1,7 +1,7 @@
 """
     abstract type TransmissionMode
 
-Declaration of the general type for transmission mode stransporting resources between areas.
+Declaration of the general type for transmission modes transporting resources between areas.
 """
 abstract type TransmissionMode end
 Base.show(io::IO, t::TransmissionMode) = print(io, "$(t.id)")

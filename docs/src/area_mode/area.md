@@ -42,8 +42,8 @@ Both types include the following fields:
 [`LimitedExchangeArea`](@ref) require an additional field:
 
 - **`limit::Dict{<:EMB.Resource, <:TimeProfile}`**:\
-  The exchange limit is the minimum amount of a resource that must be exported to other areas in each operational period.
-  It is still possible to import from other regions, but the overall net export must exceed the provided value.
+  The exchange limit is the maximum amount of a resource that can be exported to other areas in each operational period.
+  It is still possible to import from other regions, but the overall net export can not exceed the provided value.
 
 ### [Mathematical description](@id area_mode-areas-areas-math)
 
@@ -107,7 +107,7 @@ This is achieved through the *compute* functions as
 
 ##### [`create_area`](@id area_mode-areas-areas-math-con-crea)
 
-The [`RefArea`](@ref) does not introducve additional constraints.
+The [`RefArea`](@ref) does not introduce additional constraints.
 
 The [`LimitedExchangeArea`](@ref) introduces additional constraints on the net export from the area.
 This constraint is given by

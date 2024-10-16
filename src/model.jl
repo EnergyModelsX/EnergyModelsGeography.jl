@@ -125,7 +125,7 @@ This is done by calling the method [`variables_trans_mode`](@ref) on all modes o
 
 The `TransmissionMode` type representing the widest category will be called first. That is,
 `variables_trans_mode` will be called on a `TransmissionMode` before it is called on
-`PipeMode`-nodes.
+`PipeMode`.
 """
 function variables_trans_modes(m, 𝒯, ℳ, modeltype::EnergyModel)
 
