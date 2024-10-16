@@ -240,7 +240,7 @@ The following standard constraints are implemented for a [`TransmissionMode`](@r
   \end{aligned}
   ```
 
-  !!! tip "The function `EMB.scale_op_sp`"
+  !!! tip "The function `scale_op_sp`"
       The function [``scale\_op\_sp(t_{inv}, t)``](@ref EnergyModelsBase.scale_op_sp) calculates the scaling factor between operational and strategic periods.
       It also takes into account potential operational scenarios and their probability as well as representative periods.
 
