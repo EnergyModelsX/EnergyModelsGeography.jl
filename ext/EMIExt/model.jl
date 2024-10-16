@@ -1,7 +1,8 @@
 """
-    EMG.update_objective(m, 𝒩, 𝒯, 𝒫, ℒᵗʳᵃⁿˢ, modeltype::EMB.AbstractInvestmentModel)
+    EMG.update_objective(m, 𝒯, ℳ, modeltype::EMB.AbstractInvestmentModel)
 
-Create objective function overloading the default from EMB for EMB.AbstractInvestmentModel.
+Create objective function overloading the default from `EnergyModelsBase` for
+[`AbstractInvestmentModel`](@extref EnergyModelsBase.AbstractInvestmentModel).
 
 Maximize Net Present Value from revenues, investments (CAPEX) and operations (OPEX)
 
@@ -17,19 +18,22 @@ function EMG.update_objective(m, 𝒯, ℳ, modeltype::EMB.AbstractInvestmentMod
     obj  = JuMP.objective_function(m)
     disc = Discounter(discount_rate(modeltype), 𝒯)
 
-    # Update of the cost function for modes with investments
-    for t_inv ∈  𝒯ᴵⁿᵛ, tm ∈ ℳ
-        if tm ∈ ℳᴵⁿᵛ
-            obj -= objective_weight(t_inv, disc) * m[:trans_cap_capex][tm, t_inv]
-        end
-        obj -= duration_strat(t_inv) * objective_weight(t_inv, disc, type="avg") *
-            m[:trans_opex_fixed][tm, t_inv]
-        obj -= duration_strat(t_inv) * objective_weight(t_inv, disc, type="avg") *
-            m[:trans_opex_var][tm, t_inv]
-    end
-
-    @objective(m, Max, obj)
-
+    # Calculate the CAPEX cost contribution
+    capex = @expression(m, [t_inv ∈ 𝒯ᴵⁿᵛ],
+        sum(m[:trans_cap_capex][tm, t_inv] for tm ∈ ℳᴵⁿᵛ)
+    )
+    # Calculate the OPEX cost contribution
+    opex = @expression(m, [t_inv ∈ 𝒯ᴵⁿᵛ],
+        sum(m[:trans_opex_var][tm, t_inv] + m[:trans_opex_fixed][tm, t_inv] for tm ∈ ℳ)
+    )
+    # Update the objective
+    @objective(m, Max,
+        obj -
+        sum(
+            opex[t_inv] * duration_strat(t_inv) * objective_weight(t_inv, disc, type="avg") +
+            capex[t_inv] * objective_weight(t_inv, disc)
+        for t_inv ∈ 𝒯ᴵⁿᵛ)
+    )
 end
 
 """
@@ -52,9 +56,9 @@ function EMG.variables_trans_capex(m, 𝒯, ℳ, modeltype::EMB.AbstractInvestme
 
     # Add transmission specific investment variables for each strategic period:
     @variable(m, trans_cap_capex[ℳᴵⁿᵛ,  𝒯ᴵⁿᵛ] >= 0)
-    @variable(m, trans_cap_current[ℳᴵⁿᵛ, 𝒯ᴵⁿᵛ] >= 0)    # Installed capacity
-    @variable(m, trans_cap_add[ℳᴵⁿᵛ, 𝒯ᴵⁿᵛ] >= 0)        # Add capacity
-    @variable(m, trans_cap_rem[ℳᴵⁿᵛ, 𝒯ᴵⁿᵛ] >= 0)        # Remove capacity
+    @variable(m, trans_cap_current[ℳᴵⁿᵛ, 𝒯ᴵⁿᵛ] >= 0)
+    @variable(m, trans_cap_add[ℳᴵⁿᵛ, 𝒯ᴵⁿᵛ] >= 0)
+    @variable(m, trans_cap_rem[ℳᴵⁿᵛ, 𝒯ᴵⁿᵛ] >= 0)
     @variable(m, trans_cap_invest_b[ℳᴵⁿᵛ, 𝒯ᴵⁿᵛ]; container=IndexedVarArray)
     @variable(m, trans_cap_remove_b[ℳᴵⁿᵛ, 𝒯ᴵⁿᵛ]; container=IndexedVarArray)
 end
@@ -71,9 +75,9 @@ When the modeltype is an investment model, the function introduces the related c
 for the capacity expansion. The investment mode and lifetime mode are used for adding
 constraints.
 
-The default function only accepts nodes with [`SingleInvData`](@extref EnergyModelsBase.SingleInvData). If you have several
-capacities for investments, you have to dispatch specifically on the function. This is
-implemented for `Storage` nodes.
+The default function only accepts nodes with
+[`SingleInvData`](@extref EnergyModelsBase.SingleInvData). If you have several capacities
+for investments, you have to dispatch specifically on the function.
 """
 function EMG.constraints_capacity_installed(
     m,

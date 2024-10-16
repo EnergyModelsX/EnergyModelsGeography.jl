@@ -3,9 +3,9 @@
 A geographic corridor where `TransmissionModes` are used to transport resources.
 
 # Fields
-- **`from::Area`** is the area resources are transported from.\n
-- **`to::Area`** is the area resources are transported to.\n
-- **`modes::Vector{<:Transmission}`** are the transmission modes that are available.\n
+- **`from::Area`** is the area resources are transported from.
+- **`to::Area`** is the area resources are transported to.
+- **`modes::Vector{<:Transmission}`** are the transmission modes that are available.
 """
 struct Transmission
     from::Area
@@ -16,39 +16,30 @@ Base.show(io::IO, t::Transmission) = print(io, "$(t.from)-$(t.to)")
 
 """
     modes(l::Transmission)
+    modes(ℒᵗʳᵃⁿˢ::Vector{<:Transmission})
 
-Return an array of the transmission modes for a transmission corridor l.
+Return an array of the transmission modes for a transmission corridor `l` or for a vector
+of transmission corridors `ℒᵗʳᵃⁿˢ`.
 """
 modes(l::Transmission) = l.modes
-
-"""
-    modes(ℒ::Vector{::Transmission})
-
-Return an array of all transmission modes present in the different transmission corridors.
-"""
-function modes(ℒ::Vector{<:Transmission})
+function modes(ℒᵗʳᵃⁿˢ::Vector{<:Transmission})
     tmp = TransmissionMode[]
-    for l ∈ ℒ
+    for l ∈ ℒᵗʳᵃⁿˢ
         append!(tmp, modes(l))
     end
-
     return tmp
 end
 
 """
     modes_sub(l::Transmission, mode_type::TransmissionMode)
-
-Return an array containing all `TransmissionMode`s of type `type` in `Transmission`
-corridor `l`.
-"""
-function modes_sub(l::Transmission, mode_type::TransmissionMode)
-    return [tm for tm ∈ modes(l) if typeof(tm) == mode_type]
-end
-"""
     modes_sub(ℒᵗʳᵃⁿˢ::Vector{<:Transmission}, mode_type::TransmissionMode)
 
-Return an array containing all `TransmissionMode`s of type `type` in `Transmission`s `ℒ`.
+Return an array containing all `TransmissionMode`s of type `mode_type` in `Transmission`
+corridor `l` or for a vector of transmission corridors `ℒᵗʳᵃⁿˢ`.
 """
+function modes_sub(l::Transmission, mode_type::TransmissionMode)
+    return filter(tm -> isa(tm, typeof(mode_type)), modes(l))
+end
 function modes_sub(ℒᵗʳᵃⁿˢ::Vector{<:Transmission}, mode_type::TransmissionMode)
     return filter(tm -> isa(tm, typeof(mode_type)), modes(ℒᵗʳᵃⁿˢ))
 end
@@ -56,17 +47,11 @@ end
     modes_sub(l::Transmission, p::Resource)
 
 Return an array containing all `TransmissionMode`s that transport the resource `p` in
-`Transmission` corridor `l`.
+`Transmission` corridor `l` or in a vector of transmission corridors `ℒᵗʳᵃⁿˢ`.
 """
 function modes_sub(l::Transmission, p::Resource)
     return filter(tm -> map_trans_resource(tm) == p, modes(l))
 end
-"""
-    modes_sub(ℒᵗʳᵃⁿˢ::Vector{<:Transmission}, p::Resource)
-
-Return an array containing all `TransmissionMode`s that transport the resource `p` in
-`Transmission`s `ℒ`.
-"""
 function modes_sub(ℒᵗʳᵃⁿˢ::Vector{<:Transmission}, p::Resource)
     return filter(tm -> map_trans_resource(tm) == p, modes(ℒᵗʳᵃⁿˢ))
 end

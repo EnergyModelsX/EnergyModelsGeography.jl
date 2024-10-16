@@ -69,69 +69,65 @@ function small_graph_linepack()
     return case, modeltype
 end
 
+case, modeltype = small_graph_linepack()
 
-@testset "PipeLinepackSimple test" begin
+m = optimize(case, modeltype)
+general_tests(m)
 
-    case, modeltype = small_graph_linepack()
+"""
+TODO:
+- check that transport is above zero.
+- why doesnt it work if we remove the el_sink node?
+"""
+𝒯 = case[:T]
+𝒫 = case[:products]
+𝒩 = case[:nodes]
+ℒ = case[:transmission]
 
-    m = optimize(case, modeltype)
-    general_tests(m)
+Power = 𝒫[1]
+area_from = case[:areas][1]
+area_to = case[:areas][2]
 
-    """
-    TODO:
-    - check that transport is above zero.
-    - why doesnt it work if we remove the el_sink node?
-    """
-    𝒯 = case[:T]
-    𝒫 = case[:products]
-    𝒩 = case[:nodes]
-    ℒ = case[:transmission]
+source = 𝒩[3]
+sink = 𝒩[4]
 
-    Power = 𝒫[1]
-    area_from = case[:areas][1]
-    area_to = case[:areas][2]
+transmission = case[:transmission][1]
+pipeline = modes(transmission)[1]
 
-    source = 𝒩[3]
-    sink = 𝒩[4]
+# Defining the required sets
+𝒯ᴵⁿᵛ = strategic_periods(𝒯)
 
-    transmission = case[:transmission][1]
-    pipeline = modes(transmission)[1]
+@testset "Energy transferred" begin
+    # Test that energy is transferred
+    @test sum(value.(m[:trans_out])[pipeline, t] > 0 for t ∈ 𝒯) ==
+            length(𝒯)
 
-    # Defining the required sets
-    𝒯ᴵⁿᵛ = strategic_periods(𝒯)
+end
 
-    @testset "Energy transferred" begin
-        # Test that energy is transferred
-        @test sum(value.(m[:trans_out])[pipeline, t] > 0 for t ∈ 𝒯) ==
-                length(𝒯)
+@testset "Energy stored in linepack" begin
 
-    end
+    # Check that not more energy is stored than available in a pipeline
+    @test sum(value.(m[:linepack_stor_level][pipeline, t])
+        <=
+        energy_share(pipeline) * value.(m[:trans_cap][pipeline, t]) for t ∈ 𝒯) == length(𝒯)
 
-    @testset "Energy stored in linepack" begin
+    # Check that the linepack level increase equals the difference between inlet and outlet flow
+    @test sum(sum(
+            isapprox(
+                (value.(m[:trans_in][pipeline, t])*(1 - loss(pipeline, t)) -
+                    value.(m[:trans_out][pipeline, t]))*duration(t),
+                value.(m[:linepack_stor_level][pipeline, t]) -
+                    (isnothing(t_prev) ?
+                        value.(m[:linepack_stor_level][pipeline, last(t_inv)]) :
+                        value.(m[:linepack_stor_level][pipeline, t_prev])
+                    ),
+                atol=TEST_ATOL
+                )
+            for (t_prev, t) ∈ withprev(t_inv)) for t_inv ∈ 𝒯ᴵⁿᵛ)  == length(𝒯)
+end
 
-        # Check that not more energy is stored than available in a pipeline
-        @test sum(value.(m[:linepack_stor_level][pipeline, t])
-            <=
-            energy_share(pipeline) * value.(m[:trans_cap][pipeline, t]) for t ∈ 𝒯) == length(𝒯)
-
-        # Check that the linepack level increase equals the difference between inlet and outlet flow
-        @test sum(sum(
-                isapprox(
-                    (value.(m[:trans_in][pipeline, t])*(1 - loss(pipeline, t)) -
-                        value.(m[:trans_out][pipeline, t]))*duration(t),
-                    value.(m[:linepack_stor_level][pipeline, t]) -
-                        (isnothing(t_prev) ?
-                            value.(m[:linepack_stor_level][pipeline, last(t_inv)]) :
-                            value.(m[:linepack_stor_level][pipeline, t_prev])
-                        ),
-                    atol=TEST_ATOL
-                    )
-                for (t_prev, t) ∈ withprev(t_inv)) for t_inv ∈ 𝒯ᴵⁿᵛ)  == length(𝒯)
-    end
-
-    @testset "Transport accounting" begin
-        # Test that the overall system with line packing does not result in unaccounted energy
-        @test sum((1 - loss(pipeline, t)) * value.(m[:trans_in][pipeline, t]) for t in 𝒯) ≈
-                  sum(value.(m[:trans_out][pipeline, t]) for t in 𝒯)  atol=TEST_ATOL
-    end
+@testset "Transport accounting" begin
+    # Test that the overall system with line packing does not result in unaccounted energy
+    @test sum((1 - loss(pipeline, t)) * value.(m[:trans_in][pipeline, t]) for t in 𝒯) ≈
+                sum(value.(m[:trans_out][pipeline, t]) for t in 𝒯)  atol=TEST_ATOL
 end

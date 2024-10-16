@@ -19,7 +19,7 @@ The area exchange is defined for all areas for resources that area can exchange 
 This also includes also potential `Transmission` corridors in which the model can invest in.
 The exchange resources are automatically deduced from the coupled `TransmissionMode`s.
 The area exchange is negative when exporting energy/mass and positive when importing.
-This implies that for ``\texttt{area\_exchange}[a, t, p_\texttt{ex}] > 0``, the area imports product ``p``, and for ``\texttt{area\_exchange}[a, t, p_\texttt{ex}] < 0``, the area exports product ``p_\texttt{ex}``.
+This implies that for ``\texttt{area\_exchange}[a, t, p_\texttt{ex}] > 0``, the area imports product ``p_\texttt{ex}``, and for ``\texttt{area\_exchange}[a, t, p_\texttt{ex}] < 0``, the area exports product ``p_\texttt{ex}``.
 
 ## [`TransmissionMode`](@id man-opt_var-transmission_mode)
 

@@ -5,6 +5,7 @@ using EnergyModelsGeography
 using EnergyModelsBase
 using EnergyModelsInvestments
 
+const EMB = EnergyModelsBase
 const EMG = EnergyModelsGeography
 
 # Copy the NEWS.md file
@@ -43,20 +44,30 @@ makedocs(
             "Philosophy" => "manual/philosophy.md",
             "Optimization variables" => "manual/optimization-variables.md",
             "Constraint functions" => "manual/constraint-functions.md",
-            "TransmissionMode structure" => "manual/transmission-mode.md",
             "Example" => "manual/simple-example.md",
             "Investment options"=>"manual/investments.md",
             "Release notes" => "manual/NEWS.md",
+        ],
+        "Areas and Modes" => Any[
+            "Areas" => "area_mode/area.md",
+            "Transmission corridor" => "area_mode/corridor.md",
+            "Transmission modes" => "area_mode/mode.md",
         ],
         "How to" => Any[
             "Update models" => "how-to/update-models.md",
             "Contribute to EnergyModelsGeography" => "how-to/contribute.md",
         ],
         "Library" => Any[
-            "Public" => "library/public.md",
+            "Public" => Any[
+                "Areas"=>"library/public/area.md",
+                "Transmission"=>"library/public/transmission.md",
+                "TransmissionMode"=>"library/public/mode.md",
+                "EMI extension"=>"library/public/emi_extension.md",
+            ],
             "Internals"=>Any[
-                "Reference"=>"library/internals/reference.md",
-                "Reference EMIExt"=>"library/internals/reference_EMIExt.md",
+                "Functions"=>"library/internals/functions.md",
+                "Methods `EnergyModelsBase`"=>"library/internals/methods_EMB.md",
+                "Methods `EnergyModelsInvestments`"=>"library/internals/methods_EMIExt.md",
             ],
         ],
     ],

@@ -16,9 +16,19 @@ Pages = [
     "manual/philosophy.md",
     "manual/optimization-variables.md",
     "manual/constraint-functions.md",
-    "manual/transmission-mode.md",
     "manual/investments.md",
     "manual/simple-example.md"
+]
+Depth = 1
+```
+
+## Description of the areas and transmission modes
+
+```@contents
+Pages = [
+    "area-mode/area.md",
+    "area-mode/corridor.md",
+    "area-mode/mode.md",
 ]
 Depth = 1
 ```
@@ -35,10 +45,25 @@ Depth = 1
 
 ## Library outline
 
+### Public library
+
 ```@contents
 Pages = [
-    "library/public.md",
-    "library/internals/reference.md",
+    "library/public/area.md",
+    "library/public/transmission.md",
+    "library/public/mode.md",
+    "library/public/emi_extension.md",
+    ]
+Depth = 1
+```
+
+### Internal library
+
+```@contents
+Pages = [
+    "library/internals/functions.md",
+    "library/internals/methods_EMB.md",
+    "library/internals/methods_EMIExt.md",
     ]
 Depth = 1
 ```

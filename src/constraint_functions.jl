@@ -1,8 +1,17 @@
 """
     constraints_capacity(m, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EnergyModel)
+    constraints_capacity(m, tm::PipeMode, 𝒯::TimeStructure, modeltype::EnergyModel)
 
-Function for creating the constraint on the maximum capacity of a generic `TransmissionMode`.
-This function serves as fallback option if no other function is specified for a `TransmissionMode`.
+Function for creating the constraint on the maximum capacity of a generic
+[`TransmissionMode`](@ref) and [`PipeMode`](@ref).
+
+These functions serve as fallback option if no other method is specified for a specific
+`TransmissionMode`.
+
+!!! warning "Dispatching on this function"
+    If you create a new method for this function, it is crucial to call within said function
+    the function `constraints_capacity_installed(m, tm, 𝒯, modeltype)` if you want to include
+    investment options.
 """
 function constraints_capacity(m, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EnergyModel)
 
@@ -26,12 +35,6 @@ function constraints_capacity(m, tm::TransmissionMode, 𝒯::TimeStructure, mode
     # Add constraints for the installed capacity
     constraints_capacity_installed(m, tm, 𝒯, modeltype)
 end
-
-"""
-    constraints_capacity(m, tm::PipeMode, 𝒯::TimeStructure, modeltype::EnergyModel)
-
-Function for creating the constraint on the maximum capacity of a generic `PipeMode`.
-"""
 function constraints_capacity(m, tm::PipeMode, 𝒯::TimeStructure, modeltype::EnergyModel)
 
     # Upper and lower limit defined by installed capacity
@@ -50,7 +53,9 @@ end
 """
     constraints_capacity(m, tm::PipeLinepackSimple, 𝒯::TimeStructure, modeltype::EnergyModel)
 
-Function for creating the constraint on the maximum capacity of a `PipeLinepackSimple`.
+Function for creating the constraint on the maximum capacity of a [`PipeLinepackSimple`](@ref).
+
+The difference is given by the inclusion of the linepack storage level constraint.
 """
 function constraints_capacity(m, tm::PipeLinepackSimple, 𝒯::TimeStructure, modeltype::EnergyModel)
 
@@ -78,6 +83,14 @@ end
     constraints_capacity_installed(m, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EnergyModel)
 
 Function for creating the constraint on the installed capacity of a `TransmissionMode`.
+
+This function serves as fallback option if no other method is specified for a specific
+`TransmissionMode`.
+
+!!! danger "Dispatching on this function"
+    This function should only be used to dispatch on the modeltype for providing investments.
+    If you create new capacity variables, it is beneficial to include as well a method for
+    this function and the corresponding transmission mode types.
 """
 function constraints_capacity_installed(m, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EnergyModel)
 
@@ -89,9 +102,15 @@ end
 
 """
     constraints_trans_loss(m, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EnergyModel)
+    constraints_trans_loss(m, tm::PipeMode, 𝒯::TimeStructure, modeltype::EnergyModel)
 
-Function for creating the constraint on the transmission loss of a generic `TransmissionMode`.
-This function serves as fallback option if no other function is specified for a `TransmissionMode`.
+Function for creating the constraint on the transmission loss of a generic
+[`TransmissionMode`](@ref) and [`PipeMode`](@ref)
+
+These functions serve as fallback option if no other function is specified for a
+`TransmissionMode`. If you plan to use the methods, it is necessary that the function
+[`loss`](@ref) is either declared for your `TransmissionMode` or you provide alternatively
+a new method.
 """
 function constraints_trans_loss(m, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EnergyModel)
 
@@ -114,12 +133,6 @@ function constraints_trans_loss(m, tm::TransmissionMode, 𝒯::TimeStructure, mo
         )
     end
 end
-
-"""
-    constraints_trans_loss(m, tm::PipeMode, 𝒯::TimeStructure, modeltype::EnergyModel)
-
-Function for creating the constraint on the transmission loss of a generic `PipeMode`.
-"""
 function constraints_trans_loss(m, tm::PipeMode, 𝒯::TimeStructure, modeltype::EnergyModel)
 
     @constraint(m, [t ∈ 𝒯],
@@ -129,8 +142,10 @@ end
 """
     constraints_trans_balance(m, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EnergyModel)
 
-Function for creating the transmission balance for a generic `TransmissionMode`.
-This function serves as fallback option if no other function is specified for a `TransmissionMode`.
+Function for creating the transmission balance for a generic [`TransmissionMode`](@ref).
+
+This function serves as fallback option if no other function is specified for a
+`TransmissionMode`.
 """
 function constraints_trans_balance(m, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EnergyModel)
 
@@ -142,7 +157,7 @@ end
 """
     constraints_trans_balance(m, tm::PipeLinepackSimple, 𝒯::TimeStructure, modeltype::EnergyModel)
 
-Function for creating the transmission balance for a`PipeLinepackSimple`.
+Function for creating the transmission balance for a [`PipeLinepackSimple`](@ref).
 """
 function constraints_trans_balance(m, tm::PipeLinepackSimple, 𝒯::TimeStructure, modeltype::EnergyModel)
 
@@ -174,8 +189,10 @@ end
 """
     constraints_opex_fixed(m, tm::TransmissionMode, 𝒯ᴵⁿᵛ, modeltype::EnergyModel)
 
-Function for creating the constraint on the fixed OPEX of a generic `TransmissionMode`.
-This function serves as fallback option if no other function is specified for a `TransmissionMode`.
+Function for creating the constraint on the fixed OPEX of a generic [`TransmissionMode`](@ref).
+
+This function serves as fallback option if no other function is specified for a
+`TransmissionMode`.
 """
 function constraints_opex_fixed(m, tm::TransmissionMode, 𝒯ᴵⁿᵛ, modeltype::EnergyModel)
 
@@ -188,8 +205,11 @@ end
 """
     constraints_opex_var(m, tm::TransmissionMode, 𝒯ᴵⁿᵛ, modeltype::EnergyModel)
 
-Function for creating the constraint on the variable OPEX of a generic `TransmissionMode`.
-This function serves as fallback option if no other function is specified for a `TransmissionMode`.
+Function for creating the constraint on the variable OPEX of a generic
+[`TransmissionMode`](@ref).
+
+This function serves as fallback option if no other function is specified for a
+`TransmissionMode`.
 """
 function constraints_opex_var(m, tm::TransmissionMode, 𝒯ᴵⁿᵛ, modeltype::EnergyModel)
 
@@ -215,6 +235,7 @@ end
     constraints_emission(m, tm::TransmissionMode, 𝒯, modeltype::EnergyModel)
 
 Function for creating the constraints on the emissions of a generic `TransmissionMode` `tm`.
+
 This function serves as fallback option if no other function is specified for a
 `TransmissionMode`.
 """

@@ -1,5 +1,19 @@
 # Release notes
 
+## Unversioned
+
+### Minor updates
+
+* Reworked the tests and included the tests for investments.
+* Included an option to deactive the checks entirely with printing a warning, similarly to `EnergyModelsBase`.
+
+### Rework of documentation
+
+* The documentation received a significant rework.
+  The rework consists of:
+  * Provide webpages for the descriptions of `Area`s, `Transmission`, and `TransmissionMode` in which the fields are described more in detail as well as a description of the math.
+  * Restructured both the public and internal libraries
+
 ## Version 0.10.0 (2024-08-21)
 
 ### Changed `PipeSimple` and `PipeLinepackSimple` types
@@ -94,7 +108,7 @@ These changes are mainly:
 
 ## Version 0.5.2 (2023-05-16)
 
-* Bugfix in the example which lead to a trivial solution in which no energy has to be converted.
+* Bugfix in the example which lead to a tri*via*l solution in which no energy has to be converted.
 
 ## Version 0.5.1 (2023-04-30)
 
@@ -121,12 +135,12 @@ These changes are mainly:
 
 ### Change of indexing
 
-* Variables are now indexed _via_ the `TransmissionMode` and the time period instead of the using a `SparseAxisArray` and indexing _via_ `Transmission`, time period, and `TransmissionMode`. This also improves model generation time.
+* Variables are now indexed _*via*_ the `TransmissionMode` and the time period instead of the using a `SparseAxisArray` and indexing _*via*_ `Transmission`, time period, and `TransmissionMode`. This also improves model generation time.
 * This adjustment requires the declaration of a new instance for each usage of a `TransmissionMode`, see, _e.g._, the changes in `scr\user_interface.jl`.
 
 ### Additional changes
 
-* Change of variable generation for individual transmission modes: Variable generation _via_ the function `variables_trans_mode(s)` is adjusted to follow the concept introduced in `EnergyModelsBase`.
+* Change of variable generation for individual transmission modes: Variable generation _*via*_ the function `variables_trans_mode(s)` is adjusted to follow the concept introduced in `EnergyModelsBase`.
 * Move of the field `Data` from `Transmission` to `TransmissionMode`. This is required for the later application of dispatching in `EnergyModelsInvestments`.
 
 ## Version 0.3.1 (2023-02-16)
@@ -134,7 +148,7 @@ These changes are mainly:
 ### Introduction of linepacking
 
 * Redefinition of `PipelineMode` as abstract type `PipeMode` and introduction of `PipeSimple` as a composite type corresponding to the previous `PipelineMode`.
-* Introduction of a simple linepacking implementation _via_ the type `PipeLinepackSimple.
+* Introduction of a simple linepacking implementation _*via*_ the type `PipeLinepackSimple.
 * Change of `Area` to `abstract type` to be able to dispatch on areas.
 * Rewriting how functions for variable generation are called for easier introduction of variables for different `TransmissionMode`s.
 
