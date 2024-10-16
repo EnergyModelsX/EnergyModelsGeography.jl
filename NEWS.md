@@ -1,11 +1,12 @@
 # Release notes
 
-## Unversioned
+## Version 0.10.1 (2024-10-16)
 
 ### Minor updates
 
 * Reworked the tests and included the tests for investments.
 * Included an option to deactive the checks entirely with printing a warning, similarly to `EnergyModelsBase`.
+* Adjusted to [`EnergyModelsBase` v0.8.1](https://github.com/EnergyModelsX/EnergyModelsBase.jl/releases/tag/v0.8.1) and [`EnergyModelsInvestments` v0.8.0](https://github.com/EnergyModelsX/EnergyModelsInvestments.jl/releases/tag/v0.8.0).
 
 ### Rework of documentation
 
