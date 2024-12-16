@@ -1,6 +1,6 @@
-# Internal functions
+# [Internal functions](@id lib-int-fun)
 
-## Index
+## [Index](@id lib-int-fun-idx)
 
 ```@index
 Pages = ["functions.md"]
@@ -10,7 +10,7 @@ Pages = ["functions.md"]
 CurrentModule = EnergyModelsGeography
 ```
 
-## Extension methods
+## [Extension functions](@id lib-int-fun-ext)
 
 ```@docs
 create_area
@@ -20,7 +20,7 @@ update_objective(m, 𝒯, ℳ, modeltype::EnergyModel)
 update_total_emissions
 ```
 
-## Constraint methods
+## [Constraint functions](@id lib-int-fun-con)
 
 ```@docs
 constraints_area
@@ -34,14 +34,14 @@ constraints_trans_loss
 constraints_transmission
 ```
 
-## Compute methods
+## [Compute functions](@id lib-int-fun-comp)
 
 ```@docs
 compute_trans_in
 compute_trans_out
 ```
 
-## Variable creation methods
+## [Variable creation functions](@id lib-int-fun-var)
 
 ```@docs
 variables_area
@@ -53,7 +53,7 @@ variables_trans_mode
 variables_trans_opex
 ```
 
-## Check methods
+## [Check functions](@id lib-int-fun-check)
 
 ```@docs
 check_area
@@ -64,7 +64,7 @@ check_time_structure
 check_transmission
 ```
 
-## Identification methods
+## [Identification functions](@id lib-int-fun-identi)
 
 ```@docs
 extract_resources

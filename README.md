@@ -26,7 +26,8 @@ If you find `EnergyModelsGeography` useful in your work, we kindly request that 
   volume={9},
   number={97},
   pages={6619},
-  year={2024}
+  year={2024},
+  doi={https://doi.org/10.21105/joss.06619},
 }
 ```
 

@@ -1,18 +1,18 @@
-# Methods - `EnergyModelsBase`
+# [Methods - `EnergyModelsBase`](@id lib-int-met_emb)
 
-## Index
+## [Index](@id lib-int-met_emb-idx)
 
 ```@index
 Pages = ["methods_EMB.md"]
 ```
 
-## Extension methods
+## [Extension methods](@id lib-int-met_emb-ext)
 
 ```@docs
 EnergyModelsBase.create_node
 ```
 
-## Field access methods
+## [Field extraction methods](@id lib-int-met_emb-field)
 
 ```@docs
 EnergyModelsBase.capacity
