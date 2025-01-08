@@ -27,7 +27,8 @@ If you find `EnergyModelsGeography` useful in your work, we kindly request that 
   number = {97},
   pages = {6619},
   year = {2024},
-  doi = {https://doi.org/10.21105/joss.06619},
+  doi = {10.21105/joss.06619},
+  url = {https://doi.org/10.21105/joss.06619},
 }
 ```
 
@@ -41,7 +42,7 @@ For earlier work, see our [paper in Applied Energy](https://www.sciencedirect.co
   pages = {122484},
   year = {2024},
   issn = {0306-2619},
-  doi = {https://doi.org/10.1016/j.apenergy.2023.122484},
+  doi = {10.1016/j.apenergy.2023.122484},
   url = {https://www.sciencedirect.com/science/article/pii/S0306261923018482},
   author = {Espen Flo B{\o}dal and Sigmund Eggen Holm and Avinash Subramanian and Goran Durakovic and Dimitri Pinel and Lars Hellemo and Miguel Mu{\~n}oz Ortiz and Brage Rugstad Knudsen and Julian Straus}
 }
