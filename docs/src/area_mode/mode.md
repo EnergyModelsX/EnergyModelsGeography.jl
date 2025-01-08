@@ -141,7 +141,7 @@ The following standard constraints are implemented for a [`TransmissionMode`](@r
   \texttt{trans\_out}[tm, t] \leq \texttt{trans\_cap}[tm, t]
   ```
 
-  Bidirectional transport constrains bothe the inlet and outlet flow to the provided capacity:
+  Bidirectional transport constrains both the inlet and outlet flow to the provided capacity:
 
   ```math
   \begin{aligned}
@@ -241,7 +241,7 @@ The following standard constraints are implemented for a [`TransmissionMode`](@r
   ```
 
   !!! tip "The function `scale_op_sp`"
-      The function [``scale\_op\_sp(t_{inv}, t)``](@ref EnergyModelsBase.scale_op_sp) calculates the scaling factor between operational and strategic periods.
+      The function [``scale\_op\_sp(t_{inv}, t)``](@extref EnergyModelsBase.scale_op_sp) calculates the scaling factor between operational and strategic periods.
       It also takes into account potential operational scenarios and their probability as well as representative periods.
 
 - `constraints_emissions`:
