@@ -193,7 +193,7 @@ end
 """
     variables_trans_emission(m, 𝒯, ℳ, 𝒫, modeltype)
 
-Declation of variables for the modeling of tranmission emissions. These variables are only
+Declation of variables for the modeling of transmission emissions. These variables are only
 created for transmission modes where emissions are included. All emission resources that are
 not included for a type are fixed to a value of 0.
 

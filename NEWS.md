@@ -1,5 +1,11 @@
 # Release notes
 
+## Unversioned
+
+* Included a new method for identifying nodes within an area using breadth-first search.
+  This method allows for an arbitrary connection of links between a node and the availability node.
+* Minor typo updates in the documentation.
+
 ## Version 0.10.1 (2024-10-16)
 
 ### Minor updates

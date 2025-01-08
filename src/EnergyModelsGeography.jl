@@ -32,15 +32,17 @@ export PipeMode, PipeSimple, PipeLinepackSimple
 # Export the legacy constructor for transmission investment data
 export TransInvData
 
+# Export utility functions
+export getnodesinarea, nodes_in_area
+
 # Export commonly used functions for extracting fields in `Area`s
 export name, availability_node, limit_resources, exchange_limit, exchange_resources
 
 # Export commonly used functions for exctracting fields in `Transmission`s
 export modes, mode_sub, modes_sub, corr_from, corr_to, corr_from_to, modes_of_dir
-export getnodesinarea
 
 # Export commonly used functions for extracting fields in `TransmissionMode`s
-export map_trans_resource, exchange_resources
+export map_trans_resource
 export loss, directions, mode_data, consumption_rate, energy_share
 
 end # module
