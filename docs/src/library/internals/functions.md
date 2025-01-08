@@ -76,3 +76,9 @@ emit_resources
 is_bidirectional
 trans_sub
 ```
+
+## [Utility functions](@id lib-int-fun-util)
+
+```@docs
+connected_nodes
+```

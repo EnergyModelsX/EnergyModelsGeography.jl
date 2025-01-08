@@ -27,5 +27,11 @@ availability_node
 limit_resources
 exchange_limit
 exchange_resources
+```
+
+## [Utility functions for `Area` types](@id lib-pub-area-fun_util)
+
+```@docs
 getnodesinarea
+nodes_in_area
 ```
