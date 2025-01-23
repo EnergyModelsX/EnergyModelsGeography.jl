@@ -12,7 +12,7 @@ They are not discounted and do not take the duration of the investment periods i
 
 The expression includes the sum of the capital expenditures for all [`TransmissionMode`](@ref)s
 within the [`Transmission`](@ref) corridors whose method of the function
-[`has_investment`](@extref EnergyModelsBase.has_investment) returns true.
+[`has_investment`](@extref EnergyModelsInvestments.has_investment) returns true.
 """
 function EMB.objective_invest(
     m,

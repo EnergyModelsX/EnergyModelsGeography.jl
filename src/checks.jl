@@ -6,7 +6,7 @@
 !!! note "Area methods"
     All areas are checked through the functions
     - [`check_area`](@ref) to identify problematic input,
-    - [`check_time_structure`](@extref EnergyModelsbase.check_time_structure) to identify
+    - [`check_time_structure`](@extref EnergyModelsBase.check_time_structure) to identify
       time profiles at the highest level that are not equivalent to the provided timestructure.
 
     In addition, all areas are directly checked
@@ -18,12 +18,12 @@
 !!! note "Transmission methods"
     All transmission corridors are checked through the functions
     - [`check_transmission`](@ref) to identify problematic input,
-    - [`check_time_structure`](@extref EnergyModelsbase.check_time_structure) to identify
+    - [`check_time_structure`](@extref EnergyModelsBase.check_time_structure) to identify
       time profiles at the highest level that are not equivalent to the provided timestructure.
 
     The individual transmission modes of a corridorare checked through the functions
     - [`check_mode`](@ref) to identify problematic input and
-    - [`check_time_structure`](@extref EnergyModelsbase.check_time_structure) to identify
+    - [`check_time_structure`](@extref EnergyModelsBase.check_time_structure) to identify
       time profiles at the highest level that are not equivalent to the provided timestructure.
 
     In addition, all transmission corridors are directly checked to have in the fields
@@ -143,7 +143,7 @@ function check_mode(l::TransmissionMode, 𝒯, modeltype::EnergyModel, check_tim
 end
 
 """
-    check_time_structure(m::TransmissionMode, 𝒯)
+    EMB.check_time_structure(m::TransmissionMode, 𝒯)
 
 Check that all fields of a `TransmissionMode` that are of type `TimeProfile` correspond to
 the time structure `𝒯`.

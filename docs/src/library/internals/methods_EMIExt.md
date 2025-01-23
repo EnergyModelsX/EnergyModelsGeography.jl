@@ -16,9 +16,15 @@ CurrentModule =
 ### [Methods](@id lib-int-EMIext-EMG-met)
 
 ```@docs
-EMG.update_objective(m, 𝒯, ℳ, modeltype::EMB.AbstractInvestmentModel)
 EMG.constraints_capacity_installed(m, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EMB.AbstractInvestmentModel)
-EMG.variables_trans_capex(m, 𝒯, ℳ, modeltype::EMB.AbstractInvestmentModel)
+```
+
+## [EnergyModelsBase](@id lib-int-EMIext-EMB)
+
+### [Methods](@id lib-int-EMIext-EMB-met)
+
+```@docs
+EMB.objective_invest
 ```
 
 ## [EnergyModelsInvestments](@id lib-int-EMIext-EMI)

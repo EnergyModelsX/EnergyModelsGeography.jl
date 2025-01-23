@@ -5,6 +5,32 @@ Hence, there are frequently breaking changes occuring, although we plan to keep 
 This document is designed to provide users with information regarding how they have to adjust their models to keep compatibility to the latest changes.
 We will as well implement information regarding the adjustment of extension packages, although this is more difficult due to the vast majority of potential changes.
 
+## [Adjustments from 0.10.x](@id how_to-update-10)
+
+Starting from version 0.11.0, we introduced a new input format to the function `create_model`.
+The original case dictionary is replaced with a new type, [`Case`](@extref EnergyModelsBase.Case).
+We introduced deprecated methods that can be utilized with the original dictionary, but it is advisable to switch to the new type as:
+
+```julia
+# Old structure:
+case = Dict(
+    :areas => Array{Area}(areas),
+    :transmission => Array{Transmission}(transmission),
+    :nodes => Array{EMB.Node}(nodes),
+    :links => Array{Link}(links),
+    :products => products,
+    :T => T,
+)
+
+# New structure:
+case = Case(
+    T,
+    products,
+    [nodes, links, areas, transmissions],
+    [[get_nodes, get_links], [get_areas, get_transmissions]],
+)
+```
+
 ## [Adjustments from 0.9.x](@id how_to-update-09)
 
 ### [Key changes for transmission mode descriptions](@id how_to-update-06-mode)

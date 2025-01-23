@@ -382,7 +382,9 @@ end
     EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫, modeltype::EnergyModel)
 
 Set all constraints for a [`GeoAvailability`](@ref). The energy balance is handled in the
-function [`constraints_area`](@ref). Hence, no constraints are added in this function.
+function [`constraints_elements`](@ref EnergyModelsBase.constraints_elements).
+
+Hence, no constraints are added in this function.
 """
 function EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫, modeltype::EnergyModel) end
 

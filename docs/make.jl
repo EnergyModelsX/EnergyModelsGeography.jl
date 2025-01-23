@@ -62,6 +62,7 @@ makedocs(
                 "Areas"=>"library/public/area.md",
                 "Transmission"=>"library/public/transmission.md",
                 "TransmissionMode"=>"library/public/mode.md",
+                "Case"=>"library/public/case_element.md",
                 "EMI extension"=>"library/public/emi_extension.md",
             ],
             "Internals"=>Any[

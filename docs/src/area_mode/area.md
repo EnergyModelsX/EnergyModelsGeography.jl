@@ -75,10 +75,10 @@ The variables of [`Area`](@ref)s include:
 
 #### [Constraints](@id area_mode-areas-areas-math-con)
 
-The constraints for areas are calculated within the functions [`constraints_area`](@ref EnergyModelsGeography.constraints_area) and [`create_area`](@ref EnergyModelsGeography.create_area).
-The function [`constraints_area`](@ref EnergyModelsGeography.constraints_area) is the core function as it links the transmission to and from an area with a local energy system while the function [`create_area`](@ref EnergyModelsGeography.create_area) allows for providing additional constraints.
+The constraints for areas are calculated within a new method for the function [`create_area`](@ref EnergyModelsGeography.create_area) and [`constraints_couple`](@ref EnergyModelsBase.constraints_couple).
+The function [`constraints_couple`](@ref EnergyModelsBase.constraints_couple) is the core function as it links the transmission to and from an area with a local energy system while the function [`create_area`](@ref EnergyModelsGeography.create_area) allows for providing additional constraints.
 
-##### [`constraints_area`](@id area_mode-areas-areas-math-con-con)
+##### [`constraints_couple`](@id area_mode-areas-areas-math-con-con)
 
 The overall energy balance is solved within this function.
 We consider two cases:
