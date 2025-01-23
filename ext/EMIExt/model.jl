@@ -1,43 +1,36 @@
 """
-    EMG.update_objective(m, 𝒯, ℳ, modeltype::EMB.AbstractInvestmentModel)
+    EMB.objective_invest(
+        m,
+        ℒᵗʳᵃⁿˢ::Vector{Transmission},
+        𝒯ᴵⁿᵛ::TS.AbstractStratPers,
+        modeltype::AbstractInvestmentModel,
+    )
 
-Create objective function overloading the default from `EnergyModelsBase` for
-[`AbstractInvestmentModel`](@extref EnergyModelsBase.AbstractInvestmentModel).
+Create a JuMP expression indexed over the investment periods `𝒯ᴵⁿᵛ` for the capital expenditures
+contribution of the [`TransmissionMode`](@ref)s within the [`Transmission`](@ref) corridors.
+They are not discounted and do not take the duration of the investment periods into account.
 
-Maximize Net Present Value from revenues, investments (CAPEX) and operations (OPEX)
-
-## TODO:
-# * consider passing expression around for updating
-# * consider reading objective and adding terms/coefficients (from model object `m`)
+The expression includes the sum of the capital expenditures for all [`TransmissionMode`](@ref)s
+within the [`Transmission`](@ref) corridors whose method of the function
+[`has_investment`](@extref EnergyModelsBase.has_investment) returns true.
 """
-function EMG.update_objective(m, 𝒯, ℳ, modeltype::EMB.AbstractInvestmentModel)
-
-    # Extraction of data
-    𝒯ᴵⁿᵛ = strategic_periods(𝒯)
+function EMB.objective_invest(
+    m,
+    ℒᵗʳᵃⁿˢ::Vector{Transmission},
+    𝒯ᴵⁿᵛ::TS.AbstractStratPers,
+    modeltype::AbstractInvestmentModel,
+)
+    # Declaration of the required subsets
+    ℳ = modes(ℒᵗʳᵃⁿˢ)
     ℳᴵⁿᵛ = filter(has_investment, ℳ)
-    obj  = JuMP.objective_function(m)
-    disc = Discounter(discount_rate(modeltype), 𝒯)
 
-    # Calculate the CAPEX cost contribution
-    capex = @expression(m, [t_inv ∈ 𝒯ᴵⁿᵛ],
+    return @expression(m, [t_inv ∈ 𝒯ᴵⁿᵛ],
         sum(m[:trans_cap_capex][tm, t_inv] for tm ∈ ℳᴵⁿᵛ)
-    )
-    # Calculate the OPEX cost contribution
-    opex = @expression(m, [t_inv ∈ 𝒯ᴵⁿᵛ],
-        sum(m[:trans_opex_var][tm, t_inv] + m[:trans_opex_fixed][tm, t_inv] for tm ∈ ℳ)
-    )
-    # Update the objective
-    @objective(m, Max,
-        obj -
-        sum(
-            opex[t_inv] * duration_strat(t_inv) * objective_weight(t_inv, disc, type="avg") +
-            capex[t_inv] * objective_weight(t_inv, disc)
-        for t_inv ∈ 𝒯ᴵⁿᵛ)
     )
 end
 
 """
-    EMG.variables_trans_capex(m, 𝒯, ℳ,, modeltype::EMB.AbstractInvestmentModel)
+    EMB.variables_capex(m, ℒᵗʳᵃⁿˢ::Vector{Transmission}, 𝒳, 𝒯, modeltype::AbstractInvestmentModel)
 
 Create variables for the capital costs for the investments in transmission.
 
@@ -49,8 +42,9 @@ Additional variables for investment in capacity:
 * `:trans_cap_invest_b` - binary variable whether investments in capacity are happening
 * `:trans_cap_remove_b` - binary variable whether investments in capacity are removed
 """
-function EMG.variables_trans_capex(m, 𝒯, ℳ, modeltype::EMB.AbstractInvestmentModel)
-
+function EMB.variables_capex(m, ℒᵗʳᵃⁿˢ::Vector{Transmission}, 𝒳, 𝒯, modeltype::AbstractInvestmentModel)
+    # Declaration of the required subsets
+    ℳ = modes(ℒᵗʳᵃⁿˢ)
     ℳᴵⁿᵛ = filter(has_investment, ℳ)
     𝒯ᴵⁿᵛ = strategic_periods(𝒯)
 
