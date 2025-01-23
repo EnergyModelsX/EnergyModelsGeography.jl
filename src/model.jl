@@ -11,12 +11,6 @@ function create_model(
     check_timeprofiles::Bool=true,
     check_any_data::Bool = true,
 )
-    @debug "Construct model"
-    # Call of the basic model
-    if check_any_data
-        check_data(case, modeltype, check_timeprofiles)
-    end
-
     case_new = Case(
         case[:T],
         case[:products],
