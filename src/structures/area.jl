@@ -1,5 +1,9 @@
-""" Declaration of the general type for areas."""
-abstract type Area end
+"""
+    Area <: AbstractElement
+
+Declaration of the general type for areas.
+"""
+abstract type Area <: AbstractElement end
 
 """
     RefArea <: Area
