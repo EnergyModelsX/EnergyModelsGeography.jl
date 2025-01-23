@@ -5,7 +5,7 @@ const ROUND_DIGITS = 8
 using HiGHS
 
 function optimize(case, modeltype)
-    m = EMG.create_model(case, modeltype)
+    m = create_model(case, modeltype)
     optimizer = HiGHS.Optimizer
     set_optimizer(m, optimizer)
     set_optimizer_attribute(m, MOI.Silent(), true)

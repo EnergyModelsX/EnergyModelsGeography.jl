@@ -54,29 +54,26 @@ function small_graph(source=nothing, sink=nothing)
                                 CO2,
     )
 
-
-    # Creation of the case dictionary
-    case = Dict(:nodes          => nodes,
-                :links          => links,
-                :products       => products,
-                :areas          => areas,
-                :transmission   => transmissions,
-                :T              => T,
-                )
+    # Input data structure
+    case = Case(
+        T,
+        products,
+        [nodes, links, areas, transmissions],
+        [[get_nodes, get_links], [get_areas, get_transmissions]],
+    )
     return case, modeltype
 end
 
 function transmission_tests(m, case)
     # Extraction of relevant data from the model
-    source  = case[:nodes][3]
-    sink    = case[:nodes][4]
-    𝒯       = case[:T]
-    Power   = case[:products][1]
+    𝒩 = get_nodes(case)
+    source  = 𝒩[3]
+    sink    = 𝒩[4]
+    𝒯       = get_time_struct(case)
 
-    tr_osl_trd, tr_trd_osl  = case[:transmission]
+    tr_osl_trd, tr_trd_osl  = get_transmissions(case)
     tr_osl_trd_mode         = modes(tr_osl_trd)[1]
     tr_trd_osl_mode         = modes(tr_trd_osl)[1]
-    areas                   = case[:areas]
 
     @testset "Test transmission" begin
 
@@ -125,7 +122,7 @@ end
     case, modeltype = small_graph()
 
     # Replace each TransmissionMode's with a PipeSimple with identical properties.
-    for transmission in case[:transmission]
+    for transmission in get_transmissions(case)
         for (i, prev_tm) ∈ enumerate(modes(transmission))
             pipeline = PipeSimple(repr(prev_tm),
                                         inputs(prev_tm)[1],

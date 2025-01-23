@@ -62,13 +62,12 @@ function simple_graph()
     )
 
 
-    # Creation of the case dictionary
-    case = Dict(:nodes => nodes,
-        :links => links,
-        :products => products,
-        :areas => areas,
-        :transmission => transmissions,
-        :T => T,
+    # Creation of the case type
+    case = Case(
+        T,
+        products,
+        [nodes, links, areas, transmissions],
+        [[get_nodes, get_links], [get_areas, get_transmissions]],
     )
     return case, modeltype, transmission_line
 end
@@ -80,27 +79,28 @@ end
 
         # Test that the Availability node is in the node vector
         case, model, trans_line = simple_graph()
-        case[:areas][1] = RefArea(1, "Factory", 10.751, 59.921, GeoAvailability("test", case[:products]))
-        case[:transmission][1] = Transmission(case[:areas][1], case[:areas][2], [trans_line])
-        @test_throws AssertionError EMG.create_model(case, model)
+        𝒫 = get_products(case)
+        case.elements[3][1] = RefArea(1, "Factory", 10.751, 59.921, GeoAvailability("test", 𝒫))
+        case.elements[4][1] = Transmission(case.elements[3][1], case.elements[3][2], [trans_line])
+        @test_throws AssertionError create_model(case, model)
 
         # Test that the availability node is a GeoAvailability node
         case, model, trans_line = simple_graph()
-        av = GenAvailability("test", case[:products])
-        case[:nodes][1] = av
-        case[:areas][1] = RefArea(1, "Factory", 10.751, 59.921, av)
-        case[:links][1] = Direct(31, case[:nodes][3], case[:nodes][1], Linear())
-        case[:transmission][1] = Transmission(case[:areas][1], case[:areas][2], [trans_line])
-        @test_throws AssertionError EMG.create_model(case, model)
+        av = GenAvailability("test", 𝒫)
+        case.elements[1][1] = av
+        case.elements[3][1] = RefArea(1, "Factory", 10.751, 59.921, av)
+        case.elements[2][1] = Direct(31, case.elements[1][3], case.elements[1][1], Linear())
+        case.elements[4][1] = Transmission(case.elements[3][1], case.elements[3][2], [trans_line])
+        @test_throws AssertionError create_model(case, model)
 
         # Test that the availability node includes as product the exchange resources
         case, model, trans_line = simple_graph()
-        av = GeoAvailability("test", Resource[case[:products][2]])
-        case[:nodes][1] = av
-        case[:areas][1] = RefArea(1, "Factory", 10.751, 59.921, av)
-        case[:links][1] = Direct(31, case[:nodes][3], case[:nodes][1], Linear())
-        case[:transmission][1] = Transmission(case[:areas][1], case[:areas][2], [trans_line])
-        @test_throws AssertionError EMG.create_model(case, model)
+        av = GeoAvailability("test", Resource[𝒫[2]])
+        case.elements[1][1] = av
+        case.elements[3][1] = RefArea(1, "Factory", 10.751, 59.921, av)
+        case.elements[2][1] = Direct(31, case.elements[1][3], case.elements[1][1], Linear())
+        case.elements[4][1] = Transmission(case.elements[3][1], case.elements[3][2], [trans_line])
+        @test_throws AssertionError create_model(case, model)
     end
 end
 
@@ -109,11 +109,11 @@ end
         # Test that the from and to fields are correctly checked
         # - check_elements(log_by_element, ℒᵗʳᵃⁿˢ::Vector{<:Tranmission}}, 𝒳, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
         case, model, trans_line = simple_graph()
-        area = RefArea(1, "TestArea", 10.751, 59.921, case[:nodes][1])
-        case[:transmission][1] = Transmission(case[:areas][1], area, [trans_line])
-        @test_throws AssertionError EMG.create_model(case, model)
-        case[:transmission][1] = Transmission(area, case[:areas][1], [trans_line])
-        @test_throws AssertionError EMG.create_model(case, model)
+        area = RefArea(1, "TestArea", 10.751, 59.921, case.elements[1][1])
+        case.elements[4][1] = Transmission(case.elements[3][1], area, [trans_line])
+        @test_throws AssertionError create_model(case, model)
+        case.elements[4][1] = Transmission(area, case.elements[3][1], [trans_line])
+        @test_throws AssertionError create_model(case, model)
     end
 end
 

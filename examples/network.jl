@@ -76,8 +76,8 @@ function generate_example_data()
 
     # Create identical areas with index according to the input array
     an           = Dict()
-    nodes        = []
-    links        = []
+    nodes        = EMB.Node[]
+    links        = Link[]
     for a_id in area_ids
         n, l = get_sub_system_data(
             a_id,
@@ -132,7 +132,7 @@ function generate_example_data()
     SD_OverheadLine_50MW  = RefStatic("SD_PowerLine_50", Power, cap_ohl, loss, opex_var, opex_fix, 2)
 
     # Create the different transmission corridors between the individual areas
-    transmission = [
+    transmissions = [
                 Transmission(areas[1], areas[2], [OB_OverheadLine_50MW]),
                 Transmission(areas[1], areas[3], [OT_OverheadLine_50MW]),
                 Transmission(areas[1], areas[5], [OK_OverheadLine_50MW]),
@@ -144,15 +144,13 @@ function generate_example_data()
                 Transmission(areas[6], areas[7], [SD_OverheadLine_50MW]),
     ]
 
-    # WIP data structure
-    case = Dict(
-                :areas          => Array{Area}(areas),
-                :transmission   => Array{Transmission}(transmission),
-                :nodes          => Array{EMB.Node}(nodes),
-                :links          => Array{Link}(links),
-                :products       => products,
-                :T              => T,
-                )
+    # Input data structure
+    case = Case(
+        T,
+        products,
+        [nodes, links, areas, transmissions],
+        [[get_nodes, get_links], [get_areas, get_transmissions]],
+    )
     return case, model
 end
 
@@ -269,7 +267,7 @@ end
 # Generate the case and model data and run the model
 case, model = generate_example_data()
 optimizer = optimizer_with_attributes(HiGHS.Optimizer, MOI.Silent() => true)
-m = EMG.create_model(case, model)
+m = create_model(case, model)
 set_optimizer(m, optimizer)
 optimize!(m)
 
