@@ -22,5 +22,4 @@ modes_sub
 corr_from
 corr_to
 corr_from_to
-modes_of_dir
 ```

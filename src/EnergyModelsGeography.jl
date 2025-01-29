@@ -44,7 +44,7 @@ export getnodesinarea, nodes_in_area
 export name, availability_node, limit_resources, exchange_limit, exchange_resources
 
 # Export commonly used functions for exctracting fields in `Transmission`s
-export modes, mode_sub, modes_sub, corr_from, corr_to, corr_from_to, modes_of_dir
+export modes, mode_sub, modes_sub, corr_from, corr_to, corr_from_to
 
 # Export commonly used functions for extracting fields in `TransmissionMode`s
 export map_trans_resource
