@@ -340,6 +340,15 @@ Returns the directions of transmission mode `tm`.
 directions(tm::TransmissionMode) = tm.directions
 
 """
+    has_opex(tm::TransmissionMode)
+
+Checks whether transmission mode `tm` has operational expenses.
+
+By default, all transmission modes have operational expenses.
+"""
+EMB.has_opex(tm::TransmissionMode) = true
+
+"""
     has_emissions(tm::TransmissionMode)
 
 Returns whether there are emissions associated with transmission mode `tm`.

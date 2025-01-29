@@ -38,6 +38,12 @@ EMB.opex_fixed
 EMB.opex_var
 ```
 
+## [Identification methods](@id lib-int-met_emb-fun_identify)
+
+```@docs
+EMB.has_opex
+```
+
 ## [Check methods](@id lib-int-fun-check)
 
 ```@docs

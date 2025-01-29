@@ -98,7 +98,10 @@ only `ℒᵗʳᵃⁿˢ::Vector{Transmission}` requires operational expense varia
 
 !!! note "Transmission variables"
     The operational expenses variables are only created for [`TransmissionMode`](@ref)s and
-    not [`Transmission`](@ref) corridors. The created variables are
+    not [`Transmission`](@ref) corridors. The OPEX variables are furthermore only created
+    for nodes, if the function [`has_opex(tm::TransmissionMode)`](@ref) has received an
+    additional method for a given mode `m` returning the value `true`. By default, this
+    corresponds to all modes.
 
     - `trans_opex_var[tm, t_inv]` are the variable operating expenses of node `n` in investment
       period `t_inv`. The values can be negative to account for revenue streams
@@ -111,11 +114,12 @@ only `ℒᵗʳᵃⁿˢ::Vector{Transmission}` requires operational expense varia
 function EMB.variables_opex(m, ℒᵗʳᵃⁿˢ::Vector{Transmission}, 𝒳ᵛᵉᶜ, 𝒯, modeltype::EnergyModel)
     # Extract the individual transmission modes and strategic periods
     ℳ = modes(ℒᵗʳᵃⁿˢ)
+    ℳᵒᵖᵉˣ = filter(has_opex, ℳ)
     𝒯ᴵⁿᵛ = strategic_periods(𝒯)
 
     # Create the transmission mode opex variables
-    @variable(m, trans_opex_var[ℳ, 𝒯ᴵⁿᵛ])
-    @variable(m, trans_opex_fixed[ℳ, 𝒯ᴵⁿᵛ] >= 0)
+    @variable(m, trans_opex_var[ℳᵒᵖᵉˣ, 𝒯ᴵⁿᵛ])
+    @variable(m, trans_opex_fixed[ℳᵒᵖᵉˣ, 𝒯ᴵⁿᵛ] >= 0)
 end
 function EMB.variables_opex(m, 𝒜::Vector{<:Area}, 𝒳ᵛᵉᶜ, 𝒯, modeltype::EnergyModel) end
 
@@ -364,9 +368,10 @@ function EMB.objective_operational(
 )
     # Declaration of the required subsets
     ℳ = modes(ℒᵗʳᵃⁿˢ)
+    ℳᵒᵖᵉˣ = filter(has_opex, ℳ)
 
     return @expression(m, [t_inv ∈ 𝒯ᴵⁿᵛ],
-        sum((m[:trans_opex_var][tm, t_inv] + m[:trans_opex_fixed][tm, t_inv]) for tm ∈ ℳ)
+        sum((m[:trans_opex_var][tm, t_inv] + m[:trans_opex_fixed][tm, t_inv]) for tm ∈ ℳᵒᵖᵉˣ)
     )
 end
 function EMB.objective_operational(
@@ -447,6 +452,8 @@ function create_transmission_mode(m, tm::TransmissionMode, 𝒯, modeltype::Ener
     constraints_emission(m, tm, 𝒯, modeltype)
 
     # Call of the functions for both fixed and variable OPEX constraints introduction
-    constraints_opex_fixed(m, tm, 𝒯ᴵⁿᵛ, modeltype)
-    constraints_opex_var(m, tm, 𝒯ᴵⁿᵛ, modeltype)
+    if has_opex(tm)
+        constraints_opex_fixed(m, tm, 𝒯ᴵⁿᵛ, modeltype)
+        constraints_opex_var(m, tm, 𝒯ᴵⁿᵛ, modeltype)
+    end
 end
