@@ -1,5 +1,3 @@
-
-
 function bidirectional_case()
 
     # Definition of the individual resources used in the simple system
@@ -9,7 +7,7 @@ function bidirectional_case()
     products = [NG, Power, CO2]
 
     # Creation of the time structure and the used global data
-    𝒯 = TwoLevel(1, 1, SimpleTimes(2, 1); op_per_strat=2)
+    T = TwoLevel(1, 1, SimpleTimes(2, 1); op_per_strat=2)
     modeltype = OperationalModel(
                                 Dict(
                                     CO2 => FixedProfile(1e10),
@@ -69,15 +67,13 @@ function bidirectional_case()
     )
     transmission = [Transmission(areas[1], areas[2], [transmission_line])]
 
-    # Aggregation of the problem case
-    case = Dict(
-                :nodes          => Array{EMB.Node}(nodes),
-                :links          => Array{Link}(links),
-                :products       => products,
-                :areas          => Array{Area}(areas),
-                :transmission   => Array{Transmission}(transmission),
-                :T              => 𝒯,
-                )
+    # Input data structure
+    case = Case(
+        T,
+        products,
+        [nodes, links, areas, transmission],
+        [[get_nodes, get_links], [get_areas, get_transmissions]],
+    )
     return case, modeltype
 end
 
@@ -91,8 +87,8 @@ m = optimize(case, modeltype)
 general_tests(m)
 
 # Reassigning the case data
-𝒯   = case[:T]
-l   = case[:transmission][1]
+𝒯   = get_time_struct(case)
+l   = get_transmissions(case)[1]
 tm  = modes(l)[1]
 
 # The sign should be the same for both directions

@@ -9,18 +9,23 @@ module EnergyModelsGeography
 using Base: Float64
 using JuMP
 using EnergyModelsBase; const EMB = EnergyModelsBase
-using TimeStruct
+using TimeStruct; const TS = TimeStruct
 
 include(joinpath("structures", "area.jl"))
 include(joinpath("structures", "mode.jl"))
 include(joinpath("structures", "transmission.jl"))
 include(joinpath("structures", "data.jl"))
+include(joinpath("structures", "case.jl"))
+
 include("checks.jl")
 include("model.jl")
 include("constraint_functions.jl")
 include("compute_functions.jl")
 include("legacy_constructors.jl")
 include("utils.jl")
+
+# Export the functions for the case type
+export get_areas, get_transmissions
 
 # Export the invidiual types and composite types
 export Area, RefArea, LimitedExchangeArea

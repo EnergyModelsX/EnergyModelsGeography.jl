@@ -15,7 +15,6 @@ const TS = TimeStruct
 include("model.jl")
 include("legacy_constructor.jl")
 
-
 """
     EMI.has_investment(tm::EMG.TransmissionMode)
 

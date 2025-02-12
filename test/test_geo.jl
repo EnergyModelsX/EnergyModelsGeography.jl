@@ -14,14 +14,14 @@ import EnergyModelsGeography; const EMG = EnergyModelsGeography
 m, case = EMG.run_model("", HiGHS.Optimizer)
 
 # Extract the indiviudal data from the model
-𝒯       = case[:T]
+𝒯       = get_time_struct(case)
 𝒯ᴵⁿᵛ    = strategic_periods(𝒯)
-𝒩       = case[:nodes]
+𝒩       = get_nodes(case)
 𝒩ⁿᵒᵗ    = EMB.node_not_av(𝒩)
 av      = 𝒩[findall(x -> isa(x, EMB.Availability), 𝒩)]
-𝒜       = case[:areas]
-ℒᵗʳᵃⁿˢ  = case[:transmission]
-𝒫       = case[:products]
+𝒜       = get_areas(case)
+ℒᵗʳᵃⁿˢ  = get_transmissions(case)
+𝒫       = get_products(case)
 
 CH4     = 𝒫[1]
 Power   = 𝒫[3]
@@ -103,7 +103,7 @@ function system_map()
 
     linestyle = attr(line= attr(width = 2.0, dash="dash"))
     lines = []
-    for l ∈ case[:transmission]
+    for l ∈ get_transmissions(case)
         line = scattergeo(;mode="lines", lat=[l.from.lat, l.to.lat], lon=[l.from.lon, l.to.lon],
                         marker=linestyle, width=2.0,  name=join([tm.id for cm ∈ modes(l)]))
         lines = vcat(lines, [line])
@@ -144,7 +144,7 @@ function resource_map_avg(m, resource, times, lines; line_scale = 10, node_scale
     mean_values = Dict(k=> round(Statistics.mean(v), digits=2) for (k, v) ∈ trans)
     scale = line_scale/maximum(values(mean_values))
     lines = []
-    for l ∈ case[:transmission]
+    for l ∈ get_transmissions(case)
         line = scattergeo(;lat=[l.from.lat, l.to.lat], lon=[l.from.lon, l.to.lon],
                           mode="lines", line = attr(width=mean_values[l]*scale),
                           text =  mean_values[l], name=join([tm.id for cm ∈ modes(l)]))

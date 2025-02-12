@@ -53,6 +53,7 @@ Pages = [
     "library/public/transmission.md",
     "library/public/mode.md",
     "library/public/emi_extension.md",
+    "library/public/case_element.md",
     ]
 Depth = 1
 ```

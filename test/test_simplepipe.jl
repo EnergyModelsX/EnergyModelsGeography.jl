@@ -55,15 +55,14 @@ function small_graph_co2_1()
                                 CO2
                                 )
 
-
-    # Creation of the case dictionary
-    case = Dict(:nodes => nodes,
-        :links => links,
-        :products => products,
-        :areas => areas,
-        :transmission => transmissions,
-        :T => T,
+    # Input data structure
+    case = Case(
+        T,
+        products,
+        [nodes, links, areas, transmissions],
+        [[get_nodes, get_links], [get_areas, get_transmissions]],
     )
+
     return case, modeltype
 end
 
@@ -72,17 +71,18 @@ case, modeltype = small_graph_co2_1()
 m = optimize(case, modeltype)
 general_tests(m)
 
-𝒯 = case[:T]
-𝒫 = case[:products]
-𝒩 = case[:nodes]
-ℒ = case[:transmission]
+𝒯 = get_time_struct(case)
+𝒫 = get_products(case)
+𝒩 = get_nodes(case)
+ℒ = get_transmissions(case)
+𝒜 = get_areas(case)
 
 Power = 𝒫[1]
 CO2_150 = 𝒫[3]
 CO2_200 = 𝒫[4]
 
-area_from = case[:areas][1]
-area_to = case[:areas][2]
+area_from = 𝒜[1]
+area_to = 𝒜[2]
 
 a1 = 𝒩[1]
 a2 = 𝒩[2]
@@ -90,7 +90,7 @@ source = 𝒩[3]
 sink = 𝒩[4]
 el_sink = 𝒩[5]
 
-transmission = case[:transmission][1]
+transmission = ℒ[1]
 pipeline = modes(transmission)[1]
 inlet_resource = pipeline.inlet
 outlet_resource = pipeline.outlet

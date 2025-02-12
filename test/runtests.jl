@@ -38,6 +38,10 @@ include("utils.jl")
         include("test_checks.jl")
     end
 
+    @testset "Geography | Deprecation" begin
+        include("test_deprecation.jl")
+    end
+
     @testset "Geography | Investments" begin
         include("test_investments.jl")
     end

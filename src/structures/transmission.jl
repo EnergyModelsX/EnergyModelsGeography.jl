@@ -1,13 +1,15 @@
-""" A `Transmission` corridor.
+"""
+    Transmission <: AbstractElement
 
-A geographic corridor where `TransmissionModes` are used to transport resources.
+A geographic corridor between two [`Area`](@ref)s where [`TransmissionMode`](@ref)s are used
+to transport resources.
 
 # Fields
 - **`from::Area`** is the area resources are transported from.
 - **`to::Area`** is the area resources are transported to.
 - **`modes::Vector{<:Transmission}`** are the transmission modes that are available.
 """
-struct Transmission
+struct Transmission <: AbstractElement
     from::Area
     to::Area
     modes::Vector{<:TransmissionMode}

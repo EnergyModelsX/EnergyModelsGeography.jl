@@ -47,9 +47,8 @@ function generate_example_data_geo()
 
     # Create identical areas with index according to input array
     an = Dict()
-    transmission = []
-    nodes = []
-    links = []
+    nodes = EMB.Node[]
+    links = Link[]
     for a_id in area_ids
         n, l = get_sub_system_data_inv(
             a_id,
@@ -154,7 +153,7 @@ function generate_example_data_geo()
         [],
     )
 
-    transmission = [
+    transmissions = [
         Transmission(areas[1], areas[2], [OverheadLine_50MW_12]),
         Transmission(areas[1], areas[3], [OverheadLine_50MW_13]),
         Transmission(areas[2], areas[3], [OverheadLine_50MW_23]),
@@ -169,14 +168,12 @@ function generate_example_data_geo()
     modeltype = InvestmentModel(em_limits, em_cost, CO2, 0.07)
 
 
-    # WIP data structure
-    case = Dict(
-        :areas => Array{Area}(areas),
-        :transmission => Array{Transmission}(transmission),
-        :nodes => Array{EMB.Node}(nodes),
-        :links => Array{Link}(links),
-        :products => products,
-        :T => T,
+    # Input data structure
+    case = Case(
+        T,
+        products,
+        [nodes, links, areas, transmissions],
+        [[get_nodes, get_links], [get_areas, get_transmissions]],
     )
     return case, modeltype
 end
@@ -488,7 +485,7 @@ end
 # Generate case data
 case, model = generate_example_data_geo()
 optimizer = optimizer_with_attributes(HiGHS.Optimizer, MOI.Silent() => true)
-m = EMG.create_model(case, model)
+m = create_model(case, model)
 set_optimizer(m, optimizer)
 optimize!(m)
 
@@ -496,5 +493,3 @@ solution_summary(m)
 
 # Uncomment to print all the constraints set in the model.
 # print(m)
-
-solution_summary(m)

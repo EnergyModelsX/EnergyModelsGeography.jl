@@ -74,16 +74,13 @@ function small_graph_geo(; source = nothing, sink = nothing, inv_data = nothing)
         0.07,
     )
 
-    # Creation of the case dictionary
-    case = Dict(
-        :nodes => nodes,
-        :links => links,
-        :products => products,
-        :areas => areas,
-        :transmission => transmissions,
-        :T => T,
+    # Input data structure
+    case = Case(
+        T,
+        products,
+        [nodes, links, areas, transmissions],
+        [[get_nodes, get_links], [get_areas, get_transmissions]],
     )
-
     return case, modeltype
 end
 
@@ -98,10 +95,10 @@ end
     general_tests(m)
 
     # Extraction of required data
-    𝒯 = case[:T]
+    𝒯 = get_time_struct(case)
     𝒯ᴵⁿᵛ = strategic_periods(𝒯)
-    sink = case[:nodes][4]
-    tr_osl_trd = case[:transmission][1]
+    sink = get_nodes(case)[4]
+    tr_osl_trd = get_transmissions(case)[1]
     tm = modes(tr_osl_trd)[1]
 
     # Test identifying that the proper deficit is calculated
@@ -134,10 +131,10 @@ end
     general_tests(m)
 
     # Extraction of required data
-    𝒯 = case[:T]
+    𝒯 = get_time_struct(case)
     𝒯ᴵⁿᵛ = strategic_periods(𝒯)
-    sink = case[:nodes][4]
-    tr_osl_trd = case[:transmission][1]
+    sink = get_nodes(case)[4]
+    tr_osl_trd = get_transmissions(case)[1]
     tm = modes(tr_osl_trd)[1]
     inv_data = EMI.investment_data(tm, :cap)
 
@@ -186,10 +183,10 @@ end
     general_tests(m)
 
     # Extraction of required data
-    𝒯 = case[:T]
+    𝒯 = get_time_struct(case)
     𝒯ᴵⁿᵛ = strategic_periods(𝒯)
-    sink = case[:nodes][4]
-    tr_osl_trd = case[:transmission][1]
+    sink = get_nodes(case)[4]
+    tr_osl_trd = get_transmissions(case)[1]
     tm = modes(tr_osl_trd)[1]
     inv_data = EMI.investment_data(tm, :cap)
 
@@ -260,10 +257,10 @@ end
     general_tests(m)
 
     # Extraction of required data
-    𝒯 = case[:T]
+    𝒯 = get_time_struct(case)
     𝒯ᴵⁿᵛ = strategic_periods(𝒯)
-    sink = case[:nodes][4]
-    tr_osl_trd = case[:transmission][1]
+    sink = get_nodes(case)[4]
+    tr_osl_trd = get_transmissions(case)[1]
     tm = modes(tr_osl_trd)[1]
     inv_data = EMI.investment_data(tm, :cap)
     inv_mode = EMI.investment_mode(inv_data)
@@ -338,10 +335,10 @@ end
     general_tests(m)
 
     # Extraction of required data
-    𝒯 = case[:T]
+    𝒯 = get_time_struct(case)
     𝒯ᴵⁿᵛ = strategic_periods(𝒯)
-    sink = case[:nodes][4]
-    tr_osl_trd = case[:transmission][1]
+    sink = get_nodes(case)[4]
+    tr_osl_trd = get_transmissions(case)[1]
     tm = modes(tr_osl_trd)[1]
     inv_data = EMI.investment_data(tm, :cap)
 

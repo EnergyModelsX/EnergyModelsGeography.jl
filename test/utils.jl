@@ -3,10 +3,10 @@ const ROUND_DIGITS = 8
 ⪆(x, y) = x > y || isapprox(x, y; atol = TEST_ATOL)
 
 using HiGHS
+optimizer = HiGHS.Optimizer
 
 function optimize(case, modeltype)
-    m = EMG.create_model(case, modeltype)
-    optimizer = HiGHS.Optimizer
+    m = create_model(case, modeltype)
     set_optimizer(m, optimizer)
     set_optimizer_attribute(m, MOI.Silent(), true)
     optimize!(m)

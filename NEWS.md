@@ -2,6 +2,14 @@
 
 ## Unversioned
 
+### Adjustments to EMB v0.9
+
+* Switched to case structure introduced in EMB.
+* Rewrote most functions to work directly with the new approach.
+* Restructured tests for `Area`s and `TransmissionMode`s based on the new approach.
+
+### Minor updates
+
 * Included a new method for identifying nodes within an area using breadth-first search.
   This method allows for an arbitrary connection of links between a node and the availability node.
 * Minor typo updates in the documentation.

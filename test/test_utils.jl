@@ -1,9 +1,9 @@
 @testset "Filter nodes by area" begin
     # This test uses the data from `test_geo_bidirectional.jl.`
     case, m = bidirectional_case()
-    areas = case[:areas]
-    nodes = case[:nodes]
-    links = case[:links]
+    areas = get_areas(case)
+    nodes = get_nodes(case)
+    links = get_links(case)
 
     a1 = areas[1]
     a2 = areas[2]
@@ -24,9 +24,9 @@ end
 @testset "Filter nodes by area - new method" begin
     # Using the same test set as in the original method
     case, m = bidirectional_case()
-    areas = case[:areas]
-    nodes = case[:nodes]
-    links = case[:links]
+    areas = get_areas(case)
+    nodes = get_nodes(case)
+    links = get_links(case)
 
     a1 = areas[1]
     a2 = areas[2]
