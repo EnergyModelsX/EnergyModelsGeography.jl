@@ -14,7 +14,7 @@
   This method allows for an arbitrary connection of links between a node and the availability node.
 * Minor typo updates in the documentation.
 * Removed the function `modes_of_dir` and replaced its use with `filter(is_bidirectional, ℳ)`.
-  In the case of filtering for single modes, we can use `filter(!is_bidirectional, ℳ)`.
+  In the case of filtering for unidirectional modes, we can use `filter(!is_bidirectional, ℳ)`.
 
 ## Version 0.10.1 (2024-10-16)
 
