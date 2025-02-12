@@ -95,6 +95,9 @@ end
     abstract type PipeMode <: TransmissionMode
 
 `TransmissionMode` mode for additional variable potential.
+
+`PipeMode`s are by default unidirectional. If you plan to include bidirectional pipelines,
+you have to provide a new method to the function [`is_bidirectional`](@ref).
 """
 abstract type PipeMode <: TransmissionMode end
 
@@ -142,35 +145,7 @@ struct PipeSimple <: PipeMode
     trans_loss::TimeProfile
     opex_var::TimeProfile
     opex_fixed::TimeProfile
-    directions::Int
     data::Vector{<:Data}
-
-    function PipeSimple(
-        id::String,
-        inlet::EMB.Resource,
-        outlet::EMB.Resource,
-        consuming::EMB.Resource,
-        consumption_rate::TimeProfile,
-        trans_cap::TimeProfile,
-        trans_loss::TimeProfile,
-        opex_var::TimeProfile,
-        opex_fixed::TimeProfile,
-        data::Vector{<:Data}
-    )
-        new(
-            id,
-            inlet,
-            outlet,
-            consuming,
-            consumption_rate,
-            trans_cap,
-            trans_loss,
-            opex_var,
-            opex_fixed,
-            1,
-            data,
-            )
-    end
 end
 function PipeSimple(
     id::String,
@@ -230,37 +205,7 @@ struct PipeLinepackSimple <: PipeMode
     opex_var::TimeProfile
     opex_fixed::TimeProfile
     energy_share::Float64
-    directions::Int
     data::Vector{<:Data}
-
-    function PipeLinepackSimple(
-        id::String,
-        inlet::EMB.Resource,
-        outlet::EMB.Resource,
-        consuming::EMB.Resource,
-        consumption_rate::TimeProfile,
-        trans_cap::TimeProfile,
-        trans_loss::TimeProfile,
-        opex_var::TimeProfile,
-        opex_fixed::TimeProfile,
-        energy_share::Float64,
-        data::Vector{<:Data},
-    )
-        new(
-            id,
-            inlet,
-            outlet,
-            consuming,
-            consumption_rate,
-            trans_cap,
-            trans_loss,
-            opex_var,
-            opex_fixed,
-            energy_share,
-            1,
-            data,
-        )
-    end
 end
 function PipeLinepackSimple(
     id::String,
@@ -331,16 +276,6 @@ Returns the transported resource for a given TransmissionMode.
 """
 map_trans_resource(tm::TransmissionMode) = tm.resource
 map_trans_resource(tm::PipeMode) = tm.inlet
-
-"""
-    modes_of_dir(ℒ, dir::Int)
-
-Return the transmission modes of dir `directions` for transmission modes `ℳ`.
-"""
-function modes_of_dir(ℳ::Vector{<:TransmissionMode}, dir::Int)
-
-    return filter(x -> x.directions == dir, ℳ)
-end
 
 """
     capacity(tm::TransmissionMode)
@@ -452,10 +387,15 @@ energy_share(tm::PipeLinepackSimple) = tm.energy_share
 
 """
     is_bidirectional(tm::TransmissionMode)
+    is_bidirectional(tm::PipeMode)
 
-Checks whether transmission mode `tm` is bidirectional.
+Checks whether transmission mode `tm` is bidirectional. By default, it checks whether the
+the function [`directions`](@ref) returns the value 2.
+
+[`PipeMode`](@ref)s return false.
 """
-is_bidirectional(tm::TransmissionMode) = tm.directions == 2
+is_bidirectional(tm::TransmissionMode) = directions(tm) == 2
+is_bidirectional(tm::PipeMode) = false
 
 """
     mode_data(tm::TransmissionMode)

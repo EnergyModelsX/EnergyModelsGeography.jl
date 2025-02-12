@@ -215,7 +215,7 @@ These variables are:
 """
 function variables_trans_mode(m, 𝒯, ℳˢᵘᵇ::Vector{<:TransmissionMode}, modeltype::EnergyModel)
 
-    ℳ₂ = modes_of_dir(ℳˢᵘᵇ, 2)
+    ℳ₂ = filter(is_bidirectional, ℳˢᵘᵇ)
 
     @variable(m, trans_loss[ℳˢᵘᵇ, 𝒯] >= 0)
     @variable(m, trans_neg[ℳ₂, 𝒯] >= 0)

@@ -57,12 +57,3 @@ end
 function modes_sub(ℒᵗʳᵃⁿˢ::Vector{<:Transmission}, p::Resource)
     return filter(tm -> map_trans_resource(tm) == p, modes(ℒᵗʳᵃⁿˢ))
 end
-
-"""
-    modes_of_dir(l, dir::Int)
-
-Return the transmission modes of dir `directions` for transmission corridor `l``.
-"""
-function modes_of_dir(l::Transmission, dir::Int)
-    return filter(x -> x.directions == dir, modes(l))
-end
