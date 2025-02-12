@@ -9,7 +9,7 @@ We will as well implement information regarding the adjustment of extension pack
 
 Starting from version 0.11.0, we introduced a new input format to the function `create_model`.
 The original case dictionary is replaced with a new type, [`Case`](@extref EnergyModelsBase.Case).
-We introduced deprecated methods that can be utilized with the original dictionary, but it is advisable to switch to the new type as:
+Backwards-compatible methods are available to use with the original dictionary, however these are deprecated and we advise to switch to the new type::
 
 ```julia
 # Old structure:

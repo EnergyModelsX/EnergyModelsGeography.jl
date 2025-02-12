@@ -1,7 +1,7 @@
 
 """
     EMB.check_elements(log_by_element, 𝒜::Vector{<:Area}, 𝒳ᵛᵉᶜ, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
-    EMB.check_elements(log_by_element, ℒᵗʳᵃⁿˢ::Vector{<:Tranmission}, v, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
+    EMB.check_elements(log_by_element, ℒᵗʳᵃⁿˢ::Vector{<:Tranmission}, 𝒳ᵛᵉᶜ, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
 
 !!! note "Area methods"
     All areas are checked through the functions
