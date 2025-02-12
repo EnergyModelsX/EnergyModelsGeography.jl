@@ -352,31 +352,31 @@ EMB.has_opex(tm::TransmissionMode) = true
     has_emissions(tm::TransmissionMode)
 
 Returns whether there are emissions associated with transmission mode `tm`.
-Default behaviour is no emissions.
+The default behaviour is no emissions.
 """
-has_emissions(tm::TransmissionMode) = false
+EMB.has_emissions(tm::TransmissionMode) = false
 
 """
     emit_resources(m::TransmissionMode)
 
 Returns the types of emissions associated with transmission mode `tm`.
 """
-emit_resources(tm::TransmissionMode) = EMB.ResourceEmit[]
+emit_resources(tm::TransmissionMode) = ResourceEmit[]
 
 """
-    emission(tm::TransmissionMode, p::EMB.ResourceEmit)
-    emission(tm::TransmissionMode, p::EMB.ResourceEmit, t)
+    emissions(tm::TransmissionMode, p::ResourceEmit)
+    emissions(tm::TransmissionMode, p::ResourceEmit, t)
 
 Returns the emission of transmission mode `tm` of a specific resource `p` as `TimeProfile`
-or in operational period `ts`.
+or in operational period `t`.
 
 !!! note "Transmission emissions"
     None of the provided `TransmissionMode`s include emissions. If you plan to include
     emissions, you have to both create a new `TransmissionMode` and dispatch on this
     function.
 """
-emission(tm::TransmissionMode, p::EMB.ResourceEmit) = 0
-emission(tm::TransmissionMode, p::EMB.ResourceEmit, t) = 0
+emissions(tm::TransmissionMode, p::EMB.ResourceEmit) = FixedProfile(0)
+emissions(tm::TransmissionMode, p::EMB.ResourceEmit, t) = 0
 
 """
     consumption_rate(tm::PipeMode)

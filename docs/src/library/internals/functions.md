@@ -58,9 +58,8 @@ check_mode_default
 extract_resources
 export_resources
 import_resources
-has_emissions
-emission
 emit_resources
+emissions
 is_bidirectional
 trans_sub
 ```

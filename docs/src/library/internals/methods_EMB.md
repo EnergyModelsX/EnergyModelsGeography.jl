@@ -42,6 +42,7 @@ EMB.opex_var
 
 ```@docs
 EMB.has_opex
+EMB.has_emissions
 ```
 
 ## [Check methods](@id lib-int-fun-check)

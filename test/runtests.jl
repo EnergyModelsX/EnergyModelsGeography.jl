@@ -30,6 +30,10 @@ include("utils.jl")
         include("test_simplelinepack.jl")
     end
 
+    @testset "Geography | Emissions" begin
+        include("test_emissions.jl")
+    end
+
     @testset "Geography | Utilities" begin
         include("test_utils.jl")
     end
