@@ -47,8 +47,9 @@ variables_trans_mode
 
 ```@docs
 check_area
-check_mode
 check_transmission
+check_mode
+check_mode_default
 ```
 
 ## [Identification functions](@id lib-int-fun-identi)
