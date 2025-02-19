@@ -244,12 +244,12 @@ function constraints_emission(m, tm::TransmissionMode, 𝒯, modeltype::EnergyMo
     if is_bidirectional(tm)
         @constraint(m, [t ∈ 𝒯, p_em ∈ emit_resources(tm)],
             m[:emissions_trans][tm, t, p_em] ==
-                emission(tm, p_em, t) * (m[:trans_pos][tm, t] + m[:trans_neg][tm, t])
+                emissions(tm, p_em, t) * (m[:trans_pos][tm, t] + m[:trans_neg][tm, t])
         )
     else
         @constraint(m, [t ∈ 𝒯, p_em ∈ emit_resources(tm)],
             m[:emissions_trans][tm, t, p_em] ==
-                emission(tm, p_em, t) * m[:trans_out][tm, t]
+                emissions(tm, p_em, t) * m[:trans_out][tm, t]
         )
     end
 end

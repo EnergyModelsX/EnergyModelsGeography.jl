@@ -21,6 +21,9 @@
 * Minor typo updates in the documentation.
 * Removed the function `modes_of_dir` and replaced its use with `filter(is_bidirectional, ℳ)`.
   In the case of filtering for unidirectional modes, we can use `filter(!is_bidirectional, ℳ)`.
+* Reworked emissions to dispatch on the function `has_emissions` from `EnergyModelsBase`:
+  * Added tests that the approach is working.
+  * Unify the approach to return a `TimeProfile` when no timeperiod is provided.
 
 ## Version 0.10.1 (2024-10-16)
 
