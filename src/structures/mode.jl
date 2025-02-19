@@ -375,8 +375,8 @@ or in operational period `t`.
     emissions, you have to both create a new `TransmissionMode` and dispatch on this
     function.
 """
-emissions(tm::TransmissionMode, p::EMB.ResourceEmit) = FixedProfile(0)
-emissions(tm::TransmissionMode, p::EMB.ResourceEmit, t) = 0
+emissions(tm::TransmissionMode, p::ResourceEmit) = FixedProfile(0)
+emissions(tm::TransmissionMode, p::ResourceEmit, t) = 0
 
 """
     consumption_rate(tm::PipeMode)
