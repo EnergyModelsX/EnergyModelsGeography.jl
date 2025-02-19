@@ -24,6 +24,8 @@
 * Reworked emissions to dispatch on the function `has_emissions` from `EnergyModelsBase`:
   * Added tests that the approach is working.
   * Unify the approach to return a `TimeProfile` when no timeperiod is provided.
+* Reworked the function `mode_sub`.
+* Restructured the test setup while keeping the old tests.
 
 ## Version 0.10.1 (2024-10-16)
 
