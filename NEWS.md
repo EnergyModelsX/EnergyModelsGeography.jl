@@ -8,6 +8,12 @@
 * Rewrote most functions to work directly with the new approach.
 * Restructured tests for `Area`s and `TransmissionMode`s based on the new approach.
 
+### Added checks
+
+* Adjusted the checks design to the new version of EMB.
+* Included checks for `Area`s, `Transmission` corridors and all provided `TransmissionMode`s.
+* Checks are slightly more advanced to also test that indexing is working.
+
 ### Minor updates
 
 * Included a new method for identifying nodes within an area using breadth-first search.
