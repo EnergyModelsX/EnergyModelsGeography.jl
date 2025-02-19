@@ -34,6 +34,18 @@ include("utils.jl")
         include("test_emissions.jl")
     end
 
+    @testset "Geography | Modes" begin
+        include("test_mode.jl")
+    end
+
+    @testset "Geography | Transmission" begin
+        include("test_transmission.jl")
+    end
+
+    @testset "Geography | Areas" begin
+        include("test_area.jl")
+    end
+
     @testset "Geography | Utilities" begin
         include("test_utils.jl")
     end
