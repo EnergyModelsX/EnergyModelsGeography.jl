@@ -106,13 +106,13 @@ with paranthesis.
 
 The variables of all transmission modes are described on *[optimization variables](@ref man-opt_var-transmission_mode)* and include:
 
-- ``\texttt{trans\_opex\_var}``
-- ``\texttt{trans\_opex\_fixed}``
+- ``\texttt{trans\_opex\_var}`` if the transmission mode has a method returning `true` for the function [`EnergyModelsBase.has_opex`](@ref). By default, all transmission modes include the variable.
+- ``\texttt{trans\_opex\_fixed}`` if the transmission mode has a method returning `true` for the function [`EnergyModelsBase.has_opex`](@ref). By default, all transmission modes include the variable.
 - ``\texttt{trans\_cap}``
 - ``\texttt{trans\_in}``
 - ``\texttt{trans\_out}``
 - ``\texttt{trans\_loss}``
-- ``\texttt{emissions\_trans}`` if the transmission mode uses dispatch on the function [`has_emissions`](@ref).
+- ``\texttt{emissions\_trans}`` if the transmission mode has a method returning `true` for the function [`EnergyModelsBase.has_emissions`](@ref). By default, no transmission mode includes the variable.
 
 [`PipeLinepackSimple`](@ref) transmission modes include furthermore:
 
@@ -249,11 +249,11 @@ The following standard constraints are implemented for a [`TransmissionMode`](@r
   Unidirectional transport calculates the emissions of the resourecs ``p_{em} \in emit\_resources(tm)`` as a fraction of the outlet flow:
 
   ```math
-  \texttt{emissions\_trans}[tm, t, p_{em}] = emission(tm, p_{em}, t) \times \texttt{trans\_out}[tm, t]
+  \texttt{emissions\_trans}[tm, t, p_{em}] = emissions(tm, p_{em}, t) \times \texttt{trans\_out}[tm, t]
   ```
 
   while bidirectional transport utilize again the variables ``\texttt{trans\_pos}[tm, t]`` and ``\texttt{trans\_neg}[tm, t]`` as introduced above:
 
   ```math
-  \texttt{emissions\_trans}[tm, t, p_{em}] = emission(tm, p_{em}, t) \times \left(\texttt{trans\_pos}[tm, t] + \texttt{trans\_neg}[tm, t]\right)
+  \texttt{emissions\_trans}[tm, t, p_{em}] = emissions(tm, p_{em}, t) \times \left(\texttt{trans\_pos}[tm, t] + \texttt{trans\_neg}[tm, t]\right)
   ```

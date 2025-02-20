@@ -1,6 +1,6 @@
 # Release notes
 
-## Unversioned
+## Version 0.11.0 (2025-02-20)
 
 ### Adjustments to EMB v0.9
 
