@@ -7,6 +7,8 @@ We will as well implement information regarding the adjustment of extension pack
 
 ## [Adjustments from 0.10.x](@id how_to-update-10)
 
+### [Input case](@id how_to-update-10-case)
+
 Starting from version 0.11.0, we introduced a new input format to the function `create_model`.
 The original case dictionary is replaced with a new type, [`Case`](@extref EnergyModelsBase.Case).
 Backwards-compatible methods are available to use with the original dictionary, however these are deprecated and we advise to switch to the new type:
@@ -31,9 +33,16 @@ case = Case(
 )
 ```
 
+Furthermore, we reworked the design for inclusion of emission and OPEX variables.
+
+### [Modes with emissions](@id how_to-update-10-emissions)
+
+It is now necessary to provide a new method to the function [`EnergyModelsBase.has_emissions`](@ref) if you plan to include [`TransmissionMode`](@ref)s with emissions instead of a separate function declared within `EnergyModelsGeography`.
+In addition, the function `emission` was renamed to [`EnergyModelsGeography.emissions`](@ref) and, if not called with a `TimePeriod` as input argument, returns a `TimeProfile` instead of a Real.
+
 ## [Adjustments from 0.9.x](@id how_to-update-09)
 
-### [Key changes for transmission mode descriptions](@id how_to-update-06-mode)
+### [Key changes for transmission mode descriptions](@id how_to-update-09-mode)
 
 Version 0.10 removed the keyword definition of [`PipeSimple`](@ref) and [`PipeLinepackSimple`](@ref).
 A key aim behind this removal is to avoid having to specify the fields if one does not provide a value to the data or the directions field.
