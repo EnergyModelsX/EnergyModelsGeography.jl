@@ -235,38 +235,16 @@ function PipeLinepackSimple(
 end
 
 """
-    modes_sub(ℳ::Vector{<:TransmissionMode}, string::String)
+    modes_sub(ℳ::Vector{<:TransmissionMode}, str::String)
+    modes_sub(ℳ::Vector{<:TransmissionMode}, str_arr::Array{String})
 
-Returns all transmission modes that include in the name the `string`.
+Returns an array containing all [`TransmissionMode`](@ref)s that include in the name the
+String `str` or any of values in the String array `str_arr`.
 """
-function modes_sub(ℳ::Vector{<:TransmissionMode}, string::String)
-
-    sub_modes = TransmissionMode[]
-    for tm ∈ ℳ
-        if isequal(string, tm.id)
-            append!(sub_modes, [tm])
-        end
-    end
-
-    return sub_modes
-end
-"""
-    modes_sub(ℳ::Vector{<:TransmissionMode}, string_array::Array{String})
-
-Returns all transmission modes that include in the name all entries of
-the array `string_array`.
-"""
-function modes_sub(ℳ::Vector{<:TransmissionMode}, string_array::Array{String})
-
-    sub_modes = TransmissionMode[]
-    for tm ∈ ℳ
-        if all(isequal(string, tm.id) for string ∈ string_array)
-            append!(sub_modes, [tm])
-        end
-    end
-
-    return sub_modes
-end
+modes_sub(ℳ::Vector{<:TransmissionMode}, str::String) =
+    filter(tm -> occursin(str, tm.id), ℳ)
+modes_sub(ℳ::Vector{<:TransmissionMode}, str_arr::Array{String}) =
+    filter(tm -> any(occursin(str, tm.id) for str ∈ str_arr), ℳ)
 
 """
     map_trans_resource(tm::TransmissionMode)
