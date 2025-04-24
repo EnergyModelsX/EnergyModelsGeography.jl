@@ -1,5 +1,9 @@
 # Release notes
 
+## Version 0.11.1 (2025-04-24)
+
+* Fixed a bug that occured when the couplings were provided in the wrong way.
+
 ## Version 0.11.0 (2025-02-20)
 
 ### Adjustments to EMB v0.9
