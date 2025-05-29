@@ -243,7 +243,22 @@ end
 Default fallback method for a vector of elements if no other method is defined for a given
 vector type.
 """
-function EMB.variables_element(m, 𝒜ˢᵘᵇ::Vector{<:Area}, 𝒯, modeltype::EnergyModel) end
+function EMB.variables_elements(m, 𝒜ˢᵘᵇ::Vector{<:Area}, 𝒳ᵛᵉᶜ, 𝒯, modeltype::EnergyModel)
+
+    ℒᵗʳᵃⁿˢ = get_transmissions(𝒳ᵛᵉᶜ)
+
+    # Add voltage angle to all areas connected to a transmission mode that requires this variable
+    𝒜ᵛᵃ = filter(a -> has_voltage_angle(vcat(trans_sub(ℒᵗʳᵃⁿˢ, a)...)), 𝒜ˢᵘᵇ)
+    @variable(m, -π ≤ voltage_angle[𝒜ᵛᵃ, 𝒯] ≤ π)
+    @constraint(m, [t ∈ 𝒯],
+        m[:voltage_angle][𝒜ᵛᵃ[1], t] == 0)
+
+    # Add voltage angle to all areas connected to a transmission mode that requires this variable
+    𝒜ᵛᵐ = filter(a -> has_voltage_magnitude(vcat(trans_sub(ℒᵗʳᵃⁿˢ, a)...)), 𝒜ˢᵘᵇ)
+    @variable(m, voltage_magnitude[𝒜ᵛᵐ, 𝒯] ≥ 0)
+    @constraint(m, [t ∈ 𝒯],
+        m[:voltage_magnitude][𝒜ᵛᵐ[1], t] == 1)
+end
 
 """
     EMB.constraints_elements(m, 𝒜::Vector{<:Area}, 𝒳ᵛᵉᶜ, 𝒫, 𝒯, modeltype::EnergyModel)
@@ -266,8 +281,10 @@ function EMB.constraints_elements(m, 𝒜::Vector{<:Area}, 𝒳ᵛᵉᶜ, 𝒫, 
     end
 end
 function EMB.constraints_elements(m, ℒᵗʳᵃⁿˢ::Vector{Transmission}, 𝒳ᵛᵉᶜ, 𝒫, 𝒯, modeltype::EnergyModel)
-    for tm ∈ modes(ℒᵗʳᵃⁿˢ)
-        create_transmission_mode(m, tm, 𝒯, modeltype)
+    for l ∈ ℒᵗʳᵃⁿˢ
+        for tm ∈ modes(l)
+            create_transmission_mode(m, l, tm, 𝒯, modeltype)
+        end
     end
 end
 
@@ -433,7 +450,7 @@ Serves as a fallback option for unspecified subtypes of `TransmissionMode`.
 - [`constraints_opex_fixed`](@ref), and
 - [`constraints_opex_var`](@ref).
 """
-function create_transmission_mode(m, tm::TransmissionMode, 𝒯, modeltype::EnergyModel)
+function create_transmission_mode(m, l::Transmission, tm::TransmissionMode, 𝒯, modeltype::EnergyModel)
 
     # Defining the required sets
     𝒯ᴵⁿᵛ = strategic_periods(𝒯)
@@ -441,6 +458,9 @@ function create_transmission_mode(m, tm::TransmissionMode, 𝒯, modeltype::Ener
     # Call of the function for tranmission balance
     # Generic trans in which each output corresponds to the input minus losses
     constraints_trans_balance(m, tm, 𝒯, modeltype)
+
+    # Call of the function for transmission physics
+    constraints_trans_physics(m, l, tm, 𝒯, modeltype)
 
     # Call of the functions for tranmission losses
     constraints_trans_loss(m, tm, 𝒯, modeltype)
@@ -457,3 +477,13 @@ function create_transmission_mode(m, tm::TransmissionMode, 𝒯, modeltype::Ener
         constraints_opex_var(m, tm, 𝒯ᴵⁿᵛ, modeltype)
     end
 end
+
+"""
+    constraints_trans_physics(m, l::Transmission, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EnergyModel)
+
+Function for creating the transmission physics description for a generic [`TransmissionMode`](@ref).
+
+This function serves as fallback option if no other function is specified for a
+`TransmissionMode`.
+"""
+function constraints_trans_physics(m, l::Transmission, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EnergyModel) end
