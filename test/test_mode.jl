@@ -567,6 +567,28 @@ end
         )
         bi_analysis(mode)
     end
+
+    @testset "Reversed couplings" begin
+        # Test that reversed couplings are working for EMG
+        tm = RefStatic(
+            "mode",
+            Power,
+            FixedProfile(20),
+            FixedProfile(0.01),
+            FixedProfile(0.1),
+            FixedProfile(2),
+            2,
+        )
+        case, modeltype = simple_geo_uni(tm)
+        case_rev = Case(
+            get_time_struct(case),
+            get_products(case),
+            get_elements_vec(case),
+            [[get_nodes, get_links], [get_transmissions, get_areas]],
+        )
+        m = optimize(case_rev, modeltype)
+        general_tests(m)
+    end
 end
 
 # Testset for PipeSimple

@@ -315,7 +315,7 @@ function EMB.constraints_couple(m, 𝒜::Vector{<:Area}, ℒᵗʳᵃⁿˢ::Vecto
     end
 end
 function EMB.constraints_couple(m, ℒᵗʳᵃⁿˢ::Vector{Transmission}, 𝒜::Vector{<:Area}, 𝒫, 𝒯, modeltype::EnergyModel)
-    return constraints_couple(m, 𝒜, ℒᵗʳᵃⁿˢ, 𝒫, 𝒯, modeltype)
+    return EMB.constraints_couple(m, 𝒜, ℒᵗʳᵃⁿˢ, 𝒫, 𝒯, modeltype)
 end
 
 """

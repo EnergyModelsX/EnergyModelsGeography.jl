@@ -1,5 +1,9 @@
 # Release notes
 
+## Version 0.11.1 (2025-06-02)
+
+* Fixed a bug that occured when the couplings were provided in the opposite way.
+
 ## Version 0.11.0 (2025-02-20)
 
 ### Adjustments to EMB v0.9
@@ -163,12 +167,12 @@ These changes are mainly:
 
 ### Change of indexing
 
-* Variables are now indexed _*via*_ the `TransmissionMode` and the time period instead of the using a `SparseAxisArray` and indexing _*via*_ `Transmission`, time period, and `TransmissionMode`. This also improves model generation time.
-* This adjustment requires the declaration of a new instance for each usage of a `TransmissionMode`, see, _e.g._, the changes in `scr\user_interface.jl`.
+* Variables are now indexed **via** the `TransmissionMode` and the time period instead of the using a `SparseAxisArray` and indexing **via** `Transmission`, time period, and `TransmissionMode`. This also improves model generation time.
+* This adjustment requires the declaration of a new instance for each usage of a `TransmissionMode`, see, *e.g.*, the changes in `scr\user_interface.jl`.
 
 ### Additional changes
 
-* Change of variable generation for individual transmission modes: Variable generation _*via*_ the function `variables_trans_mode(s)` is adjusted to follow the concept introduced in `EnergyModelsBase`.
+* Change of variable generation for individual transmission modes: Variable generation **via** the function `variables_trans_mode(s)` is adjusted to follow the concept introduced in `EnergyModelsBase`.
 * Move of the field `Data` from `Transmission` to `TransmissionMode`. This is required for the later application of dispatching in `EnergyModelsInvestments`.
 
 ## Version 0.3.1 (2023-02-16)
@@ -176,7 +180,7 @@ These changes are mainly:
 ### Introduction of linepacking
 
 * Redefinition of `PipelineMode` as abstract type `PipeMode` and introduction of `PipeSimple` as a composite type corresponding to the previous `PipelineMode`.
-* Introduction of a simple linepacking implementation _*via*_ the type `PipeLinepackSimple.
+* Introduction of a simple linepacking implementation **via** the type `PipeLinepackSimple.
 * Change of `Area` to `abstract type` to be able to dispatch on areas.
 * Rewriting how functions for variable generation are called for easier introduction of variables for different `TransmissionMode`s.
 
