@@ -103,6 +103,8 @@ function connected_nodes(n::EMB.Node, ℒ::Vector{<:Link}, nodes::Vector{<:EMB.N
         elseif n_to == n && !(n_from ∈ nodes)
             push!(con_nodes, n_from)
             push!(con_links, l)
+        elseif (n_to == n || n_from == n)
+            push!(con_links, l)
         end
     end
     return unique(con_nodes), con_links

@@ -104,7 +104,9 @@ end
 
     # Test that the correct nodes are extracted
     @test all(n.id[1:3] == "a_" * string(k) for (k, _) ∈ enumerate(a) for n ∈ nodes[k])
+    @test all(n.id[1:3] ≠ "a_" * string(k) for (k, _) ∈ enumerate(a) for n ∈ setdiff(𝒩, nodes[k]))
 
     # Test that the correct links are extracted
     @test all(l.id[1:3] == "a_" * string(k) for (k, _) ∈ enumerate(a) for l ∈ links[k])
+    @test all(l.id[1:3] ≠ "a_" * string(k) for (k, _) ∈ enumerate(a) for l ∈ setdiff(ℒ, links[k]))
 end
