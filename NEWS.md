@@ -1,5 +1,9 @@
 # Release notes
 
+## Version 0.11.2 (2025-06-15)
+
+* Changed the links returned from `nodes_in_area` to include all links within a given area.
+
 ## Version 0.11.1 (2025-06-02)
 
 * Fixed a bug that occured when the couplings were provided in the opposite way.
