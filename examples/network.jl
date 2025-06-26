@@ -238,7 +238,6 @@ function get_sub_system_data(
                 # Line above: This implies that storing CO2 requires Power
                 Dict(CO2 => 1),             # Output from the node with output ratio
                 # In practice, for CO₂ storage, this is never used.
-                Data[]
             ),
             RefSink(
                 j+7,                        # Node id
