@@ -8,7 +8,7 @@ struct EmissionMode <: TransmissionMode
     opex_fixed::TimeProfile
     emissions::Dict{<:ResourceEmit, <:TimeProfile}
     directions::Int
-    data::Vector{Data}
+    data::Vector{ExtensionData}
 end
 EMB.has_emissions(tm::EmissionMode) = true
 EMG.emit_resources(tm::EmissionMode) = keys(tm.emissions)
@@ -83,7 +83,7 @@ function simple_case_emissions(
         FixedProfile(0),
         Dict(CO2 => FixedProfile(.5)),
         directions,
-        Data[],
+        ExtensionData[],
     )
 
     transmissions = [Transmission(areas[1], areas[2], [em_mode])]

@@ -1,5 +1,9 @@
 # Release notes
 
+## Unversioned
+
+* Use the new concepts for data variables introduced in [`EnergyModelsBase` v0.9.1](https://github.com/EnergyModelsX/EnergyModelsBase.jl/releases/tag/v0.9.1).
+
 ## Version 0.11.2 (2025-06-15)
 
 * Changed the links returned from `nodes_in_area` to include all links within a given area.
@@ -139,12 +143,12 @@ These changes are mainly:
 
 ## Version 0.6.0 (2023-05-30)
 
-* Changed the structure in which the extra field `Data` is included in the nodes.
-* It is changed from `Dict{String, Data}` to `Array{data}`.
+* Changed the structure in which the extra field `Data` is included in the modes and nodes of the test set.
+* It is changed from `Dict{String, Data}` to `Array{Data}`.
 
 ## Version 0.5.2 (2023-05-16)
 
-* Bugfix in the example which lead to a tri*via*l solution in which no energy has to be converted.
+* Bugfix in the example which lead to a trivial solution in which no energy has to be converted.
 
 ## Version 0.5.1 (2023-04-30)
 

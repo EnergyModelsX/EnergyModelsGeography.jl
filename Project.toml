@@ -16,7 +16,7 @@ EnergyModelsInvestments = "fca3f8eb-b383-437d-8e7b-aac76bb2004f"
 EMIExt = "EnergyModelsInvestments"
 
 [compat]
-EnergyModelsBase = "0.9.0"
+EnergyModelsBase = "0.9.1"
 EnergyModelsInvestments = "0.8"
 SparseVariables = "0.7.3"
 JuMP = "1.5"

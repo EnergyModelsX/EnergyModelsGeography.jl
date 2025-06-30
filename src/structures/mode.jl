@@ -23,8 +23,8 @@ Generic representation of dynamic transmission modes, using for example truck, s
 - **`opex_fixed::TimeProfile`** is the fixed operating expense per installed capacity.
 - **`directions`** is the number of directions the resource can be transported,
   1 is unidirectional (A->B) or 2 is bidirectional (A<->B).
-- **`data::Vector{Data}`** is the additional data (*e.g.*, for investments). The field `data`
-  is conditional through usage of a constructor.
+- **`data::Vector{<:ExtensionData}`** is the additional data (*e.g.*, for investments).
+  The field `data` is conditional through usage of a constructor.
 """
 struct RefDynamic <: TransmissionMode # *e.g.*, Trucks, ships etc.
     id::String
@@ -34,7 +34,7 @@ struct RefDynamic <: TransmissionMode # *e.g.*, Trucks, ships etc.
     opex_var::TimeProfile
     opex_fixed::TimeProfile
     directions::Int # 1: Unidirectional or 2: Bidirectional
-    data::Vector{Data}
+    data::Vector{<:ExtensionData}
 end
 function RefDynamic(
         id::String,
@@ -45,7 +45,7 @@ function RefDynamic(
         opex_fixed::TimeProfile,
         directions::Int,
     )
-    return RefDynamic(id, resource, trans_cap, trans_loss, opex_var, opex_fixed, directions, Data[])
+    return RefDynamic(id, resource, trans_cap, trans_loss, opex_var, opex_fixed, directions, ExtensionData[])
 end
 
 """
@@ -65,8 +65,8 @@ Generic representation of static transmission modes, such as overhead power line
 - **`opex_fixed::TimeProfile`** is the fixed operating expense per installed capacity.
 - **`directions`** is the number of directions the resource can be transported,
   1 is unidirectional (A->B) or 2 is bidirectional (A<->B).
-- **`data::Vector{Data}`** is the additional data (*e.g.*, for investments). The field `data`
-  is conditional through usage of a constructor.
+- **`data::Vector{<:ExtensionData}`** is the additional data (*e.g.*, for investments).
+  The field `data` is conditional through usage of a constructor.
 """
 struct RefStatic <: TransmissionMode # E.g. overhead power lines, pipelines etc.
     id::String
@@ -76,7 +76,7 @@ struct RefStatic <: TransmissionMode # E.g. overhead power lines, pipelines etc.
     opex_var::TimeProfile
     opex_fixed::TimeProfile
     directions::Int
-    data::Vector{Data}
+    data::Vector{<:ExtensionData}
 end
 function RefStatic(
         id::String,
@@ -87,7 +87,7 @@ function RefStatic(
         opex_fixed::TimeProfile,
         directions::Int,
     )
-    return RefStatic(id, resource, trans_cap, trans_loss, opex_var, opex_fixed, directions, Data[])
+    return RefStatic(id, resource, trans_cap, trans_loss, opex_var, opex_fixed, directions, ExtensionData[])
 end
 
 
@@ -132,8 +132,8 @@ be consumed at the wrong `Area`.
   modelled as a ratio.
 - **`opex_var::TimeProfile`** is the variable operating expense per energy unit transported.
 - **`opex_fixed::TimeProfile`** is the fixed operating expense per installed capacity.
-- **`data::Vector{Data}`** is the additional data (*e.g.*, for investments). The field `data`
-  is conditional through usage of a constructor.
+- **`data::Vector{<:ExtensionData}`** is the additional data (*e.g.*, for investments).
+  The field `data` is conditional through usage of a constructor.
 """
 struct PipeSimple <: PipeMode
     id::String
@@ -145,7 +145,7 @@ struct PipeSimple <: PipeMode
     trans_loss::TimeProfile
     opex_var::TimeProfile
     opex_fixed::TimeProfile
-    data::Vector{<:Data}
+    data::Vector{<:ExtensionData}
 end
 function PipeSimple(
     id::String,
@@ -168,7 +168,7 @@ function PipeSimple(
         trans_loss,
         opex_var,
         opex_fixed,
-        Data[],
+        ExtensionData[],
         )
 end
 
@@ -191,8 +191,8 @@ Pipeline model with linepacking implemented as simple storage function.
 - **`opex_var::TimeProfile`** is the variable operating expense per energy unit transported.
 - **`opex_fixed::TimeProfile`** is the fixed operating expense per installed capacity.
 - **`energy_share::Float64`** is the storage energy capacity relative to pipeline capacity.
-- **`data::Array{<:Data}`** is the additional data (*e.g.*, for investments). The field `data`
-  is conditional through usage of a constructor.
+- **`data::Array{<:ExtensionData}`** is the additional data (*e.g.*, for investments).
+  The field `data` is conditional through usage of a constructor.
 """
 struct PipeLinepackSimple <: PipeMode
     id::String
@@ -205,7 +205,7 @@ struct PipeLinepackSimple <: PipeMode
     opex_var::TimeProfile
     opex_fixed::TimeProfile
     energy_share::Float64
-    data::Vector{<:Data}
+    data::Vector{<:ExtensionData}
 end
 function PipeLinepackSimple(
     id::String,
@@ -231,7 +231,7 @@ function PipeLinepackSimple(
         opex_var,
         opex_fixed,
         energy_share,
-        Data[])
+        ExtensionData[])
 end
 
 """
@@ -387,6 +387,6 @@ is_bidirectional(tm::PipeMode) = false
 """
     mode_data(tm::TransmissionMode)
 
-Returns the [`Data`](@extref EnergyModelsBase.Data) array of transmission mode `tm`.
+Returns the [`ExtensionData`](@extref EnergyModelsBase.ExtensionData) array of transmission mode `tm`.
 """
-mode_data(tm::TransmissionMode) = tm.data
+mode_data(tm::TransmissionMode) = hasproperty(tm, :data) ? tm.data : ExtensionData
