@@ -350,7 +350,7 @@ end
 
 Create constraints for output flowrate and input links.
 """
-function constraints_couple_resource(m, 𝒜::Vector{<:Area}, ℒᵗʳᵃⁿˢ::Vector{<:Transmission}, 𝒫::Vector{<:Resource}, 𝒯, modeltype::EnergyModel) println("Hei her er jeg!!!") end
+function constraints_couple_resource(m, 𝒜::Vector{<:Area}, ℒᵗʳᵃⁿˢ::Vector{<:Transmission}, 𝒫::Vector{<:Resource}, 𝒯, modeltype::EnergyModel) end
 
 """
     EMB.emissions_operational(m, ℒᵗʳᵃⁿˢ::Vector{Transmission}, 𝒫ᵉᵐ, 𝒯, modeltype::EnergyModel)
