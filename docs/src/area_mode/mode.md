@@ -65,7 +65,7 @@ The fields of the types are given as:
   The fixed operating expenses are relative to the installed capacity (through the field `trans_cap`) and the chosen duration of a strategic period as outlined on *[Utilize `TimeStruct`](@extref EnergyModelsBase how_to-utilize_TS)*.\
   It is important to note that you can only use `FixedProfile` or `StrategicProfile` for the fixed OPEX, but not `RepresentativeProfile` or `OperationalProfile`.
   In addition, all values have to be non-negative.
-- **`data::Vector{Data}`**:\
+- **`data::Vector{<:ExtensionData}`**:\
   An entry for providing additional data to the model.
   In the current version, it is only used for providing additional investment data when [`EnergyModelsInvestments`](https://energymodelsx.github.io/EnergyModelsInvestments.jl/) is used.
   !!! note

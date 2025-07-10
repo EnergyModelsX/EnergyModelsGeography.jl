@@ -27,7 +27,7 @@ end
         opex_var::TimeProfile,
         opex_fixed::TimeProfile,
         directions::Int = 1
-        data::Vector{Data} = Data[]
+        data::Vector{ExtensionData} = ExtensionData[]
     )
 
 Legacy constructor for a `PipeSimple`.
@@ -48,7 +48,7 @@ function PipeSimple(
     opex_var::TimeProfile,
     opex_fixed::TimeProfile,
     directions::Int,
-    data::Vector{Data},
+    data::Vector{ExtensionData},
 )
     @warn(
         "The used implementation of a `PipeSimple` will be discontinued in the near future. " *
@@ -84,7 +84,7 @@ function PipeSimple(;
     opex_var::TimeProfile,
     opex_fixed::TimeProfile,
     directions::Int = 1,
-    data::Vector{Data} = Data[],
+    data::Vector{ExtensionData} = ExtensionData[],
 )
     @warn(
         "The used implementation of a `PipeSimple` will be discontinued in the near future. " *
@@ -123,7 +123,7 @@ end
         opex_fixed::TimeProfile,
         energy_share::Float64,
         directions::Int = 1
-        data::Vector{Data} = Data[]
+        data::Vector{ExtensionData} = ExtensionData[]
     )
 
 Legacy constructor for a `PipeLinepackSimple`.
@@ -145,7 +145,7 @@ function PipeLinepackSimple(
     opex_fixed::TimeProfile,
     energy_share::Float64,
     directions::Int,
-    data::Vector{Data},
+    data::Vector{ExtensionData},
 )
     @warn(
         "The used implementation of a `PipeLinepackSimple` will be discontinued in the near future. " *
@@ -183,7 +183,7 @@ function PipeLinepackSimple(;
     opex_fixed::TimeProfile,
     energy_share::Float64,
     directions::Int = 1,
-    data::Vector{Data} = Data[],
+    data::Vector{ExtensionData} = ExtensionData[],
 )
     @warn(
         "The used implementation of a `PipeLinepackSimple` will be discontinued in the near future. " *

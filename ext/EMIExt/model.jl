@@ -30,9 +30,9 @@ function EMB.objective_invest(
 end
 
 """
-    EMB.variables_capex(m, ℒᵗʳᵃⁿˢ::Vector{Transmission}, 𝒳, 𝒯, modeltype::AbstractInvestmentModel)
+    EMB.variables_ext_data(m, _::Type{SingleInvData}, ℳᴵⁿᵛ::Vector{<:TransmissionMode}, 𝒯, 𝒫, modeltype::AbstractInvestmentModel)
 
-Create variables for the capital costs for the investments in transmission.
+Create variables for the capital costs for the investments in transmission modes.
 
 Additional variables for investment in capacity:
 * `:trans_cap_capex` - CAPEX costs for increases in the capacity of a transmission mode
@@ -42,10 +42,15 @@ Additional variables for investment in capacity:
 * `:trans_cap_invest_b` - binary variable whether investments in capacity are happening
 * `:trans_cap_remove_b` - binary variable whether investments in capacity are removed
 """
-function EMB.variables_capex(m, ℒᵗʳᵃⁿˢ::Vector{Transmission}, 𝒳, 𝒯, modeltype::AbstractInvestmentModel)
+function EMB.variables_ext_data(
+    m,
+    _::Type{SingleInvData},
+    ℳᴵⁿᵛ::Vector{<:TransmissionMode},
+    𝒯,
+    𝒫,
+    modeltype::AbstractInvestmentModel
+)
     # Declaration of the required subsets
-    ℳ = modes(ℒᵗʳᵃⁿˢ)
-    ℳᴵⁿᵛ = filter(has_investment, ℳ)
     𝒯ᴵⁿᵛ = strategic_periods(𝒯)
 
     # Add transmission specific investment variables for each strategic period:

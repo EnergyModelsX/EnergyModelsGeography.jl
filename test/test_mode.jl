@@ -241,7 +241,7 @@ end
             FixedProfile(0.1),
             FixedProfile(1),
             2,
-            Data[EmptyData()]
+            ExtensionData[]
         )
         case, modeltype = simple_geo_uni(mode)
 
@@ -281,7 +281,7 @@ end
         @test all(EMG.emissions(mode, CO2, t) == 0 for t ∈ 𝒯)
 
 
-        @test mode_data(tm) == Data[EmptyData()]
+        @test mode_data(tm) == ExtensionData[]
     end
 
     @testset "PipeMode and PipeLinepackSimple" begin

@@ -25,6 +25,8 @@ EMB.variables_opex
 EMB.variables_capex(m, ℒᵗʳᵃⁿˢ::Vector{Transmission}, 𝒳, 𝒯, modeltype::EnergyModel)
 EMB.variables_elements
 EMB.variables_element
+EMB.variables_element_ext_data
+EMB.variables_ext_data(m, _::Type{<:ExtensionData}, ℳ::Vector{<:TransmissionMode}, 𝒯, 𝒫, modeltype::EnergyModel)
 EMB.variables_emission
 ```
 
