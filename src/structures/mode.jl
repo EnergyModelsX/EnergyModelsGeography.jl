@@ -48,6 +48,32 @@ function RefDynamic(
     return RefDynamic(id, resource, trans_cap, trans_loss, opex_var, opex_fixed, directions, ExtensionData[])
 end
 
+struct ScheduledDynamic <: TransmissionMode 
+    id::String
+    resource::EMB.Resource
+    trans_cap::TimeProfile
+    departure::TimeProfile #  Vector of binary values
+    arrival::TimeProfile #  Vector of binary values, should not overlap with departure
+    trans_loss::TimeProfile
+    opex_var::TimeProfile
+    opex_fixed::TimeProfile
+    energy_share::Float64 # Energy carried by one unit divided by charge/discharge capacity i.e charge/discharge time
+    data::Vector{<:ExtensionData}
+end
+function ScheduledDynamic(
+        id::String,
+        resource::EMB.Resource,
+        trans_cap::TimeProfile,
+        departure::TimeProfile,
+        arrival::TimeProfile,
+        trans_loss::TimeProfile,
+        opex_var::TimeProfile,
+        opex_fixed::TimeProfile,
+        energy_share::Float64,
+    )
+    return ScheduledDynamic(id, resource, trans_cap, departure, arrival, trans_loss, opex_var, opex_fixed, energy_share, ExtensionData[])
+end
+
 """
     struct RefStatic <: TransmissionMode
 
@@ -365,11 +391,19 @@ Returns the consumption rate of pipe mode `tm` as `TimeProfile` or in operationa
 consumption_rate(tm::PipeMode) = tm.consumption_rate
 consumption_rate(tm::PipeMode, t) = tm.consumption_rate[t]
 
+
+departure(tm::ScheduledDynamic) = tm.departure
+departure(tm::ScheduledDynamic, t) = tm.departure[t]
+
+arrival(tm::ScheduledDynamic) = tm.arrival
+arrival(tm::ScheduledDynamic, t) = tm.arrival[t]
+
 """
     energy_share(tm::PipeLinepackSimple)
 
 Returns the energy share of PipeLinepackSimple `tm`.
 """
+energy_share(tm::ScheduledDynamic) = tm.energy_share
 energy_share(tm::PipeLinepackSimple) = tm.energy_share
 
 """
@@ -382,6 +416,7 @@ the function [`directions`](@ref) returns the value 2.
 [`PipeMode`](@ref)s return false.
 """
 is_bidirectional(tm::TransmissionMode) = directions(tm) == 2
+is_bidirectional(tm::ScheduledDynamic) = false
 is_bidirectional(tm::PipeMode) = false
 
 """

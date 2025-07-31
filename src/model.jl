@@ -289,6 +289,11 @@ function variables_trans_mode(m, 𝒯, ℳᴸᴾ::Vector{<:PipeLinepackSimple}, 
 
     @variable(m, linepack_stor_level[ℳᴸᴾ, 𝒯] >= 0)
 end
+function variables_trans_mode(m, 𝒯, ℳ::Vector{<:ScheduledDynamic}, modeltype::EnergyModel)
+
+    @variable(m, trans_stor_level[ℳ, 𝒯] >= 0)
+end
+
 
 """
     variables_element(m, 𝒜ˢᵘᵇ::Vector{<:Area}, 𝒯, modeltype::EnergyModel)

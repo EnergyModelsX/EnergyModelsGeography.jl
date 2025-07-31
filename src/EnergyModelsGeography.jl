@@ -32,7 +32,7 @@ export Area, RefArea, LimitedExchangeArea
 export GeoAvailability
 export Transmission, TransmissionMode
 export RefStatic, RefDynamic
-export PipeMode, PipeSimple, PipeLinepackSimple
+export PipeMode, PipeSimple, PipeLinepackSimple, ScheduledDynamic
 
 # Export the legacy constructor for transmission investment data
 export TransInvData

@@ -78,6 +78,27 @@ function constraints_capacity(m, tm::PipeLinepackSimple, 𝒯::TimeStructure, mo
     # Add constraints for the installed capacity
     constraints_capacity_installed(m, tm, 𝒯, modeltype)
 end
+function constraints_capacity(m, tm::ScheduledDynamic, 𝒯::TimeStructure, modeltype::EnergyModel)
+
+    # Upper and lower transmission limit defined by installed capacity
+    @constraint(m, [t ∈ 𝒯],
+        m[:trans_out][tm, t] <= arrival(tm, t)*m[:trans_cap][tm, t]
+    )
+    @constraint(m, [t ∈ 𝒯],
+        m[:trans_in][tm, t] - m[:trans_loss][tm, t] <= departure(tm, t)*m[:trans_cap][tm, t]
+    )
+    for t ∈ 𝒯
+        set_lower_bound(m[:trans_out][tm, t], 0)
+        set_lower_bound(m[:trans_in][tm, t], 0)
+    end
+
+    # Transport upper limit for storage, trans_cap is now charge discharge cap, while trans_stor_level is the energy carried on one route
+    @constraint(m, [t ∈ 𝒯],
+        m[trans_stor_level][tm, t] <= energy_share(tm) * m[:trans_cap][tm, t])
+
+    # Add constraints for the installed capacity
+    constraints_capacity_installed(m, tm, 𝒯, modeltype)
+end
 
 """
     constraints_capacity_installed(m, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EnergyModel)
@@ -138,6 +159,11 @@ function constraints_trans_loss(m, tm::PipeMode, 𝒯::TimeStructure, modeltype:
     @constraint(m, [t ∈ 𝒯],
         m[:trans_loss][tm, t] == loss(tm, t) * m[:trans_in][tm, t])
 end
+function constraints_trans_loss(m, tm::ScheduledDynamic, 𝒯::TimeStructure, modeltype::EnergyModel)
+
+    @constraint(m, [t ∈ 𝒯],
+        m[:trans_loss][tm, t] == loss(tm, t) * m[:trans_in][tm, t])
+end
 
 """
     constraints_trans_balance(m, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EnergyModel)
@@ -148,6 +174,8 @@ This function serves as fallback option if no other function is specified for a
 `TransmissionMode`.
 """
 function constraints_trans_balance(m, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EnergyModel)
+
+    @info "Creating transmission balance constraints for TransmissionMode: $(tm.id) of type $(typeof(tm))"
 
     @constraint(m, [t ∈ 𝒯],
         m[:trans_out][tm, t] == m[:trans_in][tm, t] - m[:trans_loss][tm, t])
@@ -185,7 +213,32 @@ function constraints_trans_balance(m, tm::PipeLinepackSimple, 𝒯::TimeStructur
     end
 
 end
+function constraints_trans_balance(m, tm::ScheduledDynamic, 𝒯::TimeStructure, modeltype::EnergyModel)
 
+    𝒯ᴵⁿᵛ = strategic_periods(𝒯)
+    for t_inv ∈ 𝒯ᴵⁿᵛ, (t_prev, t) ∈ withprev(t_inv)
+        # Periodicity constraint
+        if isnothing(t_prev)
+            @constraint(m, m[:trans_stor_level][tm, t] ==
+                           m[:trans_stor_level][tm, last(t_inv)] +
+                           (m[:trans_in][tm, t] - m[:trans_loss][tm, t] - m[:trans_out][tm, t])
+                           * duration(t)
+            )
+        else # From one operational period to next
+            @constraint(m, m[:trans_stor_level][tm, t] ==
+                           m[:trans_stor_level][tm, t_prev] +
+                           (m[:trans_in][tm, t] - m[:trans_loss][tm, t] - m[:trans_out][tm, t])
+                           * duration(t)
+            )
+        end
+    end
+
+    if isa(𝒯, TwoLevel{S,T,U} where {S,T,U<:RepresentativePeriods})
+        @warn "RepresentativePeriods is not implemented for ScheduledDynamic. The overall
+        storage balance may yield unexpected results."
+    end
+
+end
 """
     constraints_opex_fixed(m, tm::TransmissionMode, 𝒯ᴵⁿᵛ, modeltype::EnergyModel)
 
