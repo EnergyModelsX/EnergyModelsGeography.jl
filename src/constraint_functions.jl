@@ -94,7 +94,7 @@ function constraints_capacity(m, tm::ScheduledDynamic, 𝒯::TimeStructure, mode
 
     # Transport upper limit for storage, trans_cap is now charge discharge cap, while trans_stor_level is the energy carried on one route
     @constraint(m, [t ∈ 𝒯],
-        m[trans_stor_level][tm, t] <= energy_share(tm) * m[:trans_cap][tm, t])
+        m[:trans_stor_level][tm, t] <= energy_share(tm) * m[:trans_cap][tm, t])
 
     # Add constraints for the installed capacity
     constraints_capacity_installed(m, tm, 𝒯, modeltype)
