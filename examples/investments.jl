@@ -39,11 +39,11 @@ function generate_example_network_investment()
     @info "Generate case data - Simple geographic example with investments"
 
     # Define the different resources and their emission intensity in tCO2/MWh
-    NG = ResourceCarrier("NG", 0.2)
-    Coal = ResourceCarrier("Coal", 0.35)
-    Power = ResourceCarrier("Power", 0.0)
-    CO2 = ResourceEmit("CO₂", 1.0)
-    𝒫 = [NG, Coal, Power, CO2]
+    ng = ResourceCarrier("NG", 0.2)
+    coal = ResourceCarrier("Coal", 0.35)
+    power = ResourceCarrier("Power", 0.0)
+    co2 = ResourceEmit("CO₂", 1.0)
+    𝒫 = [ng, coal, power, co2]
 
     # Variables for the individual entries of the time structure
     op_duration = 4 # Each operational period has a duration of 4
@@ -59,9 +59,9 @@ function generate_example_network_investment()
     # Creation of the time structure and global data
     𝒯 = TwoLevel(2, 1, operational_periods; op_per_strat)
     model = InvestmentModel(
-        Dict(CO2 => StrategicProfile([200, 100].*500)), # CO₂ emission cap in t/year
-        Dict(CO2 => FixedProfile(0)),               # CO₂ emission cost in EUR/t
-        CO2,                                        # CO2 instance
+        Dict(co2 => StrategicProfile([200, 100].*500)), # CO₂ emission cap in t/year
+        Dict(co2 => FixedProfile(0)),               # CO₂ emission cost in EUR/t
+        co2,                                        # CO₂ instance
         0.07,                                       # Discount rate in absolute value
     )
 
@@ -75,15 +75,15 @@ function generate_example_network_investment()
             FixedProfile(100),          # Capacity in MW
             FixedProfile(9),            # Variable OPEX in EUR/MWh
             FixedProfile(0),            # Fixed OPEX in EUR/MW/year
-            Dict(Coal => 1),            # Output from the Node, in this case, coal
+            Dict(coal => 1),            # Output from the Node, in this case, coal
         ),
         RefNetworkNode(
             "Reg_1-Coal_power_plant",   # Node id
             FixedProfile(25),           # Capacity in MW
             FixedProfile(6),            # Variable OPEX in EUR/MWh
             FixedProfile(0),            # Fixed OPEX in EUR/MW/year
-            Dict(Coal => 2.5),          # Input to the node with input ratio
-            Dict(Power => 1),           # Output from the node with output ratio
+            Dict(coal => 2.5),          # Input to the node with input ratio
+            Dict(power => 1),           # Output from the node with output ratio
             [EmissionsEnergy()],        # Additional data for emissions
         ),
         RefStorage{AccumulatingEmissions}(
@@ -94,10 +94,10 @@ function generate_example_network_investment()
                 FixedProfile(0)         # Storage fixed OPEX for the charging in EUR/(t/h year)
             ),
             StorCap(FixedProfile(600)), # Storage capacity in t
-            CO2,                        # Stored resource
-            Dict(CO2 => 1, Power => 0.02), # Input resource with input ratio
-            # Line above: This implies that storing CO₂ requires Power
-            Dict(CO2 => 1),             # Output from the node with output ratio
+            co2,                        # Stored resource
+            Dict(co2 => 1, power => 0.02), # Input resource with input ratio
+            # Line above: This implies that storing CO₂ requires power
+            Dict(co2 => 1),             # Output from the node with output ratio
             # In practice, for CO₂ storage, this is never used.
         ),
         RefSink(
@@ -105,7 +105,7 @@ function generate_example_network_investment()
             FixedProfile(10),           # Demand in MW
             Dict(:surplus => FixedProfile(0), :deficit => FixedProfile(1e3)),
             # Line above: Surplus and deficit penalty for the node in EUR/MWh
-            Dict(Power => 1),           # Energy demand and corresponding ratio
+            Dict(power => 1),           # Energy demand and corresponding ratio
         ),
     ]
 
@@ -131,16 +131,16 @@ function generate_example_network_investment()
             FixedProfile(200),          # Capacity in MW
             FixedProfile(30),           # Variable OPEX in EUR/MW
             FixedProfile(0),            # Fixed OPEX in EUR/MW/year
-            Dict(NG => 1),              # Output from the Node, in this case, NG
+            Dict(ng => 1),              # Output from the Node, in this case, ng
         ),
         RefNetworkNode(
-            "Reg_2-NG+CCS_power_plant", # Node id
+            "Reg_2-ng+CCS_power_plant", # Node id
             StrategicProfile([25, 50]), # Capacity in MW
             FixedProfile(5.5),          # Variable OPEX in EUR/MWh
             FixedProfile(0),            # Fixed OPEX in EUR/MW/year
-            Dict(NG => 2),              # Input to the node with input ratio
-            Dict(Power => 1, CO2 => 1), # Output from the node with output ratio
-            # Line above: CO2 is required as output for variable definition, but the
+            Dict(ng => 2),              # Input to the node with input ratio
+            Dict(power => 1, co2 => 1), # Output from the node with output ratio
+            # Line above: co2 is required as output for variable definition, but the
             # value does not matter
             [CaptureEnergyEmissions(0.9)],  # Additional data for emissions and CO₂ capture
         ),
@@ -149,7 +149,7 @@ function generate_example_network_investment()
             OperationalProfile([10, 20, 30, 20]),           # Demand in MW
             Dict(:surplus => FixedProfile(0), :deficit => FixedProfile(5e2)),
             # Line above: Surplus and deficit penalty for the node in EUR/MWh
-            Dict(Power => 1),           # Energy demand and corresponding ratio
+            Dict(power => 1),           # Energy demand and corresponding ratio
         ),
     ]
 
@@ -162,7 +162,7 @@ function generate_example_network_investment()
     ]
 
     # Create the area
-    area_2 = RefArea(2, "Natural gas area", 53.45, 6.83, 𝒩₂[1])
+    area_2 = RefArea(2, "Natural gas area", 6.83, 53.45, 𝒩₂[1])
 
     # Merge the data into single vectors
     𝒩 = vcat(𝒩₁, 𝒩₂)
@@ -180,7 +180,7 @@ function generate_example_network_investment()
     )
     power_line = RefStatic(
         "power_line",           # ID of the transmission mode
-        Power,                  # Transported resource
+        power,                  # Transported resource
         FixedProfile(0),        # Capacity in MW
         FixedProfile(0.02),     # Relative loss
         FixedProfile(0),        # Variable OPEX in EUR/MWh
@@ -198,9 +198,9 @@ function generate_example_network_investment()
     )
     co2_pipeline = PipeSimple(
         "co2_pipeline",         # ID of the transmission mode
-        CO2,                    # Resource at the inlet
-        CO2,                    # Resource at the outlet
-        Power,                  # Additional required resource for transportation
+        co2,                    # Resource at the inlet
+        co2,                    # Resource at the outlet
+        power,                  # Additional required resource for transportation
         FixedProfile(0.01),     # Relative demand for transporting the resource in MWh/t
         FixedProfile(0),        # Capacity in t/h
         FixedProfile(0),        # Relative loss
@@ -237,6 +237,8 @@ Function for processing the results to be represented in the a table afterwards.
 function process_investment_results(m, case)
     # Extract the transmission modes from the data
     power_line, co2_pipe = modes(get_transmissions(case))
+
+    # Extract the strategic periods from the case
     𝒯ⁱⁿᵛ = strategic_periods(get_time_struct(case))
     sp_1 = first(𝒯ⁱⁿᵛ)
     sp_2 = last(𝒯ⁱⁿᵛ)
