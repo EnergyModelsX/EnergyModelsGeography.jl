@@ -127,7 +127,7 @@ Bidirectional transmission modes include furthermore:
 
 A qualitative overview of the individual constraints can be found on *[Constraint functions](@ref man-con)*.
 This section focuses instead on the mathematical description of the individual constraints.
-It omits the direction inclusion of the vector of transmission modes.
+It omits the direct inclusion of the vector of transmission modes.
 Instead, it is implicitly assumed that the constraints are valid ``\forall tm ∈ M`` for all [`TransmissionMode`](@ref) types if not stated differently.
 In addition, all constraints are valid ``\forall t \in T`` (that is in all operational periods) or ``\forall t_{inv} \in T^{Inv}`` (that is in all strategic periods).
 

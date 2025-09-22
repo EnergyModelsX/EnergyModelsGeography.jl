@@ -12,6 +12,7 @@ using EnergyModelsGeography
 using EnergyModelsInvestments
 using HiGHS
 using JuMP
+using PrettyTables
 using TimeStruct
 
 const EMB = EnergyModelsBase
@@ -19,476 +20,315 @@ const EMG = EnergyModelsGeography
 const EMI = EnergyModelsInvestments
 
 """
-    generate_example_data_geo()
+    generate_example_network_investment()
 
-Generate the data for an example consisting of a simple electricity network. The simple \
-network is existing within 5 regions with differing demand. Each region has the same \
-technologies.
+Generate the data for an example consisting of a simple electricity and CO₂ network. It is
+loosely adapted from the `network.jl` example of `EnergyModelsBase`:
+https://github.com/EnergyModelsX/EnergyModelsBase.jl/blob/main/examples/network.jl
 
-The example is partly based on the provided example `network.jl` in `EnergyModelsGeography`.
-It will be repalced in the near future with a simplified example.
+The example consists of two areas, a coal area with a coal power plant, a flat electricity
+demand, and a CO₂ storage site, and a natural gas area with a natural gas power plant with
+CCS and a variable electricity demand. The latter has lower deficit costs if not sufficient
+electricity is delivered.
+
+There is initially no transmission capacity between both areas, neither for electricity, nor
+for CO₂. As a consequence, exchange of energy or mass requires investing into transmission
+capacity.
 """
+function generate_example_network_investment()
+    @info "Generate case data - Simple geographic example with investments"
 
-function generate_example_data_geo()
-    @debug "Generate case data"
-    @info "Generate data coded dummy model for now (Investment Model)"
+    # Define the different resources and their emission intensity in tCO2/MWh
+    ng = ResourceCarrier("NG", 0.2)
+    coal = ResourceCarrier("Coal", 0.35)
+    power = ResourceCarrier("Power", 0.0)
+    co2 = ResourceEmit("CO₂", 1.0)
+    𝒫 = [ng, coal, power, co2]
 
-    # Retrieve the products
-    products = get_resources_inv()
-    NG = products[1]
-    Power = products[3]
-    CO2 = products[4]
+    # Variables for the individual entries of the time structure
+    op_duration = 4 # Each operational period has a duration of 4 (hours)
+    op_number = 4   # There are in total 4 operational periods
+    operational_periods = SimpleTimes(op_number, op_duration)
 
-    # Create input data for the areas
-    area_ids = [1, 2, 3, 4]
-    d_scale = Dict(1 => 3.0, 2 => 1.5, 3 => 1.0, 4 => 0.5)
-    mc_scale = Dict(1 => 2.0, 2 => 2.0, 3 => 1.5, 4 => 0.5)
-    gen_scale = Dict(1 => 1.0, 2 => 1.0, 3 => 1.0, 4 => 0.5)
-
-    # Create identical areas with index according to input array
-    an = Dict()
-    nodes = EMB.Node[]
-    links = Link[]
-    for a_id in area_ids
-        n, l = get_sub_system_data_inv(
-            a_id,
-            products;
-            gen_scale = gen_scale[a_id],
-            mc_scale = mc_scale[a_id],
-            d_scale = d_scale[a_id],
-        )
-        append!(nodes, n)
-        append!(links, l)
-
-        # Add area node for each subsystem
-        an[a_id] = n[1]
-    end
-
-    # Create the individual areas
-    areas = [
-        RefArea(1, "Oslo", 10.751, 59.921, an[1]),
-        RefArea(2, "Bergen", 5.334, 60.389, an[2]),
-        RefArea(3, "Trondheim", 10.398, 63.437, an[3]),
-        RefArea(4, "Tromsø", 18.953, 69.669, an[4]),
-    ]
-
-    # Create the investment data for the different power line investment modes
-    inv_data_12 = SingleInvData(
-        FixedProfile(500),
-        FixedProfile(50),
-        FixedProfile(0),
-        BinaryInvestment(FixedProfile(50.0)),
-    )
-
-    inv_data_13 = SingleInvData(
-        FixedProfile(10),
-        FixedProfile(100),
-        FixedProfile(0),
-        SemiContinuousInvestment(FixedProfile(10), FixedProfile(100)),
-    )
-
-    inv_data_23 = SingleInvData(
-        FixedProfile(10),
-        FixedProfile(50),
-        FixedProfile(20),
-        DiscreteInvestment(FixedProfile(6)),
-    )
-
-    inv_data_34 = SingleInvData(
-        FixedProfile(10),
-        FixedProfile(50),
-        FixedProfile(0),
-        ContinuousInvestment(FixedProfile(1), FixedProfile(100)),
-    )
-
-    # Create the TransmissionModes and the Transmission corridors
-    OverheadLine_50MW_12 = RefStatic(
-        "PowerLine_50",
-        Power,
-        FixedProfile(50.0),
-        FixedProfile(0.05),
-        FixedProfile(0),
-        FixedProfile(0),
-        2,
-        [inv_data_12],
-    )
-    OverheadLine_50MW_13 = RefStatic(
-        "PowerLine_50",
-        Power,
-        FixedProfile(50.0),
-        FixedProfile(0.05),
-        FixedProfile(0),
-        FixedProfile(0),
-        2,
-        [inv_data_13],
-    )
-    OverheadLine_50MW_23 = RefStatic(
-        "PowerLine_50",
-        Power,
-        FixedProfile(50.0),
-        FixedProfile(0.05),
-        FixedProfile(0),
-        FixedProfile(0),
-        2,
-        [inv_data_23],
-    )
-    OverheadLine_50MW_34 = RefStatic(
-        "PowerLine_50",
-        Power,
-        FixedProfile(50.0),
-        FixedProfile(0.05),
-        FixedProfile(0),
-        FixedProfile(0),
-        2,
-        [inv_data_34],
-    )
-    LNG_Ship_100MW = RefDynamic(
-        "LNG_100",
-        NG,
-        FixedProfile(100.0),
-        FixedProfile(0.05),
-        FixedProfile(0),
-        FixedProfile(0),
-        2,
-    )
-
-    transmissions = [
-        Transmission(areas[1], areas[2], [OverheadLine_50MW_12]),
-        Transmission(areas[1], areas[3], [OverheadLine_50MW_13]),
-        Transmission(areas[2], areas[3], [OverheadLine_50MW_23]),
-        Transmission(areas[3], areas[4], [OverheadLine_50MW_34]),
-        Transmission(areas[4], areas[2], [LNG_Ship_100MW]),
-    ]
+    # Each operational period should correspond to a duration of 4 h while a duration if 1
+    # of a strategic period should correspond to a year.
+    # This implies, that a strategic period is 8760 times longer than an operational period,
+    # resulting in the values below as "/year".
+    op_per_strat = 8760
 
     # Creation of the time structure and global data
-    T = TwoLevel(4, 1, SimpleTimes(24, 1))
-    em_limits = Dict(NG => FixedProfile(1e6), CO2 => StrategicProfile([450, 400, 350, 300]))
-    em_cost = Dict(NG => FixedProfile(0), CO2 => FixedProfile(0))
-    modeltype = InvestmentModel(em_limits, em_cost, CO2, 0.07)
+    𝒯 = TwoLevel(2, 1, operational_periods; op_per_strat)
+    model = InvestmentModel(
+        Dict(co2 => StrategicProfile([200, 100].*500)), # CO₂ emission cap in t/year
+        Dict(co2 => FixedProfile(0)),               # CO₂ emission cost in EUR/t
+        co2,                                        # CO₂ instance
+        0.07,                                       # Discount rate in absolute value
+    )
 
+    ## Create the first area: It consists of a coal sources, a coal power plant, an
+    ## electricity demand with a fixed profile, and a CO₂ storage site
+    # Create the nodes
+    𝒩₁ = [
+        GeoAvailability("Reg_1-Availability", 𝒫),
+        RefSource(
+            "Reg_1-Coal_source",        # Node id
+            FixedProfile(100),          # Capacity in MW
+            FixedProfile(9),            # Variable OPEX in EUR/MWh
+            FixedProfile(0),            # Fixed OPEX in EUR/MW/year
+            Dict(coal => 1),            # Output from the Node, in this case, coal
+        ),
+        RefNetworkNode(
+            "Reg_1-Coal_power_plant",   # Node id
+            FixedProfile(25),           # Capacity in MW
+            FixedProfile(6),            # Variable OPEX in EUR/MWh
+            FixedProfile(0),            # Fixed OPEX in EUR/MW/year
+            Dict(coal => 2.5),          # Input to the node with input ratio
+            Dict(power => 1),           # Output from the node with output ratio
+            [EmissionsEnergy()],        # Additional data for emissions
+            # Line above: `EmissionsEnergy` imply that the emissions data corresponds to
+            # emissions through fuel usage as calculated by the CO₂ intensity and efficiency.
+        ),
+        RefStorage{AccumulatingEmissions}(
+            "Reg_1-CO2_storage",        # Node id
+            StorCapOpex(
+                FixedProfile(60),       # Charge capacity in t/h
+                FixedProfile(9.1),      # Storage variable OPEX for the charging in EUR/t
+                FixedProfile(0)         # Storage fixed OPEX for the charging in EUR/(t/h year)
+            ),
+            StorCap(FixedProfile(600)), # Storage capacity in t
+            co2,                        # Stored resource
+            Dict(co2 => 1, power => 0.02), # Input resource with input ratio
+            # Line above: This implies that storing CO₂ requires power
+            Dict(co2 => 1),             # Output from the node with output ratio
+            # Line above: In the case of `AccumulatingEmissions`, you must provide the
+            # stored resource as one of the keys. Its value does however not matter as the
+            # outlet flow value is fixed to 0.
+        ),
+        RefSink(
+            "Reg_1-Electricity_demand", # Node id
+            FixedProfile(10),           # Demand in MW
+            Dict(:surplus => FixedProfile(0), :deficit => FixedProfile(1e3)),
+            # Line above: Surplus and deficit penalty for the node in EUR/MWh
+            Dict(power => 1),           # Energy demand and corresponding ratio
+        ),
+    ]
+
+    # Connect all nodes with the availability node for the overall energy/mass balance
+    # NOTE: This hard coding based on indexing is error prone. It is in general advised to
+    #       use a mapping dictionary to avoid any problems when introducing new technology
+    #       nodes.
+    ℒ₁ = [
+        Direct("Reg_1-av-coal_pp", 𝒩₁[1], 𝒩₁[3], Linear())
+        Direct("Reg_1-av-CO2_stor", 𝒩₁[1], 𝒩₁[4], Linear())
+        Direct("Reg_1-av-demand", 𝒩₁[1], 𝒩₁[5], Linear())
+        Direct("Reg_1-coal_src-av", 𝒩₁[2], 𝒩₁[1], Linear())
+        Direct("Reg_1-coal_pp-av", 𝒩₁[3], 𝒩₁[1], Linear())
+    ]
+
+    # Create the area
+    area_1 = RefArea(1, "Coal area", 6.62, 51.04, 𝒩₁[1])
+
+    ## Create the second area: It consists of a natural gas sources, a natrual gas power
+    ## plant with CCS, and an electricity demand with a variable profile
+    # Create the nodes
+    𝒩₂ = [
+        GeoAvailability("Reg_2-Availability", 𝒫),
+        RefSource(
+            "Reg_2-NG_source",          # Node id
+            FixedProfile(200),          # Capacity in MW
+            FixedProfile(30),           # Variable OPEX in EUR/MW
+            FixedProfile(0),            # Fixed OPEX in EUR/MW/year
+            Dict(ng => 1),              # Output from the Node, in this case, ng
+        ),
+        RefNetworkNode(
+            "Reg_2-ng+CCS_power_plant", # Node id
+            StrategicProfile([25, 50]), # Capacity in MW
+            FixedProfile(5.5),          # Variable OPEX in EUR/MWh
+            FixedProfile(0),            # Fixed OPEX in EUR/MW/year
+            Dict(ng => 2),              # Input to the node with input ratio
+            Dict(power => 1, co2 => 0), # Output from the node with output ratio
+            # Line above: `co2` is required as output for variable definition, but the
+            # value does not matter as it is not utilized in the model.
+            [CaptureEnergyEmissions(0.9)],  # Additional data for emissions and CO₂ capture
+            # Line above: `CaptureEnergyEmissions` imply that the emissions data corresponds
+            # to emissions through fuel usage as calculated by the CO₂ intensity and efficiency.
+            # 90 % of the CO₂ emissions are captured as given by the value 0.9.
+        ),
+        RefSink(
+            "Reg_2-Electricity_demand", # Node id
+            OperationalProfile([10, 20, 30, 20]),   # Demand in MW
+            Dict(:surplus => FixedProfile(0), :deficit => FixedProfile(5e2)),
+            # Line above: Surplus and deficit penalty for the node in EUR/MWh
+            Dict(power => 1),           # Energy demand and corresponding ratio
+        ),
+    ]
+
+    # Connect all nodes with the availability node for the overall energy/mass balance
+    # NOTE: This hard coding based on indexing is error prone. It is in general advised to
+    #       use a mapping dictionary to avoid any problems when introducing new technology
+    #       nodes.
+    ℒ₂ = [
+        Direct("Reg_2-av-NG_pp", 𝒩₂[1], 𝒩₂[3], Linear())
+        Direct("Reg_2-av-demand", 𝒩₂[1], 𝒩₂[4], Linear())
+        Direct("Reg_2-NG_src-av", 𝒩₂[2], 𝒩₂[1], Linear())
+        Direct("Reg_2-NG_pp-av", 𝒩₂[3], 𝒩₂[1], Linear())
+    ]
+
+    # Create the area
+    area_2 = RefArea(2, "Natural gas area", 6.83, 53.45, 𝒩₂[1])
+
+    # Merge the data into single vectors
+    𝒩 = vcat(𝒩₁, 𝒩₂)
+    ℒ = vcat(ℒ₁, ℒ₂)
+    𝒜 = [area_1, area_2]
+
+    # Create the transmission modes for transporting power and CO₂ between the areas
+    power_inv_data = SingleInvData(
+        FixedProfile(50 * 1e3), # CAPEX in EUR/MW
+        FixedProfile(10),       # Max installed capacity [MW]
+        ContinuousInvestment(FixedProfile(0), FixedProfile(10)),
+        # Line above: Investment mode with the following arguments:
+        # 1. argument: min added capactity per investment period [MW]
+        # 2. argument: max added capactity per investment period [MW]
+    )
+    power_line = RefStatic(
+        "power_line",           # ID of the transmission mode
+        power,                  # Transported resource
+        FixedProfile(0),        # Capacity in MW
+        FixedProfile(0.02),     # Relative loss as fraction of the transported energy
+        FixedProfile(0),        # Variable OPEX in EUR/MWh
+        FixedProfile(0),        # Fixed OPEX in EUR/MW/year
+        2,                      # Directions of transport, in this case, bidirectional
+        [power_inv_data],
+    )
+    co2_pipe_inv_data = SingleInvData(
+        FixedProfile(260 * 1e3),  # CAPEX in EUR/(t/h)
+        FixedProfile(40),       # Max installed capacity [t/h]
+        SemiContinuousInvestment(FixedProfile(5), FixedProfile(20)),
+        # Line above: Investment mode with the following arguments:
+        # 1. argument: min added capactity per investment period [t/h]
+        # 2. argument: max added capactity per investment period [t/h]
+    )
+    co2_pipeline = PipeSimple(
+        "co2_pipeline",         # ID of the transmission mode
+        co2,                    # Resource at the inlet
+        co2,                    # Resource at the outlet
+        power,                  # Additional required resource for transportation
+        FixedProfile(0.01),     # Fraction of `CO₂` required as `power` for transporting the resource in MWh/t
+        # Line above: the fraction can be seen as, e.g., pumping or compression requirement
+        FixedProfile(0),        # Capacity in t/h
+        FixedProfile(0),        # Relative loss as fraction of the transported `CO₂`
+        FixedProfile(0),        # Variable OPEX in EUR/t
+        FixedProfile(0),        # Fixed OPEX in EUR/(t/h)/year
+        [co2_pipe_inv_data],
+    )
+
+    # Create the transmission corridor between the two areas
+    # Note that the corridor is defined from the natural gas area as pipeline transport is
+    # always unidirectional
+    ℒᵗʳᵃⁿˢ = [Transmission(𝒜[2], 𝒜[1], [power_line, co2_pipeline])]
 
     # Input data structure
+    # It is also explained on
+    # https://energymodelsx.github.io/EnergyModelsBase.jl/stable/library/public/case_element/
     case = Case(
-        T,
-        products,
-        [nodes, links, areas, transmissions],
+        𝒯,                  # Chosen time structure
+        𝒫,                  # Resources used
+        [𝒩, ℒ, 𝒜, ℒᵗʳᵃⁿˢ],  # Nodes, Links, Areas, and Transmission corridors used
         [[get_nodes, get_links], [get_areas, get_transmissions]],
+        # Line above: the first vector corresponds to the original couplings between `Node`s
+        # through `Link`s. The second vector introduces couplings between `Area`s through
+        # `Transmission` corridors.
     )
-    return case, modeltype
+    return case, model
 end
 
-
-function get_resources_inv()
-
-    # Define the different resources
-    NG = ResourceEmit("NG", 0.2)
-    Coal = ResourceCarrier("Coal", 0.35)
-    Power = ResourceCarrier("Power", 0.0)
-    CO2 = ResourceEmit("CO2", 1.0)
-    products = [NG, Coal, Power, CO2]
-
-    return products
-end
-
-
-function get_sub_system_data_inv(
-    i,
-    products;
-    gen_scale::Float64 = 1.0,
-    mc_scale::Float64 = 1.0,
-    d_scale::Float64 = 1.0,
-    demand = false,
-)
-
-    NG, Coal, Power, CO2 = products
-
-    if demand == false
-        demand = [
-            OperationalProfile([
-                20,
-                20,
-                20,
-                20,
-                25,
-                30,
-                35,
-                35,
-                40,
-                40,
-                40,
-                40,
-                40,
-                35,
-                35,
-                30,
-                25,
-                30,
-                35,
-                30,
-                25,
-                20,
-                20,
-                20,
-            ]),
-            OperationalProfile([
-                20,
-                20,
-                20,
-                20,
-                25,
-                30,
-                35,
-                35,
-                40,
-                40,
-                40,
-                40,
-                40,
-                35,
-                35,
-                30,
-                25,
-                30,
-                35,
-                30,
-                25,
-                20,
-                20,
-                20,
-            ]),
-            OperationalProfile([
-                20,
-                20,
-                20,
-                20,
-                25,
-                30,
-                35,
-                35,
-                40,
-                40,
-                40,
-                40,
-                40,
-                35,
-                35,
-                30,
-                25,
-                30,
-                35,
-                30,
-                25,
-                20,
-                20,
-                20,
-            ]),
-            OperationalProfile([
-                20,
-                20,
-                20,
-                20,
-                25,
-                30,
-                35,
-                35,
-                40,
-                40,
-                40,
-                40,
-                40,
-                35,
-                35,
-                30,
-                25,
-                30,
-                35,
-                30,
-                25,
-                20,
-                20,
-                20,
-            ]),
-        ]
-        demand *= d_scale
-    end
-
-    j = (i - 1) * 100
-    nodes = [
-        GeoAvailability(j + 1, products),
-        RefSink(
-            j + 2,
-            StrategicProfile(demand),
-            Dict(:surplus => FixedProfile(0), :deficit => FixedProfile(1e6)),
-            Dict(Power => 1),
-        ),
-        RefSource(
-            j + 3,
-            FixedProfile(30),
-            FixedProfile(30 * mc_scale),
-            FixedProfile(100),
-            Dict(NG => 1),
-            [
-                SingleInvData(
-                    FixedProfile(1000), # capex [€/kW]
-                    FixedProfile(200),  # max installed capacity [kW]
-                    ContinuousInvestment(FixedProfile(10), FixedProfile(200)), # investment mode
-                ),
-            ],
-        ),
-        RefSource(
-            j + 4,
-            FixedProfile(9),
-            FixedProfile(9 * mc_scale),
-            FixedProfile(100),
-            Dict(Coal => 1),
-            [
-                SingleInvData(
-                    FixedProfile(1000), # capex [€/kW]
-                    FixedProfile(200),  # max installed capacity [kW]
-                    FixedProfile(0),
-                    ContinuousInvestment(FixedProfile(10), FixedProfile(200)), # investment mode
-                ),
-            ],
-        ),
-        RefNetworkNode(
-            j + 5,
-            FixedProfile(0),
-            FixedProfile(5.5 * mc_scale),
-            FixedProfile(100),
-            Dict(NG => 2),
-            Dict(Power => 1, CO2 => 0),
-            [
-                SingleInvData(
-                    FixedProfile(600),  # capex [€/kW]
-                    FixedProfile(25),   # max installed capacity [kW]
-                    ContinuousInvestment(FixedProfile(0), FixedProfile(25)), # investment mode
-                ),
-                CaptureEnergyEmissions(0.9),
-            ],
-        ),
-        RefNetworkNode(
-            j + 6,
-            FixedProfile(0),
-            FixedProfile(6 * mc_scale),
-            FixedProfile(100),
-            Dict(Coal => 2.5),
-            Dict(Power => 1),
-            [
-                SingleInvData(
-                    FixedProfile(800),  # capex [€/kW]
-                    FixedProfile(25),   # max installed capacity [kW]
-                    ContinuousInvestment(FixedProfile(0), FixedProfile(25)), # investment mode
-                ),
-                EmissionsEnergy(),
-            ],
-        ),
-        RefStorage{AccumulatingEmissions}(
-            j + 7,
-            StorCapOpex(FixedProfile(0), FixedProfile(9.1 * mc_scale), FixedProfile(100)),
-            StorCap(FixedProfile(0)),
-            CO2,
-            Dict(CO2 => 1, Power => 0.02),
-            Dict(CO2 => 1),
-            [
-                StorageInvData(
-                    charge = NoStartInvData(
-                        FixedProfile(500),
-                        FixedProfile(600),
-                        ContinuousInvestment(FixedProfile(0), FixedProfile(600)),
-                    ),
-                    level = NoStartInvData(
-                        FixedProfile(500),
-                        FixedProfile(600),
-                        ContinuousInvestment(FixedProfile(0), FixedProfile(600)),
-                    ),
-                ),
-            ],
-        ),
-        RefNetworkNode(
-            j + 8,
-            FixedProfile(0),
-            FixedProfile(0 * mc_scale),
-            FixedProfile(0),
-            Dict(Coal => 2.5),
-            Dict(Power => 1),
-            [
-                SingleInvData(
-                    FixedProfile(10000),    # capex [€/kW]
-                    FixedProfile(25),       # max installed capacity [kW]
-                    ContinuousInvestment(FixedProfile(0), FixedProfile(2)), # investment mode
-                ),
-                EmissionsEnergy(),
-            ],
-        ),
-        RefStorage{AccumulatingEmissions}(
-            j + 9,
-            StorCapOpex(FixedProfile(3), FixedProfile(0 * mc_scale), FixedProfile(0)),
-            StorCap(FixedProfile(5)),
-            CO2,
-            Dict(CO2 => 1, Power => 0.02),
-            Dict(CO2 => 1),
-            [
-                StorageInvData(
-                    charge = NoStartInvData(
-                        FixedProfile(500),
-                        FixedProfile(30),
-                        ContinuousInvestment(FixedProfile(0), FixedProfile(3)),
-                    ),
-                    level = NoStartInvData(
-                        FixedProfile(500),
-                        FixedProfile(50),
-                        ContinuousInvestment(FixedProfile(0), FixedProfile(2)),
-                    ),
-                ),
-            ],
-        ),
-        RefNetworkNode(
-            j + 10,
-            FixedProfile(0),
-            FixedProfile(0 * mc_scale),
-            FixedProfile(0),
-            Dict(Coal => 2.5),
-            Dict(Power => 1),
-            [
-                SingleInvData(
-                    FixedProfile(10000),    # capex [€/kW]
-                    FixedProfile(10000),    # max installed capacity [kW]
-                    ContinuousInvestment(FixedProfile(0), FixedProfile(10000)), # investment mode
-                ),
-                EmissionsEnergy(),
-            ],
-        ),
-    ]
-
-    links = [
-        Direct(j * 10 + 15, nodes[1], nodes[5], Linear())
-        Direct(j * 10 + 16, nodes[1], nodes[6], Linear())
-        Direct(j * 10 + 17, nodes[1], nodes[7], Linear())
-        Direct(j * 10 + 18, nodes[1], nodes[8], Linear())
-        Direct(j * 10 + 19, nodes[1], nodes[9], Linear())
-        Direct(j * 10 + 110, nodes[1], nodes[10], Linear())
-        Direct(j * 10 + 12, nodes[1], nodes[2], Linear())
-        Direct(j * 10 + 31, nodes[3], nodes[1], Linear())
-        Direct(j * 10 + 41, nodes[4], nodes[1], Linear())
-        Direct(j * 10 + 51, nodes[5], nodes[1], Linear())
-        Direct(j * 10 + 61, nodes[6], nodes[1], Linear())
-        Direct(j * 10 + 71, nodes[7], nodes[1], Linear())
-        Direct(j * 10 + 81, nodes[8], nodes[1], Linear())
-        Direct(j * 10 + 91, nodes[9], nodes[1], Linear())
-        Direct(j * 10 + 101, nodes[10], nodes[1], Linear())
-    ]
-    return nodes, links
-end
-
-
-# Generate case data
-case, model = generate_example_data_geo()
+# Generate the case and model data and run the model
+case, model = generate_example_network_investment()
 optimizer = optimizer_with_attributes(HiGHS.Optimizer, MOI.Silent() => true)
-m = create_model(case, model)
-set_optimizer(m, optimizer)
-optimize!(m)
+m = run_model(case, model, optimizer)
 
-solution_summary(m)
+"""
+    process_investment_results(m, case)
 
-# Uncomment to print all the constraints set in the model.
-# print(m)
+Function for processing the results to be represented in the a table afterwards.
+"""
+function process_investment_results(m, case)
+    # Extract the transmission modes from the data
+    power_line, co2_pipe = modes(get_transmissions(case))
+
+    # Extract the strategic periods from the case
+    𝒯ⁱⁿᵛ = strategic_periods(get_time_struct(case))
+    sp_1 = first(𝒯ⁱⁿᵛ)
+    sp_2 = last(𝒯ⁱⁿᵛ)
+
+    # Transmission variables
+    pl_add = sort(                  # Added capacity of the power line
+            JuMP.Containers.rowtable(
+                value,
+                m[:trans_cap_add][power_line, :];
+                header = [:t_inv, :val],
+        ),
+        by = x -> x.t_inv,
+    )
+    pl_inst = sort(                  # Total capacity of the power line
+            JuMP.Containers.rowtable(
+                value,
+                m[:trans_cap_current][power_line, :];
+                header = [:t_inv, :val],
+        ),
+        by = x -> x.t_inv,
+    )
+    pl_max_use = [
+        (t_inv = sp_1, val = maximum([-value.(m[:trans_in])[power_line, t] for t ∈ sp_1]))
+        (t_inv = sp_2, val = maximum([value.(m[:trans_out])[power_line, t] for t ∈ sp_2]))
+    ]
+    co2_add = sort(                  # Added capacity of the CO₂ pipeline
+            JuMP.Containers.rowtable(
+                value,
+                m[:trans_cap_add][co2_pipe, :];
+                header = [:t_inv, :val],
+        ),
+        by = x -> x.t_inv,
+    )
+    co2_inst = sort(                  # Total capacity of the CO₂ pipeline
+            JuMP.Containers.rowtable(
+                value,
+                m[:trans_cap_current][co2_pipe, :];
+                header = [:t_inv, :val],
+        ),
+        by = x -> x.t_inv,
+    )
+    co2_max_use = [
+        (t_inv = sp_1, val = maximum([value.(m[:trans_in])[co2_pipe, t] for t ∈ sp_1]))
+        (t_inv = sp_2, val = maximum([value.(m[:trans_in])[co2_pipe, t] for t ∈ sp_2]))
+    ]
+
+    # Set up the individual named tuples as a single named tuple
+    table = [(
+            t_inv = repr(con_1.t_inv),
+            power_line_add = round(con_2.val; digits=1),
+            power_line_inst = round(con_1.val; digits=1),
+            power_line_max_use = round(con_3.val; digits=1),
+            co2_pipe_add = round(con_5.val; digits=1),
+            co2_pipe_inst = round(con_4.val; digits=1),
+            co2_pipe_max_use = round(con_6.val; digits=1),
+        ) for (con_1, con_2, con_3, con_4, con_5, con_6) ∈
+        zip(pl_inst, pl_add, pl_max_use, co2_inst, co2_add, co2_max_use)
+    ]
+    return table
+end
+
+# Display some results
+table = process_investment_results(m, case)
+
+@info(
+    "Individual results from the simple network:\n" *
+    "The optimization results in investing in both the CO₂ pipeline and the power line.\n" *
+    "The power line only invests in the required capacity in each strategic period as it\n" *
+    "allows for continuous investments. The CO₂ pipeline is however modelled as semi-\n" *
+    "continuous investment with a minimum capacity addition of 5 t/h if investments occur.\n" *
+    "As a consequence, it overinvests in the first strategic period to account for the\n" *
+    "required capacity in the second strategic period.\n"
+)
+pretty_table(table)

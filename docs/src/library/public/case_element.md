@@ -10,7 +10,7 @@ Pages = ["case_element.md"]
 
 The incorporation of the [`AbstractElement`](@extref EnergyModelsBase.AbstractElement)s requires a change to the provided input.
 
-The original design of `EnergyModelsBase` when only considering [`Node`](@extref EnergyModelsBase.Node)s and [`Link`](@extref EnergyModelsBase.Link)s is given by:
+The original structure of the [`Case`](@extref EnergyModelsBase.Case) of `EnergyModelsBase` when only considering [`Node`](@extref EnergyModelsBase.Node)s and [`Link`](@extref EnergyModelsBase.Link)s is given by:
 
 ```julia
 case = Case(
@@ -20,6 +20,8 @@ case = Case(
     [[get_nodes, get_links]],
 )
 ```
+
+As *[outlined in the documentation](@extref EnergyModelsBase lib-pub-case-case)*, this corresponds to an energy system with [`Node`](@extref EnergyModelsBase.Node)s coupled by [`Link`](@extref EnergyModelsBase.Link)s with a given time structure `T` and resources `products`.
 
 Including areas and transmission corridors requires to declare the case as
 
@@ -32,7 +34,8 @@ case = Case(
 )
 ```
 
-that is including the `areas` and `transmissions` vectors in the field `elements` and adding a new vector to the field `couplings` given by the functions to access `areas` and `transmissions` vectors in the field `elements`, `get_areas` and `get_transmissions` as described below
+that is including the `areas` and `transmissions` vectors in the field `elements` and adding a new vector to the field `couplings` given by the functions to access `areas` and `transmissions` vectors in the field `elements`, `get_areas` and `get_transmissions` as described below.
+This extends the existing model with the constraints for the [`Area`](@ref)s [`Transmission`](@ref) corridors as well as the coupling between them.
 
 ## [Functions for accessing different information](@id lib-pub-links-fun_field)
 
