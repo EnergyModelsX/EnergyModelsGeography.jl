@@ -10,7 +10,7 @@ Pages = ["case_element.md"]
 
 The incorporation of the [`AbstractElement`](@extref EnergyModelsBase.AbstractElement)s requires a change to the provided input.
 
-The original structure of the [`Case`](@ref EnergyModelsBase.Case) of `EnergyModelsBase` when only considering [`Node`](@extref EnergyModelsBase.Node)s and [`Link`](@extref EnergyModelsBase.Link)s is given by:
+The original structure of the [`Case`](@extref EnergyModelsBase.Case) of `EnergyModelsBase` when only considering [`Node`](@extref EnergyModelsBase.Node)s and [`Link`](@extref EnergyModelsBase.Link)s is given by:
 
 ```julia
 case = Case(
@@ -21,7 +21,7 @@ case = Case(
 )
 ```
 
-As *[outlined in the documentation](EnergyModelsBase lib-pub-case-case)*, this corresponds to an energy system with [`Node`](@extref EnergyModelsBase.Node)s coupled by [`Link`](@extref EnergyModelsBase.Link)s with a given time structure `T` and resources `products`.
+As *[outlined in the documentation](@extref EnergyModelsBase lib-pub-case-case)*, this corresponds to an energy system with [`Node`](@extref EnergyModelsBase.Node)s coupled by [`Link`](@extref EnergyModelsBase.Link)s with a given time structure `T` and resources `products`.
 
 Including areas and transmission corridors requires to declare the case as
 
