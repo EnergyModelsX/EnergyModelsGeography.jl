@@ -46,7 +46,7 @@ function generate_example_network_investment()
     𝒫 = [ng, coal, power, co2]
 
     # Variables for the individual entries of the time structure
-    op_duration = 4 # Each operational period has a duration of 4
+    op_duration = 4 # Each operational period has a duration of 4 (hours)
     op_number = 4   # There are in total 4 operational periods
     operational_periods = SimpleTimes(op_number, op_duration)
 
@@ -85,6 +85,8 @@ function generate_example_network_investment()
             Dict(coal => 2.5),          # Input to the node with input ratio
             Dict(power => 1),           # Output from the node with output ratio
             [EmissionsEnergy()],        # Additional data for emissions
+            # Line above: `EmissionsEnergy` imply that the emissions data corresponds to
+            # emissions through fuel usage as calculated by the CO₂ intensity and efficiency.
         ),
         RefStorage{AccumulatingEmissions}(
             "Reg_1-CO2_storage",        # Node id
@@ -98,7 +100,9 @@ function generate_example_network_investment()
             Dict(co2 => 1, power => 0.02), # Input resource with input ratio
             # Line above: This implies that storing CO₂ requires power
             Dict(co2 => 1),             # Output from the node with output ratio
-            # In practice, for CO₂ storage, this is never used.
+            # Line above: In the case of `AccumulatingEmissions`, you must provide the
+            # stored resource as one of the keys. Its value does however not matter as the
+            # outlet flow value is fixed to 0.
         ),
         RefSink(
             "Reg_1-Electricity_demand", # Node id
@@ -110,6 +114,9 @@ function generate_example_network_investment()
     ]
 
     # Connect all nodes with the availability node for the overall energy/mass balance
+    # NOTE: This hard coding based on indexing is error prone. It is in general advised to
+    #       use a mapping dictionary to avoid any problems when introducing new technology
+    #       nodes.
     ℒ₁ = [
         Direct("Reg_1-av-coal_pp", 𝒩₁[1], 𝒩₁[3], Linear())
         Direct("Reg_1-av-CO2_stor", 𝒩₁[1], 𝒩₁[4], Linear())
@@ -139,14 +146,17 @@ function generate_example_network_investment()
             FixedProfile(5.5),          # Variable OPEX in EUR/MWh
             FixedProfile(0),            # Fixed OPEX in EUR/MW/year
             Dict(ng => 2),              # Input to the node with input ratio
-            Dict(power => 1, co2 => 1), # Output from the node with output ratio
-            # Line above: co2 is required as output for variable definition, but the
-            # value does not matter
+            Dict(power => 1, co2 => 0), # Output from the node with output ratio
+            # Line above: `co2` is required as output for variable definition, but the
+            # value does not matter as it is not utilized in the model.
             [CaptureEnergyEmissions(0.9)],  # Additional data for emissions and CO₂ capture
+            # Line above: `CaptureEnergyEmissions` imply that the emissions data corresponds
+            # to emissions through fuel usage as calculated by the CO₂ intensity and efficiency.
+            # 90 % of the CO₂ emissions are captured as given by the value 0.9.
         ),
         RefSink(
             "Reg_2-Electricity_demand", # Node id
-            OperationalProfile([10, 20, 30, 20]),           # Demand in MW
+            OperationalProfile([10, 20, 30, 20]),   # Demand in MW
             Dict(:surplus => FixedProfile(0), :deficit => FixedProfile(5e2)),
             # Line above: Surplus and deficit penalty for the node in EUR/MWh
             Dict(power => 1),           # Energy demand and corresponding ratio
@@ -154,6 +164,9 @@ function generate_example_network_investment()
     ]
 
     # Connect all nodes with the availability node for the overall energy/mass balance
+    # NOTE: This hard coding based on indexing is error prone. It is in general advised to
+    #       use a mapping dictionary to avoid any problems when introducing new technology
+    #       nodes.
     ℒ₂ = [
         Direct("Reg_2-av-NG_pp", 𝒩₂[1], 𝒩₂[3], Linear())
         Direct("Reg_2-av-demand", 𝒩₂[1], 𝒩₂[4], Linear())
@@ -171,7 +184,7 @@ function generate_example_network_investment()
 
     # Create the transmission modes for transporting power and CO₂ between the areas
     power_inv_data = SingleInvData(
-        FixedProfile(50 * 1e3), # Capex in EUR/MW
+        FixedProfile(50 * 1e3), # CAPEX in EUR/MW
         FixedProfile(10),       # Max installed capacity [MW]
         ContinuousInvestment(FixedProfile(0), FixedProfile(10)),
         # Line above: Investment mode with the following arguments:
@@ -182,14 +195,14 @@ function generate_example_network_investment()
         "power_line",           # ID of the transmission mode
         power,                  # Transported resource
         FixedProfile(0),        # Capacity in MW
-        FixedProfile(0.02),     # Relative loss
+        FixedProfile(0.02),     # Relative loss as fraction of the transported energy
         FixedProfile(0),        # Variable OPEX in EUR/MWh
         FixedProfile(0),        # Fixed OPEX in EUR/MW/year
         2,                      # Directions of transport, in this case, bidirectional
         [power_inv_data],
     )
     co2_pipe_inv_data = SingleInvData(
-        FixedProfile(260 * 1e3),  # Capex in EUR/(t/h)
+        FixedProfile(260 * 1e3),  # CAPEX in EUR/(t/h)
         FixedProfile(40),       # Max installed capacity [t/h]
         SemiContinuousInvestment(FixedProfile(5), FixedProfile(20)),
         # Line above: Investment mode with the following arguments:
@@ -201,9 +214,10 @@ function generate_example_network_investment()
         co2,                    # Resource at the inlet
         co2,                    # Resource at the outlet
         power,                  # Additional required resource for transportation
-        FixedProfile(0.01),     # Relative demand for transporting the resource in MWh/t
+        FixedProfile(0.01),     # Fraction of `CO₂` required as `power` for transporting the resource in MWh/t
+        # Line above: the fraction can be seen as, e.g., pumping or compression requirement
         FixedProfile(0),        # Capacity in t/h
-        FixedProfile(0),        # Relative loss
+        FixedProfile(0),        # Relative loss as fraction of the transported `CO₂`
         FixedProfile(0),        # Variable OPEX in EUR/t
         FixedProfile(0),        # Fixed OPEX in EUR/(t/h)/year
         [co2_pipe_inv_data],
@@ -215,11 +229,16 @@ function generate_example_network_investment()
     ℒᵗʳᵃⁿˢ = [Transmission(𝒜[2], 𝒜[1], [power_line, co2_pipeline])]
 
     # Input data structure
+    # It is also explained on
+    # https://energymodelsx.github.io/EnergyModelsBase.jl/stable/library/public/case_element/
     case = Case(
-        𝒯,
-        𝒫,
-        [𝒩, ℒ, 𝒜, ℒᵗʳᵃⁿˢ],
+        𝒯,                  # Chosen time structure
+        𝒫,                  # Resources used
+        [𝒩, ℒ, 𝒜, ℒᵗʳᵃⁿˢ],  # Nodes, Links, Areas, and Transmission corridors used
         [[get_nodes, get_links], [get_areas, get_transmissions]],
+        # Line above: the first vector corresponds to the original couplings between `Node`said
+        # through `Link`s. The second vector introduces couplings between `Area`s through
+        # `Transmission` corridors.
     )
     return case, model
 end
