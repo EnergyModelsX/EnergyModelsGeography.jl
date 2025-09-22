@@ -236,7 +236,7 @@ function generate_example_network_investment()
         𝒫,                  # Resources used
         [𝒩, ℒ, 𝒜, ℒᵗʳᵃⁿˢ],  # Nodes, Links, Areas, and Transmission corridors used
         [[get_nodes, get_links], [get_areas, get_transmissions]],
-        # Line above: the first vector corresponds to the original couplings between `Node`said
+        # Line above: the first vector corresponds to the original couplings between `Node`s
         # through `Link`s. The second vector introduces couplings between `Area`s through
         # `Transmission` corridors.
     )
