@@ -428,7 +428,7 @@ function EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫, modeltype::EnergyMod
 
     # Constraints based on the resource types
     for p_sub in EMB.res_types_seg(inputs(n))
-        EMB.constraints_flow_resource(m, n, 𝒯, p_sub, modeltype)
+        EMB.constraints_resource(m, n, 𝒯, p_sub, modeltype)
     end
 end
 
