@@ -3,6 +3,7 @@
 ## Unversioned
 
 * Use the new concepts for data variables introduced in [`EnergyModelsBase` v0.9.1](https://github.com/EnergyModelsX/EnergyModelsBase.jl/releases/tag/v0.9.1).
+* Reworked the examples to be simpler to understand.
 
 ## Version 0.11.2 (2025-06-15)
 
