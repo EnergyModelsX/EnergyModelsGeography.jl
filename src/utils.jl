@@ -57,7 +57,7 @@ function nodes_in_area(a::Area, ℒ::Vector{<:Link}; n_nodes=1000)
     # Initiate the arrays
     queue = EMB.Node[av]
     nodes = EMB.Node[av]
-    links = EMB.Direct[]
+    links = EMB.Link[]
     k = 1
     while !isempty(queue)
         # Extract the connected nodes
