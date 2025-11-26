@@ -1,6 +1,6 @@
 # Release notes
 
-## Unversioned
+## Version 0.11.3 (2025-11-26)
 
 * Use the new concepts for data variables introduced in [`EnergyModelsBase` v0.9.1](https://github.com/EnergyModelsX/EnergyModelsBase.jl/releases/tag/v0.9.1).
 * Reworked the examples to be simpler to understand.

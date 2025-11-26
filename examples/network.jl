@@ -32,7 +32,7 @@ electricity is delivered.
 function generate_example_network()
     @info "Generate case data - Simple geographic example"
 
-    # Define the different resources and their emission intensity in tCO2/MWh
+    # Define the different resources and their emission intensity in t CO₂/MWh
     ng = ResourceCarrier("NG", 0.2)
     coal = ResourceCarrier("Coal", 0.35)
     power = ResourceCarrier("Power", 0.0)
@@ -78,7 +78,7 @@ function generate_example_network()
             Dict(coal => 2.5),          # Input to the node with input ratio
             Dict(power => 1),           # Output from the node with output ratio
             [EmissionsEnergy()],        # Additional data for emissions
-            # Line above: `EmissionsEnergy` imply that the emissions data corresponds to
+            # Line above: `EmissionsEnergy` implies that the emissions data corresponds to
             # emissions through fuel usage as calculated by the CO₂ intensity and efficiency.
         ),
         RefStorage{AccumulatingEmissions}(
@@ -143,7 +143,7 @@ function generate_example_network()
             # Line above: `co2` is required as output for variable definition, but the
             # value does not matter as it is not utilized in the model.
             [CaptureEnergyEmissions(0.9)],  # Additional data for emissions and CO₂ capture
-            # Line above: `CaptureEnergyEmissions` imply that the emissions data corresponds
+            # Line above: `CaptureEnergyEmissions` implies that the emissions data corresponds
             # to emissions through fuel usage as calculated by the CO₂ intensity and efficiency.
             # 90 % of the CO₂ emissions are captured as given by the value 0.9.
         ),

@@ -26,7 +26,7 @@ TransmissionMode
 ```
 
 The individual modes use in general the same constraint functions and have the same fields with minor variations.
-Hence, all nodes with be presented below.
+Hence, all transmission modes will be presented below.
 
 The fields of the types are given as:
 
@@ -83,13 +83,10 @@ The types [`RefStatic`](@ref) and [`RefDynamic`](@ref) have furthermore the foll
 - **`directions::Int`**:\
   The direction value decides whether only unidirectional (1) or bidirectional (2) transport is allowed for the transmission mode.
 
-Theoretically, both [`PipeSimple`](@ref) and [`PipeLinepackSimple`](@ref) include the field `directions`.
-However, it is automatically set to 1 through the application of an *[inner constructor](https://docs.julialang.org/en/v1/manual/constructors/#man-inner-constructor-methods)*.
-
 !!! tip "Order of the fields"
     The order of the individual fields can be best found in the library, [`RefStatic`](@ref), [`RefDynamic`](@ref), [`PipeSimple`](@ref), and [`PipeLinepackSimple`](@ref).
 
-## [Mathematical description](@id nodes-trans_mode-math)
+## [Mathematical description](@id area_mode-trans_mode-math)
 
 In the following mathematical equations, we use the name for variables and functions used in the model.
 Variables are in general represented as
@@ -102,7 +99,7 @@ with square brackets, while functions are represented as
 
 with paranthesis.
 
-### [Variables](@id nodes-trans_mode-math-var)
+### [Variables](@id area_mode-trans_mode-math-var)
 
 The variables of all transmission modes are described on *[optimization variables](@ref man-opt_var-transmission_mode)* and include:
 
@@ -123,7 +120,7 @@ Bidirectional transmission modes include furthermore:
 - ``\texttt{trans\_neg}``
 - ``\texttt{trans\_pos}``
 
-### [Constraints](@id nodes-trans_mode-math-con)
+### [Constraints](@id area_mode-trans_mode-math-con)
 
 A qualitative overview of the individual constraints can be found on *[Constraint functions](@ref man-con)*.
 This section focuses instead on the mathematical description of the individual constraints.
