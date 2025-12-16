@@ -11,10 +11,11 @@ Base.show(io::IO, t::TransmissionMode) = print(io, "$(t.id)")
 
 A reference dynamic `TransmissionMode`.
 
-Generic representation of dynamic transmission modes, using for example truck, ship or railway transport.
+Generic representation of dynamic transmission modes, using for example truck, ship or
+railway transport.
 
 # Fields
-- **`id::String`** is the name/identifyer of the transmission mode.
+- **`id::AbstractString`** is the name/identifyer of the transmission mode.
 - **`resource::Resource`** is the resource that is transported.
 - **`trans_cap::TimeProfile`** is the capacity of the transmission mode.
 - **`trans_loss::TimeProfile`** is the loss of the transported resource during
@@ -27,7 +28,7 @@ Generic representation of dynamic transmission modes, using for example truck, s
   The field `data` is conditional through usage of a constructor.
 """
 struct RefDynamic <: TransmissionMode # *e.g.*, Trucks, ships etc.
-    id::String
+    id::AbstractString
     resource::EMB.Resource
     trans_cap::TimeProfile
     trans_loss::TimeProfile
@@ -37,7 +38,7 @@ struct RefDynamic <: TransmissionMode # *e.g.*, Trucks, ships etc.
     data::Vector{<:ExtensionData}
 end
 function RefDynamic(
-        id::String,
+        id::AbstractString,
         resource::EMB.Resource,
         trans_cap::TimeProfile,
         trans_loss::TimeProfile,
@@ -56,10 +57,10 @@ A reference static `TransmissionMode`.
 Generic representation of static transmission modes, such as overhead power lines or pipelines.
 
 # Fields
-- **`id::String`** is the name/identifyer of the transmission mode.
+- **`id::AbstractString`** is the name/identifyer of the transmission mode.
 - **`resource::Resource`** is the resource that is transported.
-- **`trans_cap::Real`** is the capacity of the transmission mode.
-- **`trans_loss::Real`** is the loss of the transported resource during transmission,
+- **`trans_cap::TimeProfile`** is the capacity of the transmission mode.
+- **`trans_loss::TimeProfile`** is the loss of the transported resource during transmission,
   modelled as a ratio.
 - **`opex_var::TimeProfile`** is the variable operating expense per energy unit transported.
 - **`opex_fixed::TimeProfile`** is the fixed operating expense per installed capacity.
@@ -69,7 +70,7 @@ Generic representation of static transmission modes, such as overhead power line
   The field `data` is conditional through usage of a constructor.
 """
 struct RefStatic <: TransmissionMode # E.g. overhead power lines, pipelines etc.
-    id::String
+    id::AbstractString
     resource::EMB.Resource
     trans_cap::TimeProfile
     trans_loss::TimeProfile
@@ -79,7 +80,7 @@ struct RefStatic <: TransmissionMode # E.g. overhead power lines, pipelines etc.
     data::Vector{<:ExtensionData}
 end
 function RefStatic(
-        id::String,
+        id::AbstractString,
         resource::EMB.Resource,
         trans_cap::TimeProfile,
         trans_loss::TimeProfile,
@@ -119,7 +120,7 @@ use `PipeSimple` for bidirectional transport as the consuming resource would in 
 be consumed at the wrong `Area`.
 
 # Fields
-- **`id::String`** is the identifier used in printed output.
+- **`id::AbstractString`** is the identifier used in printed output.
 - **`inlet::Resource`** is the `Resource` going into transmission.
 - **`outlet::Resource`** is the `Resource` going out of the outlet of the transmission.
 - **`consuming::Resource`** is the `Resource` the transmission consumes by operating.
@@ -127,8 +128,8 @@ be consumed at the wrong `Area`.
   consumed, as a ratio of the volume of the resource going into the inlet, *i.e.*:
 
         `consumption_rate` = consumed volume / inlet volume (per operational period)
-- **`trans_cap::Real`** is the capacity of the transmission mode.
-- **`trans_loss::Real`** is the loss of the transported resource during transmission,
+- **`trans_cap::TimeProfile`** is the capacity of the transmission mode.
+- **`trans_loss::TimeProfile`** is the loss of the transported resource during transmission,
   modelled as a ratio.
 - **`opex_var::TimeProfile`** is the variable operating expense per energy unit transported.
 - **`opex_fixed::TimeProfile`** is the fixed operating expense per installed capacity.
@@ -136,7 +137,7 @@ be consumed at the wrong `Area`.
   The field `data` is conditional through usage of a constructor.
 """
 struct PipeSimple <: PipeMode
-    id::String
+    id::AbstractString
     inlet::EMB.Resource
     outlet::EMB.Resource
     consuming::EMB.Resource
@@ -148,7 +149,7 @@ struct PipeSimple <: PipeMode
     data::Vector{<:ExtensionData}
 end
 function PipeSimple(
-    id::String,
+    id::AbstractString,
     inlet::EMB.Resource,
     outlet::EMB.Resource,
     consuming::EMB.Resource,
@@ -178,15 +179,15 @@ end
 Pipeline model with linepacking implemented as simple storage function.
 
 # Fields
-- **`id::String`** is the identifier used in printed output.
+- **`id::AbstractString`** is the identifier used in printed output.
 - **`inlet::Resource`** is the `Resource` going into transmission.
 - **`outlet::Resource`** is the `Resource` going out of the outlet of the transmission.
 - **`consuming::Resource`** is the `Resource` the transmission consumes by operating.
 - **`consumption_rate::TimeProfile`** the rate of which the resource `Pipeline.consuming` is
   consumed, as a ratio of the volume of the resource going into the inlet, *i.e.*:\n
         `consumption_rate` = consumed volume / inlet volume (per operational period)
-- **`trans_cap::Real`** is the capacity of the transmission mode.
-- **`trans_loss::Real`** is the loss of the transported resource during transmission,
+- **`trans_cap::TimeProfil`** is the capacity of the transmission mode.
+- **`trans_loss::TimeProfile`** is the loss of the transported resource during transmission,
   modelled as a ratio.
 - **`opex_var::TimeProfile`** is the variable operating expense per energy unit transported.
 - **`opex_fixed::TimeProfile`** is the fixed operating expense per installed capacity.
@@ -195,7 +196,7 @@ Pipeline model with linepacking implemented as simple storage function.
   The field `data` is conditional through usage of a constructor.
 """
 struct PipeLinepackSimple <: PipeMode
-    id::String
+    id::AbstractString
     inlet::EMB.Resource
     outlet::EMB.Resource
     consuming::EMB.Resource
@@ -208,7 +209,7 @@ struct PipeLinepackSimple <: PipeMode
     data::Vector{<:ExtensionData}
 end
 function PipeLinepackSimple(
-    id::String,
+    id::AbstractString,
     inlet::EMB.Resource,
     outlet::EMB.Resource,
     consuming::EMB.Resource,
@@ -387,6 +388,14 @@ is_bidirectional(tm::PipeMode) = false
 """
     mode_data(tm::TransmissionMode)
 
-Returns the [`ExtensionData`](@extref EnergyModelsBase.ExtensionData) array of transmission mode `tm`.
+Returns the [`ExtensionData`](@extref EnergyModelsBase.ExtensionData) array of transmission
+mode `tm`.
+
+!!! warning "Fieldname"
+    The function requires that the field is named `:data`.
+    If the field name is different, it will return an empty array `ExtensionData[]`.
+
+    If you want to have a different field name, you **must** create a new method for this
+    function.
 """
-mode_data(tm::TransmissionMode) = hasproperty(tm, :data) ? tm.data : ExtensionData
+mode_data(tm::TransmissionMode) = hasproperty(tm, :data) ? tm.data : ExtensionData[]
