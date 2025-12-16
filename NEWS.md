@@ -1,5 +1,15 @@
 # Release notes
 
+## Version 0.11.4 (2025-12-16)
+
+### Minor updates
+
+* Allow for `AbstractString` for the id of the `TransmissionMode`s.
+
+### Bugfix
+
+* Fixed a bug introduced in v0.11.3 in cases in which a `TransmissionMode` did not include a field `:data`.
+
 ## Version 0.11.3 (2025-11-26)
 
 * Use the new concepts for data variables introduced in [`EnergyModelsBase` v0.9.1](https://github.com/EnergyModelsX/EnergyModelsBase.jl/releases/tag/v0.9.1).
