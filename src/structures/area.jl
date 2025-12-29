@@ -67,10 +67,10 @@ changed mass balance.
 """
 struct GeoAvailability <: EMB.Availability
     id
-    input::Array{Resource}
-    output::Array{Resource}
+    input::Array{<:Resource}
+    output::Array{<:Resource}
 end
-GeoAvailability(id, 𝒫::Array{Resource}) = GeoAvailability(id, 𝒫, 𝒫)
+GeoAvailability(id, 𝒫::Array{<:Resource}) = GeoAvailability(id, 𝒫, 𝒫)
 
 """
     name(a::Area)
