@@ -53,9 +53,9 @@ struct LimitedExchangeArea <: Area
 end
 
 """
-    GeoAvailability <: EMB.Availability
+    struct GeoAvailability <: EMB.Availability
 
-A geography `Availability` node for substituion of the general
+A geography `Availability` node for substitution of the general
 [`GenAvailability`](@extref EnergyModelsBase.GenAvailability) node. A `GeoAvailability` is
 required if transmission should be included between individual [`Area`](@ref)s due to a
 changed mass balance.
@@ -64,6 +64,10 @@ changed mass balance.
 - **`id`** is the name/identifier of the node.
 - **`inputs::Vector{<:Resource}`** are the input [`Resource`](@extref EnergyModelsBase.Resource)s.
 - **`output::Vector{<:Resource}`** are the output [`Resource`](@extref EnergyModelsBase.Resource)s.
+
+A constructor is provided so that only a single array can be provided with the fields:
+- **`id`** is the name/identifier of the node.
+- **`𝒫::Vector{<:Resource}`** are the [`Resource`](@extref EnergyModelsBase.Resource)s.
 """
 struct GeoAvailability <: EMB.Availability
     id
