@@ -1,5 +1,11 @@
 # Release notes
 
+## Version 0.11.5 (2026-01-06)
+
+### Adjustments
+
+* Make the `GeoAvailability(id, 𝒫::Array{Resource})` constructor more flexible (enabling, e.g., `GeoAvailability("av", [ResourceCarrier("Power", 0.0)])`).
+
 ## Version 0.11.4 (2025-12-16)
 
 ### Minor updates
