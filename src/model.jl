@@ -424,13 +424,7 @@ Set all constraints for a [`GeoAvailability`](@ref). The energy balance is handl
 function [`constraints_couple`](@ref EnergyModelsBase.constraints_couple).
 
 """
-function EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫, modeltype::EnergyModel)
-
-    # Constraints based on the resource types
-    for p_sub in EMB.res_types_seg(inputs(n))
-        EMB.constraints_resource(m, n, 𝒯, p_sub, modeltype)
-    end
-end
+function EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫, modeltype::EnergyModel) end
 
 """
     create_area(m, a::Area, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
