@@ -103,6 +103,7 @@ end
     end
     EMG.has_opex(tm::NoOPEXMode) = false
     EMG.is_bidirectional(tm::NoOPEXMode) = false
+    EMG.mode_data(tm::NoOPEXMode) = ExtensionData[]
 
     # Definition of the individual resources used in the simple system
     Power = ResourceCarrier("Power", 0.)

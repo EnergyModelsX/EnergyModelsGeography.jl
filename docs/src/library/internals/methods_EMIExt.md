@@ -25,6 +25,7 @@ EMG.constraints_capacity_installed(m, tm::TransmissionMode, 𝒯::TimeStructure,
 
 ```@docs
 EMB.objective_invest
+EMB.variables_ext_data(m, _::Type{SingleInvData}, ℳᴵⁿᵛ::Vector{<:TransmissionMode}, 𝒯, 𝒫, modeltype::AbstractInvestmentModel)
 ```
 
 ## [EnergyModelsInvestments](@id lib-int-EMIext-EMI)

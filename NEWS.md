@@ -1,5 +1,30 @@
 # Release notes
 
+## Version 0.11.5 (2026-01-06)
+
+### Adjustments
+
+* Make the `GeoAvailability(id, 𝒫::Array{Resource})` constructor more flexible (enabling, e.g., `GeoAvailability("av", [ResourceCarrier("Power", 0.0)])`).
+
+## Version 0.11.4 (2025-12-16)
+
+### Minor updates
+
+* Allow for `AbstractString` for the id of the `TransmissionMode`s.
+
+### Bugfix
+
+* Fixed a bug introduced in v0.11.3 in cases in which a `TransmissionMode` did not include a field `:data`.
+
+## Version 0.11.3 (2025-11-26)
+
+* Use the new concepts for data variables introduced in [`EnergyModelsBase` v0.9.1](https://github.com/EnergyModelsX/EnergyModelsBase.jl/releases/tag/v0.9.1).
+* Reworked the examples to be simpler to understand.
+
+## Version 0.11.2 (2025-06-15)
+
+* Changed the links returned from `nodes_in_area` to include all links within a given area.
+
 ## Version 0.11.1 (2025-06-02)
 
 * Fixed a bug that occured when the couplings were provided in the opposite way.
@@ -135,12 +160,12 @@ These changes are mainly:
 
 ## Version 0.6.0 (2023-05-30)
 
-* Changed the structure in which the extra field `Data` is included in the nodes.
-* It is changed from `Dict{String, Data}` to `Array{data}`.
+* Changed the structure in which the extra field `Data` is included in the modes and nodes of the test set.
+* It is changed from `Dict{String, Data}` to `Array{Data}`.
 
 ## Version 0.5.2 (2023-05-16)
 
-* Bugfix in the example which lead to a tri*via*l solution in which no energy has to be converted.
+* Bugfix in the example which lead to a trivial solution in which no energy has to be converted.
 
 ## Version 0.5.1 (2023-04-30)
 

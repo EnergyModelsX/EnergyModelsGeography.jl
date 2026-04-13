@@ -231,6 +231,59 @@ function EMB.variables_elements(m, ℒᵗʳᵃⁿˢ::Vector{Transmission}, 𝒳�
 end
 
 """
+    EMB.variables_element_ext_data(m, ℒᵗʳᵃⁿˢ::Vector{Transmission}, 𝒳ᵛᵉᶜ, 𝒯, 𝒫,modeltype::EnergyModel)
+
+Loop through all data subtypes and create variables specific to each subtype. It starts
+at the top level and subsequently move through the branches until it reaches a leave.
+
+The function subsequently calls the subroutine [`variables_ext_data`](@ref EnergyModelsBase.variables_ext_data)
+for creating the variables for the transmission modes that have the corresponding data types.
+"""
+function EMB.variables_element_ext_data(
+    m,
+    ℒᵗʳᵃⁿˢ::Vector{Transmission},
+    𝒳ᵛᵉᶜ,
+    𝒯,
+    𝒫,
+    modeltype::EnergyModel
+)
+    # Extract all ExtensionData types within all transmission modes
+    ℳ = modes(ℒᵗʳᵃⁿˢ)
+    𝒟 = reduce(vcat, [mode_data(tm) for tm ∈ ℳ])
+
+    # Skip if no data is added to the individual transmission modes
+    isempty(𝒟) && return
+
+    # Vector of the unique data types in 𝒟.
+    data_composite_types = unique(typeof.(𝒟))
+    # Get all `ExtensionData`-types in the type-hierarchy that the nodes 𝒟 represents.
+    data_types = EMB.collect_types(data_composite_types)
+    # Sort the `ExtensionData`-types such that a supertype will always come before its subtypes.
+    data_types = EMB.sort_types(data_types)
+
+    for data_type ∈ data_types
+        # All transmission modes with the given data sub type.
+        ℳᵈᵃᵗ = filter(tm -> any(isa.(mode_data(tm), data_type)), ℳ)
+        try
+            EMB.variables_ext_data(m, data_type, ℳᵈᵃᵗ, 𝒯, 𝒫, modeltype)
+        catch e
+            # Parts of the exception message we are looking for
+            pre1 = "An object of name"
+            pre2 = "is already attached to this model."
+            if isa(e, ErrorException)
+                if occursin(pre1, e.msg) && occursin(pre2, e.msg)
+                    # data_type was already registered by a call to a supertype, so just continue.
+                    continue
+                end
+            end
+            # If we make it to this point, this means some other error occured.
+            # This should not be ignored.
+            throw(e)
+        end
+    end
+end
+
+"""
     variables_trans_mode(m, 𝒯, ℳˢᵘᵇ::Vector{<:TransmissionMode}, modeltype::EnergyModel)
 
 Default fallback method when no function is defined for a [`TransmissionMode`](@ref) type.
@@ -270,6 +323,22 @@ Default fallback method for a vector of elements if no other method is defined f
 vector type.
 """
 function EMB.variables_element(m, 𝒜ˢᵘᵇ::Vector{<:Area}, 𝒯, modeltype::EnergyModel) end
+
+"""
+    EMB.variables_ext_data(m, _::Type{<:ExtensionData}, ℳ::Vector{<:TransmissionMode}, 𝒯, 𝒫, modeltype::EnergyModel)
+
+Default fallback method for the variables creation for a data type of a `Vector{<:TransmissionMode}`
+`ℳ` if no other method is defined. The default method does not specify any variables.
+"""
+function EMB.variables_ext_data(
+    m,
+    _::Type{<:ExtensionData},
+    ℳ::Vector{<:TransmissionMode},
+    𝒯,
+    𝒫,
+    modeltype::EnergyModel
+)
+end
 
 """
     EMB.constraints_elements(m, 𝒜::Vector{<:Area}, 𝒳ᵛᵉᶜ, 𝒫, 𝒯, modeltype::EnergyModel)

@@ -22,7 +22,7 @@ function small_graph_geo(; source = nothing, sink = nothing, inv_data = nothing)
             FixedProfile(10),
             FixedProfile(5),
             Dict(Power => 1),
-            Array{Data}([]),
+            Array{ExtensionData}([]),
         )
     end
 
@@ -48,7 +48,7 @@ function small_graph_geo(; source = nothing, sink = nothing, inv_data = nothing)
     ]
 
     if isnothing(inv_data)
-        inv_data = Data[]
+        inv_data = ExtensionData[]
     else
         inv_data = [inv_data]
     end
@@ -107,11 +107,11 @@ end
     ) == length(𝒯)
 
     # Test showing that no investment variables are created
-    @test isempty((m[:trans_cap_current]))
-    @test isempty((m[:trans_cap_add]))
-    @test isempty((m[:trans_cap_rem]))
-    @test isempty((m[:trans_cap_invest_b]))
-    @test isempty((m[:trans_cap_remove_b]))
+    @test !haskey(m, :trans_cap_current)
+    @test !haskey(m, :trans_cap_add)
+    @test !haskey(m, :trans_cap_rem)
+    @test !haskey(m, :trans_cap_invest_b)
+    @test !haskey(m, :trans_cap_remove_b)
 end
 
 # Test set for continuous investments
