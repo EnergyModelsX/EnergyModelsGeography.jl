@@ -90,7 +90,6 @@ function simple_geo_area(mode_fun::Function)
     return case, modeltype
 end
 
-
 # Testset for the individual extraction methods incorporated in the model
 @testset "Mode utilities" begin
     mode_fun(name::String) = PipeSimple(

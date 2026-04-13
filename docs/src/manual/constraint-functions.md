@@ -5,6 +5,11 @@ The general approach is similar to `EnergyModelsBase`.
 Bidirectional transport requires at the time being the introduciton of an *if*-loop.
 In later implementation, it is planned to also use dispatch for this analysis as well.
 
+For resource-specific extensions of area-transmission coupling, see
+[`constraints_couple_resource`](@ref).
+This hook is called from the default implementation of
+`EMB.constraints_couple` for each resource-type segment.
+
 ## [Capacity constraints](@id man-con-cap)
 
 ```julia
