@@ -64,6 +64,8 @@ Depth = 1
 ```@contents
 Pages = [
     "library/internals/functions.md",
+    "library/internals/methods_EMB.md",
+    "library/internals/methods_EMIExt.md",
     ]
 Depth = 1
 ```

@@ -1,19 +1,14 @@
 # Release notes
 
-## Version 0.11.6 (2026-04-14)
+## Version 0.11.6 (2026-04-15)
 
-### Adjustments to `EnergyModelsBase` v0.9.5
+### Add support for resource-specific constraint functions
 
-* Replaced `res_types_seg` with `res_types_vec` at all internal call sites to align with the renamed function in `EnergyModelsBase` v0.9.5.
-
-### New resource-specific extension functions
-
-Both `EMB.variables_flow` (for `TransmissionMode`s and `Area`s) and `EMB.constraints_couple` now iterate over type-segmented resource vectors and call dedicated extension functions per segment:
-
-* [`variables_flow_resource`](@ref EnergyModelsBase.variables_flow_resource): can be implemented in extension packages for a `Vector` of a specific `Resource` subtype together with either a `Vector{<:TransmissionMode}` or a `Vector{<:Area}` to create additional JuMP variables for that resource.
-* [`constraints_couple_resource`](@ref EnergyModelsGeography.constraints_couple_resource): can be implemented in extension packages for a `Vector` of a specific `Resource` subtype to add coupling constraints between areas and transmission modes for that resource.
-
-Default fallback methods are empty so existing models are unaffected.
+* Introduced support for resource specific constraint functions as introduced in [`EnergyModelsBase` v0.9.5](https://github.com/EnergyModelsX/EnergyModelsBase.jl/releases/tag/v0.9.5)
+* Both `EMB.variables_flow` (for `TransmissionMode`s and `Area`s) and `EMB.constraints_couple` now iterate over type-segmented resource vectors and call dedicated extension functions per segment:
+  * [`variables_flow_resource`](https://energymodelsx.github.io/EnergyModelsBase.jl/stable/library/internals/functions/#EnergyModelsBase.variables_flow_resource): can be implemented in extension packages for a `Vector` of a specific `Resource` subtype together with either a `Vector{<:TransmissionMode}` or a `Vector{<:Area}` to create additional JuMP variables for that resource.
+  * [`constraints_couple_resource`](https://energymodelsx.github.io/EnergyModelsBase.jl/stable/library/internals/functions/#EnergyModelsBase.constraints_couple_resource): can be implemented in extension packages for a `Vector` of a specific `Resource` subtype to add coupling constraints between areas and transmission modes for that resource.
+* Default fallback methods are added to allow for resources without additional variables.
 
 ## Version 0.11.5 (2026-01-06)
 

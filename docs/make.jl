@@ -68,6 +68,8 @@ makedocs(
             ],
             "Internals"=>Any[
                 "Functions"=>"library/internals/functions.md",
+                "Methods `EnergyModelsBase`"=>"library/internals/methods_EMB.md",
+                "Methods `EnergyModelsInvestments`"=>"library/internals/methods_EMIExt.md",
             ],
         ],
     ],

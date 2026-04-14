@@ -21,6 +21,7 @@ EMB.constraints_couple
 ```@docs
 EMB.variables_capacity
 EMB.variables_flow
+EMB.variables_flow_resource
 EMB.variables_opex
 EMB.variables_capex(m, ℒᵗʳᵃⁿˢ::Vector{Transmission}, 𝒳, 𝒯, modeltype::EnergyModel)
 EMB.variables_elements

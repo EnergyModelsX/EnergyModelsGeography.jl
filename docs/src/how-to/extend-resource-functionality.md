@@ -1,17 +1,18 @@
-# [Extend Resource Functionality](@id how_to-extend-resources)
+# [Extend Resource functionality](@id how_to-res_funct)
 
-This guide is the `EnergyModelsGeography` counterpart to the extension functionality in
-`EnergyModelsBase` described in `extend-resource-functionality.md`.
-It shows how that same pattern is used for geography-specific coupling through a concrete
-example from `test_resource_flow.jl`: a `PotentialPower` resource with dedicated flow
+This guide is the `EnergyModelsGeography` counterpart to the resource functionality *[introduced in `EnergyModelsBase`](@ref EnergyModelsBase how_to-res_funct)*.
+It shows how that same pattern is used for geography-specific coupling through a concrete example from `test_resource_flow.jl`: a `PotentialPower` resource with dedicated flow
 variables and coupling constraints.
 
-## Practical example: `PotentialPower`
+## [Practical example: `PotentialPower`](@id how_to-res_funct-example)
 
-The goal is to track a resource-specific "potential" flow in parallel with standard
-transmission flow and enforce a mode-specific loss factor.
+The goal is to track a resource-specific "potential" flow in parallel with standard transmission flow and enforce a mode-specific loss factor.
 
 ### 1. Define the resource and mode
+
+!!! tip
+    You can use the same resource type as declared in `EnergyModelsBase` or any other package.
+    This corresponds to *[step 1 in the example of `EnergyModelsBase`](@ref EnergyModelsBase how_to-res_funct-example)*.
 
 ```julia
 struct PotentialPower <: Resource
@@ -40,7 +41,7 @@ end
 
 ### 2. Add resource-specific variables
 
-Implement `EMB.variables_flow_resource` for both mode-level and area-level variables.
+Implement `EMB.variables_flow_resource` for both mode-level and area-level variables to introduce new variables.
 
 ```julia
 function EMB.variables_flow_resource(
