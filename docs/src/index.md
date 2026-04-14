@@ -38,6 +38,7 @@ Depth = 1
 ```@contents
 Pages = [
     "how-to/update-models.md",
+    "how-to/extend-resource-functionality.md",
     "how-to/contribute.md",
 ]
 Depth = 1
@@ -63,8 +64,6 @@ Depth = 1
 ```@contents
 Pages = [
     "library/internals/functions.md",
-    "library/internals/methods_EMB.md",
-    "library/internals/methods_EMIExt.md",
     ]
 Depth = 1
 ```

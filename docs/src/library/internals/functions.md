@@ -16,6 +16,8 @@ CurrentModule = EnergyModelsGeography
 create_area
 create_model
 create_transmission_mode
+constraints_couple_resource
+EMB.variables_flow_resource
 ```
 
 ## [Constraint functions](@id lib-int-fun-con)
@@ -23,7 +25,6 @@ create_transmission_mode
 ```@docs
 constraints_capacity
 constraints_capacity_installed(m, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EnergyModel)
-constraints_couple_resource
 constraints_emission
 constraints_opex_fixed
 constraints_opex_var
@@ -41,7 +42,6 @@ compute_trans_out
 ## [Variable creation functions](@id lib-int-fun-var)
 
 ```@docs
-variables_flow_resource
 variables_trans_mode
 ```
 

@@ -1,5 +1,9 @@
 # [`TransmissionMode`](@id lib-pub-mode)
 
+```@meta
+CurrentModule = EnergyModelsGeography
+```
+
 `TransmissionMode` describes how resources are transported, for example by dynamic transmission modes on ship, truck or railway (represented generically by `RefDynamic`, although not implemented in the current version) or by static transmission modes on overhead power lines or gas pipelines (respresented generically by `RefStatic`).
 `TransmissionMode`s includes capacity limits (`trans_cap`), losses (`trans_loss`) and directions (`directions`) for the generic transmission modes `RefDynamic` and `RefStatic`.
 More specialized `TransmissionModes` such as subtypes of the abstract type `PipeMode` can convert one `inlet` resource to another `outlet` resource.

@@ -132,13 +132,14 @@ end
 
 function EMB.variables_flow_resource(
     m,
-    𝒜::Vector{<:Area},
+    �::Vector{<:Area},
     𝒫::Vector{<:PotentialPower},
     𝒯,
     modeltype::EnergyModel,
 )
-    @variable(m, lower_limit(p) <= energy_potential_area_in[a ∈ 𝒜, 𝒯, p ∈ 𝒫] <= upper_limit(p))
-    @variable(m, lower_limit(p) <= energy_potential_area_out[a ∈ 𝒜, 𝒯, p ∈ 𝒫] <= upper_limit(p))
+    𝒩ᵃᵛ = [availability_node(a) for a ∈ 𝒜]
+    @variable(m, lower_limit(p) <= energy_potential_node_in[n ∈ 𝒩ᵃᵛ, 𝒯, p ∈ 𝒫] <= upper_limit(p))
+    @variable(m, lower_limit(p) <= energy_potential_node_out[n ∈ 𝒩ᵃᵛ, 𝒯, p ∈ 𝒫] <= upper_limit(p))
 end
 
 function EMG.constraints_trans_balance(
@@ -171,14 +172,14 @@ function EMG.constraints_couple_resource(
 
         if !isempty(ℳᶠʳᵒᵐ)
             @constraint(m, [t ∈ 𝒯],
-                m[:energy_potential_area_out][a, t, p] ==
+                m[:energy_potential_node_out][availability_node(a), t, p] ==
                     sum(m[:energy_potential_trans_in][tm, t, p] for tm ∈ ℳᶠʳᵒᵐ)
             )
         end
 
         if !isempty(ℳᵗᵒ)
             @constraint(m, [t ∈ 𝒯],
-                m[:energy_potential_area_in][a, t, p] ==
+                m[:energy_potential_node_in][availability_node(a), t, p] ==
                     sum(m[:energy_potential_trans_out][tm, t, p] for tm ∈ ℳᵗᵒ)
             )
         end
@@ -200,13 +201,13 @@ end
 
     @test haskey(m, :energy_potential_trans_in)
     @test haskey(m, :energy_potential_trans_out)
-    @test haskey(m, :energy_potential_area_in)
-    @test haskey(m, :energy_potential_area_out)
+    @test haskey(m, :energy_potential_node_in)
+    @test haskey(m, :energy_potential_node_out)
 
     @test length(m[:energy_potential_trans_in]) == n_t
     @test length(m[:energy_potential_trans_out]) == n_t
-    @test length(m[:energy_potential_area_in]) == 2 * n_t
-    @test length(m[:energy_potential_area_out]) == 2 * n_t
+    @test length(m[:energy_potential_node_in]) == 2 * n_t
+    @test length(m[:energy_potential_node_out]) == 2 * n_t
 
     @test all(value(m[:energy_potential_trans_in][tm, t, pp]) ≥ lower_limit(pp) for t ∈ 𝒯)
     @test all(value(m[:energy_potential_trans_in][tm, t, pp]) ≤ upper_limit(pp) for t ∈ 𝒯)
@@ -214,7 +215,7 @@ end
     @test all(value(m[:energy_potential_trans_out][tm, t, pp]) ≤ upper_limit(pp) for t ∈ 𝒯)
 
     @test all(
-        value(m[:energy_potential_area_out][area_from, t, pp]) ≈
+        value(m[:energy_potential_node_out][availability_node(area_from), t, pp]) ≈
             value(m[:energy_potential_trans_in][tm, t, pp])
     for t ∈ 𝒯)
     @test all(
@@ -222,13 +223,13 @@ end
             0.9 * value(m[:energy_potential_trans_in][tm, t, pp])
     for t ∈ 𝒯)
     @test all(
-        value(m[:energy_potential_area_in][area_to, t, pp]) ≈
+        value(m[:energy_potential_node_in][availability_node(area_to), t, pp]) ≈
             value(m[:energy_potential_trans_out][tm, t, pp])
     for t ∈ 𝒯)
 
     @test all(
-        value(m[:energy_potential_area_in][area_to, t, pp]) <
-            value(m[:energy_potential_area_out][area_from, t, pp])
+        value(m[:energy_potential_node_in][availability_node(area_to), t, pp]) <
+            value(m[:energy_potential_node_out][availability_node(area_from), t, pp])
     for t ∈ 𝒯)
     @test all(value(m[:trans_in][tm, t]) ≈ value(m[:trans_out][tm, t]) for t ∈ 𝒯)
     @test all(value(m[:energy_potential_trans_in][tm, t, pp]) < value(m[:trans_in][tm, t]) for t ∈ 𝒯)

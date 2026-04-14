@@ -41,11 +41,11 @@ Starting from this update, `EnergyModelsGeography` follows the same extension pa
 `EnergyModelsBase` for resource-specific dispatch in model construction.
 
 The methods `EMB.variables_flow` and `EMB.constraints_couple` now segment the full resource
-vector `𝒫` by type and call dedicated hook functions for each segment.
+vector `𝒫` by type and call dedicated extension functions for each segment.
 
-- [`variables_flow_resource`](@ref) can be implemented to create additional flow variables for a
+- [`variables_flow_resource`](@ref EnergyModelsBase.variables_flow_resource) can be implemented to create additional flow variables for a
     specific resource subtype.
-- [`constraints_couple_resource`](@ref) can be implemented to add coupling constraints for a
+- [`constraints_couple_resource`](@ref EnergyModelsGeography.constraints_couple_resource) can be implemented to add coupling constraints for a
     specific resource subtype.
 
 The default fallback methods are intentionally empty and only provide dispatch points.
@@ -58,13 +58,13 @@ This keeps current behavior unchanged unless extension packages add their own me
 
 For an overview of standard coupling logic, see
 [`Constraint functions`](@ref man-con).
-For all internal extension hooks, see
+For all internal extension functions, see
 [`Internal functions`](@ref lib-int-fun).
 
 ### [Modes with emissions](@id how_to-update-10-emissions)
 
 It is now necessary to provide a new method to the function [`EnergyModelsBase.has_emissions`](@ref) if you plan to include [`TransmissionMode`](@ref)s with emissions instead of a separate function declared within `EnergyModelsGeography`.
-In addition, the function `emission` was renamed to [`EnergyModelsGeography.emissions`](@ref) and, if not called with a `TimePeriod` as input argument, returns a `TimeProfile` instead of a Real.
+In addition, the function `emission` was renamed to [`emissions`](@ref EnergyModelsGeography.emissions) and, if not called with a `TimePeriod` as input argument, returns a `TimeProfile` instead of a Real.
 
 ## [Adjustments from 0.9.x](@id how_to-update-09)
 
