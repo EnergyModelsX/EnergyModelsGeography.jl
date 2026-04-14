@@ -1,10 +1,10 @@
 # Release notes
 
-## Unversioned
+## Version 0.11.6 (2026-04-14)
 
-### Adjustments to `EnergyModelsBase` v0.10
+### Adjustments to `EnergyModelsBase` v0.9.5
 
-* Replaced `res_types_seg` with `res_types_vec` at all internal call sites to align with the renamed function in `EnergyModelsBase` v0.10.
+* Replaced `res_types_seg` with `res_types_vec` at all internal call sites to align with the renamed function in `EnergyModelsBase` v0.9.5.
 
 ### New resource-specific extension functions
 
