@@ -132,7 +132,7 @@ end
 
 function EMB.variables_flow_resource(
     m,
-    �::Vector{<:Area},
+    𝒜::Vector{<:Area},
     𝒫::Vector{<:PotentialPower},
     𝒯,
     modeltype::EnergyModel,
