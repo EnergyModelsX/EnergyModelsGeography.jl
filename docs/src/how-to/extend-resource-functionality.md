@@ -1,6 +1,6 @@
 # [Extend Resource functionality](@id how_to-res_funct)
 
-This guide is the `EnergyModelsGeography` counterpart to the resource functionality *[introduced in `EnergyModelsBase`](@ref EnergyModelsBase how_to-res_funct)*.
+This guide is the `EnergyModelsGeography` counterpart to the resource functionality *[introduced in `EnergyModelsBase`](@extref EnergyModelsBase how_to-res_funct)*.
 It shows how that same pattern is used for geography-specific coupling through a concrete example from `test_resource_flow.jl`: a `PotentialPower` resource with dedicated flow
 variables and coupling constraints.
 
@@ -18,7 +18,7 @@ The goal is to track a resource-specific "potential" flow in parallel with stand
 
 !!! tip
     You can use the same resource type as declared in `EnergyModelsBase` or any other package.
-    This corresponds to *[step 1 in the example of `EnergyModelsBase`](@ref EnergyModelsBase how_to-res_funct-example)*.
+    This corresponds to *[step 1 in the example of `EnergyModelsBase`](@extref EnergyModelsBase how_to-res_funct-example)*.
 
 ```julia
 struct PotentialPower <: Resource

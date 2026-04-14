@@ -392,8 +392,8 @@ end
     EMB.constraints_resource(m, tm::TransmissionMode, 𝒯, 𝒫::Vector{<:Resource}, modeltype::EnergyModel)
 
 Create constraints for the flow of resources through an [`AbstractElement`](@ref) for
-specific resource types. In `EnergyModelsBase`, this method is provided for
-[`Node`](@ref EnergyModelsBase.Node) and [`Link`](@ref).
+specific resource types. In `EnergyModelsGeography`, this method is provided for
+[`Area`](@ref) and [`TransmissionMode`](@ref).
 
 The function is empty by default and can be implemented in extension packages.
 
