@@ -118,14 +118,14 @@ function EMB.variables_flow_resource(
 
     @variable(
         m,
-        lower_limit(p) <=
-            energy_potential_trans_in[tm ∈ ℳᵖ, 𝒯, p ∈ intersect(inputs(tm), 𝒫)] <=
+        lower_limit(p) ≤
+            energy_potential_trans_in[tm ∈ ℳᵖ, 𝒯, p ∈ intersect(inputs(tm), 𝒫)] ≤
             upper_limit(p)
     )
     @variable(
         m,
-        lower_limit(p) <=
-            energy_potential_trans_out[tm ∈ ℳᵖ, 𝒯, p ∈ intersect(outputs(tm), 𝒫)] <=
+        lower_limit(p) ≤
+            energy_potential_trans_out[tm ∈ ℳᵖ, 𝒯, p ∈ intersect(outputs(tm), 𝒫)] ≤
             upper_limit(p)
     )
 end
@@ -138,8 +138,8 @@ function EMB.variables_flow_resource(
     modeltype::EnergyModel,
 )
     𝒩ᵃᵛ = [availability_node(a) for a ∈ 𝒜]
-    @variable(m, lower_limit(p) <= energy_potential_node_in[n ∈ 𝒩ᵃᵛ, 𝒯, p ∈ 𝒫] <= upper_limit(p))
-    @variable(m, lower_limit(p) <= energy_potential_node_out[n ∈ 𝒩ᵃᵛ, 𝒯, p ∈ 𝒫] <= upper_limit(p))
+    @variable(m, lower_limit(p) ≤ energy_potential_node_in[n ∈ 𝒩ᵃᵛ, 𝒯, p ∈ 𝒫] ≤ upper_limit(p))
+    @variable(m, lower_limit(p) ≤ energy_potential_node_out[n ∈ 𝒩ᵃᵛ, 𝒯, p ∈ 𝒫] ≤ upper_limit(p))
 end
 
 function EMG.constraints_trans_balance(
@@ -157,7 +157,7 @@ function EMG.constraints_trans_balance(
     )
 end
 
-function EMG.constraints_couple_resource(
+function EMB.constraints_couple_resource(
     m,
     𝒜::Vector{<:Area},
     ℒᵗʳᵃⁿˢ::Vector{<:Transmission},

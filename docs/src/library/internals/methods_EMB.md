@@ -14,6 +14,7 @@ EMB.objective_operational
 EMB.emissions_operational
 EMB.constraints_elements
 EMB.constraints_couple
+EMB.constraints_couple_resource
 ```
 
 ## [Variable methods](@id lib-int-met_emb-var)

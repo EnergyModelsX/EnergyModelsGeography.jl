@@ -16,7 +16,6 @@ CurrentModule = EnergyModelsGeography
 create_area
 create_model
 create_transmission_mode
-constraints_couple_resource
 ```
 
 ## [Constraint functions](@id lib-int-fun-con)

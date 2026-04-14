@@ -149,8 +149,6 @@ This function serves as fallback option if no other function is specified for a
 """
 function constraints_trans_balance(m, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EnergyModel)
 
-    @info "Creating transmission balance constraints for TransmissionMode: $(tm.id) of type $(typeof(tm))"
-
     @constraint(m, [t ∈ 𝒯],
         m[:trans_out][tm, t] == m[:trans_in][tm, t] - m[:trans_loss][tm, t])
 
