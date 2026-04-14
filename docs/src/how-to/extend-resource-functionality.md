@@ -4,6 +4,12 @@ This guide is the `EnergyModelsGeography` counterpart to the resource functional
 It shows how that same pattern is used for geography-specific coupling through a concrete example from `test_resource_flow.jl`: a `PotentialPower` resource with dedicated flow
 variables and coupling constraints.
 
+!!! warning
+    While we allow resource variable introduction for [`Area`](@ref)s, we strongly advise against introducing new variables for an `Area`.
+    It is instead easier to access in the function [`EMB.constraints_couple_resource`](@ref) the relevant `Availability` node as outlined below.
+
+    This approach allows you to couple the local energy system with the transmission modes with respect to the extra variables.
+
 ## [Practical example: `PotentialPower`](@id how_to-res_funct-example)
 
 The goal is to track a resource-specific "potential" flow in parallel with standard transmission flow and enforce a mode-specific loss factor.
@@ -41,7 +47,7 @@ end
 
 ### 2. Add resource-specific variables
 
-Implement `EMB.variables_flow_resource` for both mode-level and area-level variables to introduce new variables.
+Implement `EMB.variables_flow_resource` for both [`Area`] and [`Node`] to introduce new variables.
 
 ```julia
 function EMB.variables_flow_resource(
@@ -67,40 +73,36 @@ function EMB.variables_flow_resource(
     )
 end
 
-# It would be cleaner to dispatch on GeoAvailability instead of Area, but Area is used to test the functionality extension implemented in this package
 function EMB.variables_flow_resource(
     m,
-    𝒜::Vector{<:Area},
+    𝒩::Vector{<:Node},
     𝒫::Vector{<:PotentialPower},
     𝒯,
     modeltype::EnergyModel,
 )
-    𝒩ᵃᵛ = [availability_node(a) for a ∈ 𝒜]
-    @variable(m, lower_limit(p) <= energy_potential_node_in[n ∈ 𝒩ᵃᵛ, 𝒯, p ∈ 𝒫] <= upper_limit(p))
-    @variable(m, lower_limit(p) <= energy_potential_node_out[n ∈ 𝒩ᵃᵛ, 𝒯, p ∈ 𝒫] <= upper_limit(p))
+    @variable(m, lower_limit(p) <= energy_potential_node_in[n ∈ 𝒩, 𝒯, p ∈ 𝒫] <= upper_limit(p))
+    @variable(m, lower_limit(p) <= energy_potential_node_out[n ∈ 𝒩, 𝒯, p ∈ 𝒫] <= upper_limit(p))
 end
 ```
 
-### 3. Use the new variables in a custom transmission mode
+### 3. Use the new variables in the function
 
-Apply the resource-specific variable in the mode balance implementation.
+Apply the resource-specific variable in the function [`EMB.constraints_resource`](@ref).
+You must be careful when defining the internal constraints due to potential changes in the variables.
 
 ```julia
-function EMG.constraints_trans_balance(
+function EMB.constraints_resource(
     m,
     tm::PotentialLossMode,
     𝒯::TimeStructure,
+    𝒫::Vector{<:PotentialPower},
     modeltype::EnergyModel,
 )
-    @constraint(m, [t ∈ 𝒯],
-        m[:trans_out][tm, t] == m[:trans_in][tm, t] - m[:trans_loss][tm, t]
-    )
     @constraint(m, [t ∈ 𝒯, p ∈ outputs(tm)],
         m[:energy_potential_trans_out][tm, t, p] ==
             tm.loss_factor * m[:energy_potential_trans_in][tm, t, p]
     )
 end
-
 ```
 
 ### 4. Couple variables between area and transmission mode

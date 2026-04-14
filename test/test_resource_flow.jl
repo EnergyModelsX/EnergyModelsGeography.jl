@@ -107,6 +107,18 @@ function resource_flow_case_with_loss(loss_factor::Float64)
     return case, modeltype
 end
 
+# Declare new variables for the potential power resource
+function EMB.variables_flow_resource(
+    m,
+    𝒜::Vector{<:Area},
+    𝒫::Vector{<:PotentialPower},
+    𝒯,
+    modeltype::EnergyModel,
+)
+    𝒩ᵃᵛ = [availability_node(a) for a ∈ 𝒜]
+    @variable(m, lower_limit(p) ≤ energy_potential_node_in[n ∈ 𝒩ᵃᵛ, 𝒯, p ∈ 𝒫] ≤ upper_limit(p))
+    @variable(m, lower_limit(p) ≤ energy_potential_node_out[n ∈ 𝒩ᵃᵛ, 𝒯, p ∈ 𝒫] ≤ upper_limit(p))
+end
 function EMB.variables_flow_resource(
     m,
     ℳ::Vector{<:TransmissionMode},
@@ -130,33 +142,33 @@ function EMB.variables_flow_resource(
     )
 end
 
-function EMB.variables_flow_resource(
+# Declare new constraints for the potential power resource using the newly declared variables
+function EMB.constraints_resource(
     m,
-    𝒜::Vector{<:Area},
+    a::Area,
+    𝒯::TimeStructure,
     𝒫::Vector{<:PotentialPower},
-    𝒯,
     modeltype::EnergyModel,
 )
-    𝒩ᵃᵛ = [availability_node(a) for a ∈ 𝒜]
-    @variable(m, lower_limit(p) ≤ energy_potential_node_in[n ∈ 𝒩ᵃᵛ, 𝒯, p ∈ 𝒫] ≤ upper_limit(p))
-    @variable(m, lower_limit(p) ≤ energy_potential_node_out[n ∈ 𝒩ᵃᵛ, 𝒯, p ∈ 𝒫] ≤ upper_limit(p))
+    n = availability_node(a)
+    @constraint(m, [t ∈ 𝒯, p ∈ 𝒫],
+        m[:energy_potential_node_in][n, t, p] == m[:energy_potential_node_out][n, t, p]
+    )
 end
-
-function EMG.constraints_trans_balance(
+function EMB.constraints_resource(
     m,
     tm::PotentialLossMode,
     𝒯::TimeStructure,
+    𝒫::Vector{<:PotentialPower},
     modeltype::EnergyModel,
 )
-    @constraint(m, [t ∈ 𝒯],
-        m[:trans_out][tm, t] == m[:trans_in][tm, t] - m[:trans_loss][tm, t]
-    )
     @constraint(m, [t ∈ 𝒯, p ∈ outputs(tm)],
         m[:energy_potential_trans_out][tm, t, p] ==
             tm.loss_factor * m[:energy_potential_trans_in][tm, t, p]
     )
 end
 
+# Declare new coupling constraints for the potential power resource
 function EMB.constraints_couple_resource(
     m,
     𝒜::Vector{<:Area},
@@ -187,35 +199,63 @@ function EMB.constraints_couple_resource(
 end
 
 @testset "Resource flow | PotentialPower" begin
+    # Create and run the case
     case, modeltype = resource_flow_case_with_loss(0.9)
-    pp, co2 = get_products(case)
-    𝒯 = get_time_struct(case)
-    n_t = length(𝒯)
-    𝒜 = get_areas(case)
-    ℒᵗʳᵃⁿˢ = get_transmissions(case)
-    tm = modes(ℒᵗʳᵃⁿˢ)[1]
-    area_from, area_to = 𝒜
-
     m = optimize(case, modeltype)
     general_tests(m)
 
+    # Exctract the case data
+    pp, co2 = get_products(case)
+    𝒯 = get_time_struct(case)
+    n_t = length(𝒯)
+    area_from, area_to = get_areas(case)
+    n_from = availability_node(area_from)
+    n_to = availability_node(area_to)
+    ℒᵗʳᵃⁿˢ = get_transmissions(case)
+    tm = modes(ℒᵗʳᵃⁿˢ)[1]
+
+    # Variable testing (calling of the correct function)
+    # - EMB.variables_flow
+    # Check that the variables are created
     @test haskey(m, :energy_potential_trans_in)
     @test haskey(m, :energy_potential_trans_out)
     @test haskey(m, :energy_potential_node_in)
     @test haskey(m, :energy_potential_node_out)
 
+    ## Check that the variables have the correct length
     @test length(m[:energy_potential_trans_in]) == n_t
     @test length(m[:energy_potential_trans_out]) == n_t
     @test length(m[:energy_potential_node_in]) == 2 * n_t
     @test length(m[:energy_potential_node_out]) == 2 * n_t
 
+    ## Check that the bounds of the variables are enforced
     @test all(value(m[:energy_potential_trans_in][tm, t, pp]) ≥ lower_limit(pp) for t ∈ 𝒯)
     @test all(value(m[:energy_potential_trans_in][tm, t, pp]) ≤ upper_limit(pp) for t ∈ 𝒯)
     @test all(value(m[:energy_potential_trans_out][tm, t, pp]) ≥ lower_limit(pp) for t ∈ 𝒯)
     @test all(value(m[:energy_potential_trans_out][tm, t, pp]) ≤ upper_limit(pp) for t ∈ 𝒯)
 
+    # Test that the resource constraints arre correctly enforced
+    # - EMB.constraints_resource
+    @test all(value(m[:trans_in][tm, t]) ≈ value(m[:trans_out][tm, t]) for t ∈ 𝒯)
+    @test all(value(m[:energy_potential_trans_in][tm, t, pp]) < value(m[:trans_in][tm, t]) for t ∈ 𝒯)
+    @test all(value(m[:energy_potential_trans_out][tm, t, pp]) < value(m[:trans_out][tm, t]) for t ∈ 𝒯)
     @test all(
-        value(m[:energy_potential_node_out][availability_node(area_from), t, pp]) ≈
+        value(m[:energy_potential_trans_out][tm, t, pp]) ≈
+            0.9 * value(m[:energy_potential_trans_in][tm, t, pp])
+    for t ∈ 𝒯)
+    @test all(
+        value(m[:energy_potential_node_out][n_from, t, pp]) ≈
+            value(m[:energy_potential_node_in][n_from, t, pp])
+    for t ∈ 𝒯)
+    @test all(
+        value(m[:energy_potential_node_out][n_to, t, pp]) ≈
+            value(m[:energy_potential_node_in][n_to, t, pp])
+    for t ∈ 𝒯)
+
+    # Test that the coupling constraints are correctly enforced
+    # - EMB.constraints_couple_resource
+    @test all(
+        value(m[:energy_potential_node_out][n_from, t, pp]) ≈
             value(m[:energy_potential_trans_in][tm, t, pp])
     for t ∈ 𝒯)
     @test all(
@@ -223,15 +263,12 @@ end
             0.9 * value(m[:energy_potential_trans_in][tm, t, pp])
     for t ∈ 𝒯)
     @test all(
-        value(m[:energy_potential_node_in][availability_node(area_to), t, pp]) ≈
+        value(m[:energy_potential_node_in][n_to, t, pp]) ≈
             value(m[:energy_potential_trans_out][tm, t, pp])
     for t ∈ 𝒯)
 
     @test all(
-        value(m[:energy_potential_node_in][availability_node(area_to), t, pp]) <
-            value(m[:energy_potential_node_out][availability_node(area_from), t, pp])
+        value(m[:energy_potential_node_in][n_to, t, pp]) <
+            value(m[:energy_potential_node_out][n_from, t, pp])
     for t ∈ 𝒯)
-    @test all(value(m[:trans_in][tm, t]) ≈ value(m[:trans_out][tm, t]) for t ∈ 𝒯)
-    @test all(value(m[:energy_potential_trans_in][tm, t, pp]) < value(m[:trans_in][tm, t]) for t ∈ 𝒯)
-    @test all(value(m[:energy_potential_trans_out][tm, t, pp]) < value(m[:trans_out][tm, t]) for t ∈ 𝒯)
 end

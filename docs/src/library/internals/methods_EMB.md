@@ -13,6 +13,7 @@ EMB.create_node
 EMB.objective_operational
 EMB.emissions_operational
 EMB.constraints_elements
+EMB.constraints_resource
 EMB.constraints_couple
 EMB.constraints_couple_resource
 ```
