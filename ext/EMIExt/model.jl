@@ -88,10 +88,9 @@ function EMG.constraints_capacity_installed(
         # Extract the investment data and the discount rate
         disc_rate = discount_rate(modeltype)
         inv_data = EMI.investment_data(tm, :cap)
-        𝒯ᴵⁿᵛ = strategic_periods(𝒯)
 
         # Add the investment constraints
-        EMI.add_investment_constraints(m, tm, inv_data, :cap, :trans_cap, 𝒯ᴵⁿᵛ, disc_rate)
+        EMI.add_investment_constraints(m, tm, inv_data, :cap, :trans_cap, 𝒯, disc_rate)
     else
         for t ∈ 𝒯
             fix(m[:trans_cap][tm, t], EMB.capacity(tm, t); force=true)
