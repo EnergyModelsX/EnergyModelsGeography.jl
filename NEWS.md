@@ -8,6 +8,7 @@
   * Breaking change required as early retirement is now allowed.
   * Changed the function call arguments for [`add_investment_constraints`](https://github.com/EnergyModelsX/EnergyModelsInvestments.jl/blob/0c84eb4fabdf6f3c188812a3555b40f2681e916b/src/model.jl#L1).
   * Adjustment can change model behavior and results.
+* Removed legacy constructors for `TransInvData`.
 
 ## Version 0.11.6 (2026-04-15)
 
