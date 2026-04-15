@@ -40,7 +40,7 @@ Furthermore, we reworked the design for inclusion of emission and OPEX variables
 It is now necessary to provide a new method to the function [`EnergyModelsBase.has_emissions`](@ref) if you plan to include [`TransmissionMode`](@ref)s with emissions instead of a separate function declared within `EnergyModelsGeography`.
 In addition, the function `emission` was renamed to [`emissions`](@ref EnergyModelsGeography.emissions) and, if not called with a `TimePeriod` as input argument, returns a `TimeProfile` instead of a Real.
 
-## [Adjustments from 0.9.x](@id how_to-update-09)
+## [Adjustments from 0.9.x to 0.11.x](@id how_to-update-09)
 
 ### [Key changes for transmission mode descriptions](@id how_to-update-09-mode)
 
@@ -68,9 +68,10 @@ We consider it to be more consistent with the framework philosophy to remove tha
 The translations below describe the keyword constructor.
 You only have to remove the entry to the field of directions.
 
-!!! note "Timeline for constructors"
-    The legacy constructors for calls of the composite types of version 0.9 will be included at least until version 0.11.
-    However, it is recommended to update your model as soon as possible to the latest version.
+!!! warning "Removal of constructors"
+    The legacy constructors for calls of the composite types of version 0.9 where removed in version 0.12.
+
+    This implies that you must adjust existing models to the lastest version if you have not done this yet.
 
 ### [`PipeSimple`](@ref)
 
@@ -140,7 +141,7 @@ PipeLinepackSimple(
 )
 ```
 
-## [Adjustments from 0.7.x](@id how_to-update-07)
+## [Adjustments from 0.7.x to 0.11.x](@id how_to-update-07)
 
 ### [`GeoAvailability`](@ref)
 
@@ -156,4 +157,12 @@ GeoAvailability(
 
 # This translates to the following new version
 GeoAvailability(id, collect(keys(input)), collect(keys(output)))
+
+# or alternatively
+GeoAvailability(id, collect(keys(input)))
 ```
+
+!!! warning "Removal of constructor"
+    The legacy constructor for calls of the composite types of version 0.7 was removed in version 0.12.
+
+    This implies that you must adjust existing models to the lastest version if you have not done this yet.
