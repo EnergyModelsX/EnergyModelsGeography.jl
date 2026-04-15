@@ -70,8 +70,10 @@ You only have to remove the entry to the field of directions.
 
 !!! warning "Removal of constructors"
     The legacy constructors for calls of the composite types of version 0.9 where removed in version 0.12.
-
     This implies that you must adjust existing models to the lastest version if you have not done this yet.
+
+    `Data` was furthermore replaced with `ExtensionData` in [`EnergyModelsBase` v0.9.1](https://github.com/EnergyModelsX/EnergyModelsBase.jl/releases/tag/v0.9.1).
+    This means that you must also replace the field information to `Vector{<:ExtensionData}` and a potential vector that is added to `ExtensionData[]`.
 
 ### [`PipeSimple`](@ref)
 
