@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Extend resource functionality · EnergyModelsGeography</title><meta name="title" content="Extend resource functionality · EnergyModelsGeography"/><meta property="og:title" content="Extend resource functionality · EnergyModelsGeography"/><meta property="twitter:title" content="Extend resource functionality · EnergyModelsGeography"/><meta name="description" content="Documentation for EnergyModelsGeography."/><meta property="og:description" content="Documentation for EnergyModelsGeography."/><meta property="twitter:description" content="Documentation for EnergyModelsGeography."/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">EnergyModelsGeography</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Manual</span><ul><li><a class="tocitem" href="../../manual/quick-start/">Quick Start</a></li><li><a class="tocitem" href="../../manual/philosophy/">Philosophy</a></li><li><a class="tocitem" href="../../manual/optimization-variables/">Optimization variables</a></li><li><a class="tocitem" href="../../manual/constraint-functions/">Constraint functions</a></li><li><a class="tocitem" href="../../manual/simple-example/">Example</a></li><li><a class="tocitem" href="../../manual/investments/">Investment options</a></li><li><a class="tocitem" href="../../manual/NEWS/">Release notes</a></li></ul></li><li><span class="tocitem">Areas and Modes</span><ul><li><a class="tocitem" href="../../area_mode/area/">Areas</a></li><li><a class="tocitem" href="../../area_mode/corridor/">Transmission corridor</a></li><li><a class="tocitem" href="../../area_mode/mode/">Transmission modes</a></li></ul></li><li><span class="tocitem">How to</span><ul><li><a class="tocitem" href="../update-models/">Update models</a></li><li class="is-active"><a class="tocitem" href>Extend resource functionality</a><ul class="internal"><li><a class="tocitem" href="#how_to-res_funct-example"><span>Practical example: <code>PotentialPower</code></span></a></li><li><a class="tocitem" href="#Other-useful-applications"><span>Other useful applications</span></a></li><li><a class="tocitem" href="#See-also"><span>See also</span></a></li></ul></li><li><a class="tocitem" href="../contribute/">Contribute to EnergyModelsGeography</a></li></ul></li><li><span class="tocitem">Library</span><ul><li><input class="collapse-toggle" id="menuitem-5-1" type="checkbox"/><label class="tocitem" for="menuitem-5-1"><span class="docs-label">Public</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../../library/public/area/">Areas</a></li><li><a class="tocitem" href="../../library/public/transmission/">Transmission</a></li><li><a class="tocitem" href="../../library/public/mode/">TransmissionMode</a></li><li><a class="tocitem" href="../../library/public/case_element/">Case</a></li><li><a class="tocitem" href="../../library/public/emi_extension/">EMI extension</a></li></ul></li><li><input class="collapse-toggle" id="menuitem-5-2" type="checkbox"/><label class="tocitem" for="menuitem-5-2"><span class="docs-label">Internals</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../../library/internals/functions/">Functions</a></li><li><a class="tocitem" href="../../library/internals/methods_EMB/">Methods <code>EnergyModelsBase</code></a></li><li><a class="tocitem" href="../../library/internals/methods_EMIExt/">Methods <code>EnergyModelsInvestments</code></a></li></ul></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">How to</a></li><li class="is-active"><a href>Extend resource functionality</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Extend resource functionality</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/EnergyModelsX/EnergyModelsGeography.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/EnergyModelsX/EnergyModelsGeography.jl/blob/main/docs/src/how-to/extend-resource-functionality.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="how_to-res_funct"><a class="docs-heading-anchor" href="#how_to-res_funct">Extend Resource functionality</a><a id="how_to-res_funct-1"></a><a class="docs-heading-anchor-permalink" href="#how_to-res_funct" title="Permalink"></a></h1><p>This guide is the <code>EnergyModelsGeography</code> counterpart to the resource functionality <em><a href="https://energymodelsx.github.io/EnergyModelsBase.jl/stable/how-to/extend-resource-functionality/#how_to-res_funct">introduced in <code>EnergyModelsBase</code></a></em>. It shows how that same pattern is used for geography-specific coupling through a concrete example from <code>test_resource_flow.jl</code>: a <code>PotentialPower</code> resource with dedicated flow variables and coupling constraints.</p><div class="admonition is-warning" id="Warning-bcc514d7c4ed697e"><header class="admonition-header">Warning<a class="admonition-anchor" href="#Warning-bcc514d7c4ed697e" title="Permalink"></a></header><div class="admonition-body"><p>While we allow resource variable introduction for <a href="../../library/public/area/#EnergyModelsGeography.Area"><code>Area</code></a>s, we strongly advise against introducing new variables for an <code>Area</code>. It is instead easier to access in the function <a href="../../library/internals/methods_EMB/#EnergyModelsBase.constraints_couple_resource"><code>EMB.constraints_couple_resource</code></a> the relevant <code>Availability</code> node as outlined below.</p><p>This approach allows you to couple the local energy system with the transmission modes with respect to the extra variables.</p></div></div><h2 id="how_to-res_funct-example"><a class="docs-heading-anchor" href="#how_to-res_funct-example">Practical example: <code>PotentialPower</code></a><a id="how_to-res_funct-example-1"></a><a class="docs-heading-anchor-permalink" href="#how_to-res_funct-example" title="Permalink"></a></h2><p>The goal is to track a resource-specific &quot;potential&quot; flow in parallel with standard transmission flow and enforce a mode-specific loss factor.</p><h3 id="1.-Define-the-resource-and-mode"><a class="docs-heading-anchor" href="#1.-Define-the-resource-and-mode">1. Define the resource and mode</a><a id="1.-Define-the-resource-and-mode-1"></a><a class="docs-heading-anchor-permalink" href="#1.-Define-the-resource-and-mode" title="Permalink"></a></h3><div class="admonition is-success" id="Tip-417053959e4a91a8"><header class="admonition-header">Tip<a class="admonition-anchor" href="#Tip-417053959e4a91a8" title="Permalink"></a></header><div class="admonition-body"><p>You can use the same resource type as declared in <code>EnergyModelsBase</code> or any other package. This corresponds to <em><a href="https://energymodelsx.github.io/EnergyModelsBase.jl/stable/how-to/extend-resource-functionality/#how_to-res_funct-example">step 1 in the example of <code>EnergyModelsBase</code></a></em>.</p></div></div><pre><code class="language-julia hljs">struct PotentialPower &lt;: Resource
+    id::String
+    co2_int::Float64
+    potential_lower::Float64
+    potential_upper::Float64
+end
+
+EMB.is_resource_emit(::PotentialPower) = false
+lower_limit(p::PotentialPower) = p.potential_lower
+upper_limit(p::PotentialPower) = p.potential_upper
+
+struct PotentialLossMode{T &lt;: PotentialPower} &lt;: TransmissionMode
+    id::String
+    resource::T
+    trans_cap::TimeProfile
+    trans_loss::TimeProfile
+    opex_var::TimeProfile
+    opex_fixed::TimeProfile
+    directions::Int
+    data::Vector{Data}
+    loss_factor::Float64
+end</code></pre><h3 id="2.-Add-resource-specific-variables"><a class="docs-heading-anchor" href="#2.-Add-resource-specific-variables">2. Add resource-specific variables</a><a id="2.-Add-resource-specific-variables-1"></a><a class="docs-heading-anchor-permalink" href="#2.-Add-resource-specific-variables" title="Permalink"></a></h3><p>Implement <code>EMB.variables_flow_resource</code> for both [<code>Area</code>] and [<code>Node</code>] to introduce new variables.</p><pre><code class="language-julia hljs">function EMB.variables_flow_resource(
+    m,
+    ℳ::Vector{&lt;:TransmissionMode},
+    𝒫::Vector{&lt;:PotentialPower},
+    𝒯,
+    modeltype::EnergyModel,
+)
+    ℳᵖ = filter(tm -&gt; any(p -&gt; p ∈ 𝒫, inputs(tm)) || any(p -&gt; p ∈ 𝒫, outputs(tm)), ℳ)
+
+    @variable(
+        m,
+        lower_limit(p) &lt;=
+            energy_potential_trans_in[tm ∈ ℳᵖ, 𝒯, p ∈ intersect(inputs(tm), 𝒫)] &lt;=
+            upper_limit(p)
+    )
+    @variable(
+        m,
+        lower_limit(p) &lt;=
+            energy_potential_trans_out[tm ∈ ℳᵖ, 𝒯, p ∈ intersect(outputs(tm), 𝒫)] &lt;=
+            upper_limit(p)
+    )
+end
+
+function EMB.variables_flow_resource(
+    m,
+    𝒩::Vector{&lt;:Node},
+    𝒫::Vector{&lt;:PotentialPower},
+    𝒯,
+    modeltype::EnergyModel,
+)
+    @variable(m, lower_limit(p) &lt;= energy_potential_node_in[n ∈ 𝒩, 𝒯, p ∈ 𝒫] &lt;= upper_limit(p))
+    @variable(m, lower_limit(p) &lt;= energy_potential_node_out[n ∈ 𝒩, 𝒯, p ∈ 𝒫] &lt;= upper_limit(p))
+end</code></pre><h3 id="3.-Use-the-new-variables-in-the-function"><a class="docs-heading-anchor" href="#3.-Use-the-new-variables-in-the-function">3. Use the new variables in the function</a><a id="3.-Use-the-new-variables-in-the-function-1"></a><a class="docs-heading-anchor-permalink" href="#3.-Use-the-new-variables-in-the-function" title="Permalink"></a></h3><p>Apply the resource-specific variable in the function <a href="../../library/internals/methods_EMB/#EnergyModelsBase.constraints_resource"><code>EMB.constraints_resource</code></a>. You must be careful when defining the internal constraints due to potential changes in the variables.</p><pre><code class="language-julia hljs">function EMB.constraints_resource(
+    m,
+    tm::PotentialLossMode,
+    𝒯::TimeStructure,
+    𝒫::Vector{&lt;:PotentialPower},
+    modeltype::EnergyModel,
+)
+    @constraint(m, [t ∈ 𝒯, p ∈ outputs(tm)],
+        m[:energy_potential_trans_out][tm, t, p] ==
+            tm.loss_factor * m[:energy_potential_trans_in][tm, t, p]
+    )
+end</code></pre><h3 id="4.-Couple-variables-between-area-and-transmission-mode"><a class="docs-heading-anchor" href="#4.-Couple-variables-between-area-and-transmission-mode">4. Couple variables between area and transmission mode</a><a id="4.-Couple-variables-between-area-and-transmission-mode-1"></a><a class="docs-heading-anchor-permalink" href="#4.-Couple-variables-between-area-and-transmission-mode" title="Permalink"></a></h3><p>Map area-level variables to transmission-level variables with <code>EMG.constraints_couple_resource</code>.</p><pre><code class="language-julia hljs">function EMG.constraints_couple_resource(
+    m,
+    𝒜::Vector{&lt;:Area},
+    ℒᵗʳᵃⁿˢ::Vector{&lt;:Transmission},
+    𝒫::Vector{&lt;:PotentialPower},
+    𝒯,
+    modeltype::EnergyModel,
+)
+    for a ∈ 𝒜, p ∈ 𝒫
+        ℒᶠʳᵒᵐ, ℒᵗᵒ = EMG.trans_sub(ℒᵗʳᵃⁿˢ, a)
+        ℳᶠʳᵒᵐ = EMG.modes_sub(ℒᶠʳᵒᵐ, p)
+        ℳᵗᵒ = EMG.modes_sub(ℒᵗᵒ, p)
+
+        if !isempty(ℳᶠʳᵒᵐ)
+            @constraint(m, [t ∈ 𝒯],
+                m[:energy_potential_node_out][availability_node(a), t, p] ==
+                    sum(m[:energy_potential_trans_in][tm, t, p] for tm ∈ ℳᶠʳᵒᵐ)
+            )
+        end
+
+        if !isempty(ℳᵗᵒ)
+            @constraint(m, [t ∈ 𝒯],
+                m[:energy_potential_node_in][availability_node(a), t, p] ==
+                    sum(m[:energy_potential_trans_out][tm, t, p] for tm ∈ ℳᵗᵒ)
+            )
+        end
+    end
+end</code></pre><h3 id="5.-What-this-gives-you"><a class="docs-heading-anchor" href="#5.-What-this-gives-you">5. What this gives you</a><a id="5.-What-this-gives-you-1"></a><a class="docs-heading-anchor-permalink" href="#5.-What-this-gives-you" title="Permalink"></a></h3><ul><li>Bounded resource-specific transmission variables.</li><li>Explicit coupling between area and transmission representation.</li><li>Mode-specific transformations (here: potential loss factor) without changing core code.</li></ul><h2 id="Other-useful-applications"><a class="docs-heading-anchor" href="#Other-useful-applications">Other useful applications</a><a id="Other-useful-applications-1"></a><a class="docs-heading-anchor-permalink" href="#Other-useful-applications" title="Permalink"></a></h2><p>The same extension pattern is useful whenever transport quality matters, not only quantity.</p><ul><li>District heating networks: track temperature state (supply/return quality) and enforce temperature-dependent delivery constraints.</li><li>Natural gas networks: track pressure-related transport limits and represent gas mixtures (e.g., hydrogen blending constraints across corridors).</li><li>Any carrier with quality degradation: track concentration, purity, or state-of-charge style attributes with resource-specific balance equations.</li></ul><h2 id="See-also"><a class="docs-heading-anchor" href="#See-also">See also</a><a id="See-also-1"></a><a class="docs-heading-anchor-permalink" href="#See-also" title="Permalink"></a></h2><ul><li><a href="../update-models/#how_to-update"><code>update-models</code></a></li><li><a href="../../manual/constraint-functions/#man-con"><code>Constraint functions</code></a></li></ul></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../update-models/">« Update models</a><a class="docs-footer-nextpage" href="../contribute/">Contribute to EnergyModelsGeography »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Thursday 16 April 2026 06:41">Thursday 16 April 2026</span>. Using Julia version 1.12.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
