@@ -40,7 +40,7 @@ struct PotentialLossMode{T <: PotentialPower} <: TransmissionMode
     opex_var::TimeProfile
     opex_fixed::TimeProfile
     directions::Int
-    data::Vector{Data}
+    data::Vector{<:ExtensionData}
     loss_factor::Float64
 end
 ```

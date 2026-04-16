@@ -34,9 +34,6 @@ export Transmission, TransmissionMode
 export RefStatic, RefDynamic
 export PipeMode, PipeSimple, PipeLinepackSimple
 
-# Export the legacy constructor for transmission investment data
-export TransInvData
-
 # Export utility functions
 export getnodesinarea, nodes_in_area
 

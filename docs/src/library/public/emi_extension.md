@@ -12,9 +12,8 @@ Transmission mode investments utilize the same investment data type ([`SingleInv
 
 ### [Legacy constructors](@id lib-pub-emi_ext-inv_data-leg)
 
-We provide a legacy constructor, `TransInvData`, that uses the same input as in version 0.5.x.
-If you want to adjust your model to the latest changes, please refer to the section *[Update your model to the latest version of EnergyModelsInvestments](@extref EnergyModelsInvestments how_to-update-05)*.
+We provided a legacy constructor, `TransInvData`, that uses the same input as in version 0.5.x.
+This legacy constructor was removed starting in version 0.12.
 
-```@docs
-TransInvData
-```
+This implies you must adjust your model if you still utilize the for version.
+The adjustment is explained in the section *[Update your model to the latest version of EnergyModelsInvestments](@extref EnergyModelsInvestments how_to-update-05)*.
