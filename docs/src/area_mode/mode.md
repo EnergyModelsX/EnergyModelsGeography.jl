@@ -58,7 +58,7 @@ The fields of the types are given as:
   The transmission loss is calculated as a ratio of the transported resource.
   It is an absolute ratio, *i.e.*, it is not dependent on the distance of the transmission corridor.
 - **`opex_var::TimeProfile`**:\
-  The variable operational expenses are based on the capacity utilization through the variable [`:trans_out`](@ref man-opt_var-transmission_mode).
+  The variable operating expenses are based on the capacity utilization through the variable [`:trans_out`](@ref man-opt_var-transmission_mode).
   Hence, it is directly related to the specified `output` ratios.
   The variable operating expenses can be provided as `OperationalProfile` as well.
 - **`opex_fixed::TimeProfile`**:\
@@ -97,7 +97,7 @@ with square brackets, while functions are represented as
 
 ``func\_example(index_1, index_2)``
 
-with paranthesis.
+with parantheses.
 
 ### [Variables](@id area_mode-trans_mode-math-var)
 

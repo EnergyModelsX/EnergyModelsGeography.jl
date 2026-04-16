@@ -56,7 +56,7 @@ with square brackets, while functions are represented as
 
 ``func\_example(index_1, index_2)``
 
-with paranthesis.
+with parantheses.
 
 In addition, we simplify the description as:
 
@@ -167,7 +167,7 @@ with square brackets, while functions are represented as
 
 ``func\_example(index_1, index_2)``
 
-with paranthesis.
+with parantheses.
 
 #### [Variables](@id area_mode-areas-availability-math-var)
 

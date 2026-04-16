@@ -321,9 +321,9 @@ directions(tm::TransmissionMode) = tm.directions
 """
     has_opex(tm::TransmissionMode)
 
-Checks whether transmission mode `tm` has operational expenses.
+Checks whether transmission mode `tm` has operating expenses.
 
-By default, all transmission modes have operational expenses.
+By default, all transmission modes have operating expenses.
 """
 EMB.has_opex(tm::TransmissionMode) = true
 
