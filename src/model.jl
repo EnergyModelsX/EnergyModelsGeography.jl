@@ -57,8 +57,8 @@ function EMB.variables_capacity(m, 𝒜::Vector{<:Area}, 𝒳ᵛᵉᶜ, 𝒯, mo
     EMB.variables_flow(m, ℒᵗʳᵃⁿˢ::Vector{Transmission}, 𝒳ᵛᵉᶜ, 𝒯, modeltype::EnergyModel)
     EMB.variables_flow(m, 𝒜::Vector{<:Area}, 𝒳ᵛᵉᶜ, 𝒯, modeltype::EnergyModel)
 
-Declaration of flow OPEX variables for the element types introduced in
-`EnergyModelsGeography`. `EnergyModelsGeography` introduces two elements for an energy system, and
+Declaration of flow variables for the element types introduced in `EnergyModelsGeography`.
+`EnergyModelsGeography` introduces two elements for an energy system, and
 hence, provides the user with two individual methods:
 
 !!! tip "Transmission variables"
@@ -69,24 +69,58 @@ hence, provides the user with two individual methods:
       resources of transmission mode `m` are extracted using the function [`inputs`](@ref).
     - `trans_out[tm, t]` is the flow _**from**_ mode `tm` in operational period `t`. The outflow
       resources of transmission mode `m` are extracted using the function [`outputs`](@ref).
+    - call of the function [`EMB.variables_flow_resource`](@ref) for introducing resource
+      specific flow variables.
 
 !!! note "Area variables"
     - `area_exchange[a, t, p]` is the exchange of resource `p` by area `a` in operational
       period `t`. The exchange resources are extracted using the function
       [`exchange_resources`](@ref)
+    - call of the function [`EMB.variables_flow_resource`](@ref) for introducing resource
+      specific flow variables.
 """
-function EMB.variables_flow(m, ℒᵗʳᵃⁿˢ::Vector{Transmission}, 𝒳ᵛᵉᶜ, 𝒯, modeltype::EnergyModel)
+function EMB.variables_flow(m, ℒᵗʳᵃⁿˢ::Vector{Transmission}, 𝒳ᵛᵉᶜ, 𝒫, 𝒯,  modeltype::EnergyModel)
     # Extract the individual transmission modes
     ℳ = modes(ℒᵗʳᵃⁿˢ)
 
     # Create the transmission mode flow variables
     @variable(m, trans_in[ℳ, 𝒯])
     @variable(m, trans_out[ℳ, 𝒯])
+
+    # Create new flow variables for specific resource types
+    for p_sub ∈ EMB.res_types_vec(𝒫)
+        EMB.variables_flow_resource(m, ℳ, p_sub, 𝒯, modeltype)
+    end
 end
-function EMB.variables_flow(m, 𝒜::Vector{<:Area}, 𝒳ᵛᵉᶜ, 𝒯, modeltype::EnergyModel)
+function EMB.variables_flow(m, 𝒜::Vector{<:Area}, 𝒳ᵛᵉᶜ, 𝒫, 𝒯, modeltype::EnergyModel)
     ℒᵗʳᵃⁿˢ = get_transmissions(𝒳ᵛᵉᶜ)
     @variable(m, area_exchange[a ∈ 𝒜, 𝒯, p ∈ exchange_resources(ℒᵗʳᵃⁿˢ, a)])
+
+    # Create new flow variables for specific resource types
+    for p_sub ∈ EMB.res_types_vec(𝒫)
+        EMB.variables_flow_resource(m, 𝒜, p_sub, 𝒯, modeltype)
+    end
 end
+
+"""
+    EMB.variables_flow_resource(m, 𝒜::Vector{<:TransmissionMode}, 𝒫::Vector{<:Resource}, 𝒯, modeltype::EnergyModel)
+    EMB.variables_flow_resource(m, ℒ::Vector{<:Area}, 𝒫::Vector{Resource}, 𝒯, modeltype::EnergyModel)
+
+Declaration of flow variables for the different resource-type segments.
+
+The methods are called from [`EMB.variables_flow`](@ref) after segmenting `𝒫` through
+`EMB.res_types_vec(𝒫)`.
+
+The default methods are empty and intended to be implemented in extension packages that add
+resource-specific variables.
+
+!!! warning "Resource flow variables for Areas"
+    We strongly advise against creating new variables for `Area`s. Instead, it is prefered
+    to create the variables for the respective nodes to couple the local energy system with
+    th transmission corridors.
+"""
+function EMB.variables_flow_resource(m, 𝒜::Vector{<:TransmissionMode}, 𝒫::Vector{<:Resource}, 𝒯, modeltype::EnergyModel) end
+function EMB.variables_flow_resource(m, 𝒜::Vector{<:Area}, 𝒫::Vector{<:Resource}, 𝒯, modeltype::EnergyModel) end
 
 """
     EMB.variables_opex(m, ℒᵗʳᵃⁿˢ::Vector{Transmission}, 𝒳ᵛᵉᶜ, 𝒯, modeltype::EnergyModel)
@@ -332,13 +366,47 @@ function EMB.constraints_elements(m, 𝒜::Vector{<:Area}, 𝒳ᵛᵉᶜ, 𝒫, 
     ℒᵗʳᵃⁿˢ = get_transmissions(𝒳ᵛᵉᶜ)
     for a ∈ 𝒜
         create_area(m, a, 𝒯, ℒᵗʳᵃⁿˢ, modeltype)
+
+        # Constraints based on the resource types
+        n = availability_node(a)
+        area_resources = Vector{Resource}(unique(vcat(inputs(n), outputs(n))))
+        for 𝒫ˢᵘᵇ ∈ EMB.res_types_vec(area_resources)
+            EMB.constraints_resource(m, a, 𝒯, 𝒫ˢᵘᵇ, modeltype)
+        end
     end
 end
 function EMB.constraints_elements(m, ℒᵗʳᵃⁿˢ::Vector{Transmission}, 𝒳ᵛᵉᶜ, 𝒫, 𝒯, modeltype::EnergyModel)
     for tm ∈ modes(ℒᵗʳᵃⁿˢ)
         create_transmission_mode(m, tm, 𝒯, modeltype)
+
+        # Constraints based on the resource types
+        mode_resources = Vector{Resource}(unique(vcat(inputs(tm), outputs(tm))))
+        for 𝒫ˢᵘᵇ ∈ EMB.res_types_vec(mode_resources)
+            EMB.constraints_resource(m, tm, 𝒯, 𝒫ˢᵘᵇ, modeltype)
+        end
     end
 end
+
+"""
+    EMB.constraints_resource(m, a::Area, 𝒯, 𝒫::Vector{<:Resource}, modeltype::EnergyModel)
+    EMB.constraints_resource(m, tm::TransmissionMode, 𝒯, 𝒫::Vector{<:Resource}, modeltype::EnergyModel)
+
+Create constraints for the flow of resources through an
+[`AbstractElement`](@extref EnergyModelsBase.AbstractElement) for specific resource types.
+In `EnergyModelsGeography`, this method is provided for [`Area`](@ref) and [`TransmissionMode`](@ref).
+
+The function is empty by default and can be implemented in extension packages.
+
+!!! warning
+    While we allow the method to be also used for [`Area`](@ref)s, we strongly advise against
+    introducing new variables for an `Area` as it would require more steps to introduce new
+    variables. It is instead easier to access in the function [`EMB.constraints_couple`](@ref)
+    the relevant `Availability` node.
+
+    This approach allows you to couple the local energy system with the transmission modes.
+"""
+function EMB.constraints_resource(m, n::Area, 𝒯, 𝒫::Vector{<:Resource}, modeltype::EnergyModel) end
+function EMB.constraints_resource(m, tm::TransmissionMode, 𝒯, 𝒫::Vector{<:Resource}, modeltype::EnergyModel) end
 
 """
     EMB.constraints_couple(m, 𝒜::Vector{<:Area}, ℒᵗʳᵃⁿˢ::Vector{Transmission}, 𝒫, 𝒯, modeltype::EnergyModel)
@@ -382,10 +450,27 @@ function EMB.constraints_couple(m, 𝒜::Vector{<:Area}, ℒᵗʳᵃⁿˢ::Vecto
             sum(compute_trans_out(m, t, p, tm) for tm ∈ modes(ℒᵗᵒ))
         )
     end
+
+    # Create new constraints for specific resource types
+    for p_sub ∈ EMB.res_types_vec(𝒫)
+        EMB.constraints_couple_resource(m, 𝒜, ℒᵗʳᵃⁿˢ, p_sub, 𝒯, modeltype)
+    end
 end
 function EMB.constraints_couple(m, ℒᵗʳᵃⁿˢ::Vector{Transmission}, 𝒜::Vector{<:Area}, 𝒫, 𝒯, modeltype::EnergyModel)
     return EMB.constraints_couple(m, 𝒜, ℒᵗʳᵃⁿˢ, 𝒫, 𝒯, modeltype)
 end
+
+"""
+    EMB.constraints_couple_resource(m, 𝒜::Vector{<:Area}, ℒᵗʳᵃⁿˢ::Vector{Transmission}, 𝒫::Vector{<:Resource}, 𝒯, modeltype::EnergyModel)
+
+Create resource-specific coupling constraints.
+
+The method is called from [`EMB.constraints_couple`](@ref) for each resource-type segment
+generated by `EMB.res_types_vec(𝒫)`.
+
+The default method is empty and intended to be implemented in extension packages.
+"""
+function EMB.constraints_couple_resource(m, 𝒜::Vector{<:Area}, ℒᵗʳᵃⁿˢ::Vector{<:Transmission}, 𝒫::Vector{<:Resource}, 𝒯, modeltype::EnergyModel) end
 
 """
     EMB.emissions_operational(m, ℒᵗʳᵃⁿˢ::Vector{Transmission}, 𝒫ᵉᵐ, 𝒯, modeltype::EnergyModel)
@@ -458,7 +543,6 @@ end
 Set all constraints for a [`GeoAvailability`](@ref). The energy balance is handled in the
 function [`constraints_couple`](@ref EnergyModelsBase.constraints_couple).
 
-Hence, no constraints are added in this function.
 """
 function EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫, modeltype::EnergyModel) end
 

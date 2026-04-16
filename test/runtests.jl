@@ -46,6 +46,10 @@ include("utils.jl")
         include("test_area.jl")
     end
 
+    @testset "Geography | Resource flow" begin
+        include("test_resource_flow.jl")
+    end
+
     @testset "Geography | Utilities" begin
         include("test_utils.jl")
     end

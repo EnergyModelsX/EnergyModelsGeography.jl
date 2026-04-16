@@ -1,5 +1,9 @@
 # [Case description](@id lib-pub-case)
 
+```@meta
+CurrentModule = EnergyModelsGeography
+```
+
 ## Index
 
 ```@index

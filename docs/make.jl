@@ -55,6 +55,7 @@ makedocs(
         ],
         "How to" => Any[
             "Update models" => "how-to/update-models.md",
+            "Extend resource functionality" => "how-to/extend-resource-functionality.md",
             "Contribute to EnergyModelsGeography" => "how-to/contribute.md",
         ],
         "Library" => Any[

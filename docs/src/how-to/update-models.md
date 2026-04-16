@@ -38,7 +38,7 @@ Furthermore, we reworked the design for inclusion of emission and OPEX variables
 ### [Modes with emissions](@id how_to-update-10-emissions)
 
 It is now necessary to provide a new method to the function [`EnergyModelsBase.has_emissions`](@ref) if you plan to include [`TransmissionMode`](@ref)s with emissions instead of a separate function declared within `EnergyModelsGeography`.
-In addition, the function `emission` was renamed to [`EnergyModelsGeography.emissions`](@ref) and, if not called with a `TimePeriod` as input argument, returns a `TimeProfile` instead of a Real.
+In addition, the function `emission` was renamed to [`emissions`](@ref EnergyModelsGeography.emissions) and, if not called with a `TimePeriod` as input argument, returns a `TimeProfile` instead of a Real.
 
 ## [Adjustments from 0.9.x](@id how_to-update-09)
 

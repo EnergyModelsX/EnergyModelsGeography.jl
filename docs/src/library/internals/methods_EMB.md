@@ -13,7 +13,9 @@ EMB.create_node
 EMB.objective_operational
 EMB.emissions_operational
 EMB.constraints_elements
+EMB.constraints_resource
 EMB.constraints_couple
+EMB.constraints_couple_resource
 ```
 
 ## [Variable methods](@id lib-int-met_emb-var)
@@ -21,6 +23,7 @@ EMB.constraints_couple
 ```@docs
 EMB.variables_capacity
 EMB.variables_flow
+EMB.variables_flow_resource
 EMB.variables_opex
 EMB.variables_capex(m, ℒᵗʳᵃⁿˢ::Vector{Transmission}, 𝒳, 𝒯, modeltype::EnergyModel)
 EMB.variables_elements
