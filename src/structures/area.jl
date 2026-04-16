@@ -1,12 +1,12 @@
 """
-    Area <: AbstractElement
+    abstract type Area <: AbstractElement
 
 Declaration of the general type for areas.
 """
 abstract type Area <: AbstractElement end
 
 """
-    RefArea <: Area
+    struct RefArea <: Area
 
 A `RefArea` is an area representation with no additional constraints on energy/mass exchange.
 
@@ -27,7 +27,7 @@ end
 Base.show(io::IO, a::Area) = print(io, "$(a.name)")
 
 """
-    LimitedExchangeArea <: Area
+    struct LimitedExchangeArea <: Area
 
 A `LimitedExchangeArea` is an area in which the export is limited in each individual
 operational period for the provided resources. This can be necessary when an area is

@@ -53,9 +53,9 @@ end
 """
     constraints_capacity(m, tm::PipeLinepackSimple, 𝒯::TimeStructure, modeltype::EnergyModel)
 
-Function for creating the constraint on the maximum capacity of a [`PipeLinepackSimple`](@ref).
+Method for creating the constraint on the maximum capacity of a [`PipeLinepackSimple`](@ref).
 
-The difference is given by the inclusion of the linepack storage level constraint.
+The function introduces in addition an upper bound on the linepack storage level.
 """
 function constraints_capacity(m, tm::PipeLinepackSimple, 𝒯::TimeStructure, modeltype::EnergyModel)
 
@@ -157,7 +157,9 @@ end
 """
     constraints_trans_balance(m, tm::PipeLinepackSimple, 𝒯::TimeStructure, modeltype::EnergyModel)
 
-Function for creating the transmission balance for a [`PipeLinepackSimple`](@ref).
+Method for creating the transmission balance for a [`PipeLinepackSimple`](@ref).
+
+It adds the linepack level balance.
 """
 function constraints_trans_balance(m, tm::PipeLinepackSimple, 𝒯::TimeStructure, modeltype::EnergyModel)
 
