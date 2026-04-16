@@ -1,6 +1,6 @@
 # Release notes
 
-## Unversioned
+## Version 0.12.0 (2026-04-16)
 
 ### Breaking changes
 
@@ -10,6 +10,10 @@
   * Adjustment can change model behavior and results.
 * Removed legacy constructors for `TransInvData` (you can see how to update existing models in *[the documentation of `EnergyModelsInvestments`](https://energymodelsx.github.io/EnergyModelsInvestments.jl/stable/how-to/update-models/#how_to-update-05-inv_data)).
 * Removed legacy constructors for `GeoAvailability`, `PipeSimple`, and `PipeLinepackSimple` (you can see how to update existing models in *[the documentation of `EnergyModelsGeography`](https://energymodelsx.github.io/EnergyModelsGeography.jl/stable/how-to/update-models/#how_to-update-09))
+
+### Minor updates
+
+* Adjustments to the documentation.
 
 ## Version 0.11.6 (2026-04-15)
 

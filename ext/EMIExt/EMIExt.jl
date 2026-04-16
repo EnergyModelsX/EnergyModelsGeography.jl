@@ -40,7 +40,7 @@ EMI.get_var_inst(m, prefix::Symbol, tm::EMG.TransmissionMode)  = m[Symbol(prefix
     EMI.investment_data(tm::EMG.TransmissionMode, field::Symbol)
 
 Return the `InvestmentData` of the transmission mode `tm` or if `field` is specified, it
-returns the `InvData` for the corresponding capacity.
+returns the `InvestmentData` for the corresponding capacity.
 """
 EMI.investment_data(tm::EMG.TransmissionMode) =
     tm.data[findfirst(data -> typeof(data) <: InvestmentData, mode_data(tm))]

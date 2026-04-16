@@ -131,7 +131,7 @@ Declaration of different OPEX variables for the element types introduced in
 only `ℒᵗʳᵃⁿˢ::Vector{Transmission}` requires operational expense variables.
 
 !!! note "Transmission variables"
-    The operational expenses variables are only created for [`TransmissionMode`](@ref)s and
+    The operating expenses variables are only created for [`TransmissionMode`](@ref)s and
     not [`Transmission`](@ref) corridors. The OPEX variables are furthermore only created
     for nodes, if the function [`has_opex(tm::TransmissionMode)`](@ref) has received an
     additional method for a given mode `m` returning the value `true`. By default, this
@@ -161,8 +161,13 @@ function EMB.variables_opex(m, 𝒜::Vector{<:Area}, 𝒳ᵛᵉᶜ, 𝒯, modelt
     EMB.variables_capex(m, ℒᵗʳᵃⁿˢ::Vector{Transmission}, 𝒳ᵛᵉᶜ, 𝒯, modeltype::EnergyModel)
     EMB.variables_capex(m, 𝒜::Vector{<:Area}, 𝒳ᵛᵉᶜ, 𝒯, modeltype::EnergyModel)
 
-Create variables for the capital costs for the investments in transmission.
-Empty function to allow for multiple dispatch in the `EnergyModelsInvestment` package.
+
+Declaration of different capital expenditures variables for the element types introduced in
+`EnergyModelsGeography`. `EnergyModelsGeography` introduces two elements for an energy
+system, and hence, provides the user with two individual methods.
+
+!!! note
+    The function is included for legacy support but will be removed in the near future.
 """
 function EMB.variables_capex(m, ℒᵗʳᵃⁿˢ::Vector{Transmission}, 𝒳ᵛᵉᶜ, 𝒯, modeltype::EnergyModel) end
 function EMB.variables_capex(m, 𝒜::Vector{<:Area}, 𝒳ᵛᵉᶜ, 𝒯, modeltype::EnergyModel) end
@@ -503,7 +508,7 @@ end
     EMB.objective_operational(m, 𝒜::Vector{<:Area}, 𝒯ᴵⁿᵛ::TS.AbstractStratPers, modeltype::EnergyModel)
 
 Create JuMP expressions indexed over the investment periods `𝒯ᴵⁿᵛ` for different elements.
-The expressions correspond to the operational expenses of the different elements.
+The expressions correspond to the operating expenses of the different elements.
 The expressions are not discounted and do not take the duration of the investment periods
 into account.
 
@@ -551,6 +556,8 @@ function EMB.create_node(m, n::GeoAvailability, 𝒯, 𝒫, modeltype::EnergyMod
 
 Set all constraints for an [`Area`](@ref). Can serve as fallback option for all unspecified
 subtypes of `Area`.
+
+The default method does not add any constraints.
 """
 function create_area(m, a::Area, 𝒯, ℒᵗʳᵃⁿˢ, modeltype) end
 
