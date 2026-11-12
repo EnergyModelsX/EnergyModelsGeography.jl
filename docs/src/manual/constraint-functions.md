@@ -89,7 +89,7 @@ It can however be extended, if desirable.
 
 ## [Extension data functions](@id man-con-ext_data)
 
-[`create_transmission_mode`](@ref) iterates through the data of a transmission mode and calls for each entry
+[`create_transmission_mode`](@ref EnergyModelsGeography.create_transmission_mode) iterates through the data of a transmission mode and calls for each entry
 
 ```julia
 EMB.constraints_ext_data(m, tm::TransmissionMode, 𝒯, modeltype::EnergyModel, data::ExtensionData)
