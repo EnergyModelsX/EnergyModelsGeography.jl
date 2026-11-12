@@ -7,7 +7,7 @@ This page explains the fields of areas more specifically and introduces the diff
 
 ```@contents
 Pages = [
-    "area_mode/area.md",
+    "area.md",
     ]
 Depth = 2
 ```
@@ -23,8 +23,8 @@ Both types include the following fields:
   The field `id` is only used to provide an identifier for the area.
   This identifier can be a shortened version of the area name.
 - **`name`**:\
-  The name of the `area` is used for printing an area to the Julia REPL, and hence, saving of variables.
-  it can be only used as string input for the functions [`corr_from`](@ref), [`corr_to`](@ref), and [`corr_from_to`](@ref).
+  The name of the area is used for printing an area to the Julia REPL, and hence, saving of variables.
+  It can also be used as string input for the functions [`corr_from`](@ref), [`corr_to`](@ref), and [`corr_from_to`](@ref).
 - **`lon::Real`**:\
   The longitudinal position of the area is not directly used in `EnergyModelsGeography`.
   It is however possible for the user to provide additional functions which can utilize the longitude for distance calculations.
@@ -32,14 +32,13 @@ Both types include the following fields:
   The latitudinal position of the area is not directly used in `EnergyModelsGeography`.
   It is however possible for the user to provide additional functions which can utilize the latitude for distance calculations.
 - **`node::Availability`**:\
-  The field `node` correspond to the `Availability` node of the `Area` that is utilized for exchanging resources with other areas.
-  !!! danger "Nodal type:
-  It must by a [`GeoAvailability`](@ref) (or comparable nodes in which the energy balance is not calculated in the `create_node` function) as otherwise no energy transmission between this area and other areas is possible.
+  The field `node` corresponds to the `Availability` node of the `Area` that is utilized for exchanging resources with other areas.
+  !!! danger "Nodal type"
+      It must be a [`GeoAvailability`](@ref) node as otherwise no energy transmission between this area and other areas is possible.
+      The checks of the model enforce this requirement.
+      The energy balance of the area is calculated in the function [`constraints_couple`](@ref EnergyModelsBase.constraints_couple) instead of within the `Availability` node.
 
-  We decided to not limit it directly to `GeoAvailability` to allow the user to introduce other types of `Availability` nodes with potentially additional variables and constraints.
-  It is however important to not calculate the energy balance within the `Availability` node.
-
-[`LimitedExchangeArea`](@ref) require an additional field:
+[`LimitedExchangeArea`](@ref) requires an additional field:
 
 - **`limit::Dict{<:EMB.Resource, <:TimeProfile}`**:\
   The exchange limit is the maximum amount of a resource that can be exported to other areas in each operational period.
@@ -56,14 +55,14 @@ with square brackets, while functions are represented as
 
 ``func\_example(index_1, index_2)``
 
-with parantheses.
+with parentheses.
 
 In addition, we simplify the description as:
 
 - ``n = availability\_node(a)``\
   corresponds to the availability node ``n`` in the area ``a``.
 - ``P^{ex} = exchange\_resources(L^{trans}, a)``\
-  correspond to the exchange resources ``P^{ex}`` of the area ``a``, that is all resources that are either consumed in energy transmission or exchanged with connected areas.
+  corresponds to the exchange resources ``P^{ex}`` of the area ``a``, that is all resources that are either consumed in energy transmission or exchanged with connected areas.
 - ``L^{from}, L^{to} = trans\_sub (L^{trans}, a)``\
   are all transmission corridors that are either originating (superscript *from*) or ending (superscript *to*) in the area ``a``.
 
@@ -75,7 +74,7 @@ The variables of [`Area`](@ref)s include:
 
 #### [Constraints](@id area_mode-areas-areas-math-con)
 
-The constraints for areas are calculated within a new method for the function [`create_area`](@ref EnergyModelsGeography.create_area) and [`constraints_couple`](@ref EnergyModelsBase.constraints_couple).
+The constraints for areas are calculated within new methods for the functions [`create_area`](@ref EnergyModelsGeography.create_area) and [`constraints_couple`](@ref EnergyModelsBase.constraints_couple).
 The function [`constraints_couple`](@ref EnergyModelsBase.constraints_couple) is the core function as it links the transmission to and from an area with a local energy system while the function [`create_area`](@ref EnergyModelsGeography.create_area) allows for providing additional constraints.
 
 ##### [`constraints_couple`](@id area_mode-areas-areas-math-con-con)
@@ -100,8 +99,8 @@ This is achieved through the *compute* functions as
 
 ```math
 \begin{aligned}
-\texttt{area\_exchange}[a, t, p_{ex}] + & \sum_{tm \in L^{from}} compute\_trans\_in(t, p_{ex}, tm) = \\
-& \sum_{tm \in L^{to}} compute\_trans\_out(t, p_{ex}, tm)
+\texttt{area\_exchange}[a, t, p_{ex}] + & \sum_{tm \in modes(L^{from})} compute\_trans\_in(t, p_{ex}, tm) = \\
+& \sum_{tm \in modes(L^{to})} compute\_trans\_out(t, p_{ex}, tm)
 \end{aligned}
 ```
 
@@ -119,7 +118,7 @@ This constraint is given by
 ## [GeoAvailability](@id area_mode-areas-availability)
 
 The [`GeoAvailability`](@ref) node is introduced to allow the energy balance of an area being handled on the [`Area`](@ref) level.
-It is in itself equivalent to the to [`GenAvailability`](@extref EnergyModelsBase.GenAvailability) node with respect to introduced fields and variables.
+It is in itself equivalent to the [`GenAvailability`](@extref EnergyModelsBase.GenAvailability) node with respect to introduced fields and variables.
 *[Availability node](@extref EnergyModelsBase nodes-availability)* provides a detailed description of availability nodes.
 
 !!! warning "Energy exchange"
@@ -135,9 +134,9 @@ The fields of a [`GeoAvailability`](@ref) node are given as:
 
 - **`id`**:\
   The field `id` is only used for providing a name to the node.
-- **`input::Vector{<:Resource}`** and **`output::Vector{<:Resource}`**:\
+- **`input::Array{<:Resource}`** and **`output::Array{<:Resource}`**:\
   Both fields describe the `input` and `output` [`Resource`](@extref EnergyModelsBase.Resource)s as vectors.
-  This approach is different to all other nodes, but simplifies the overall design.
+  This approach is different from all other nodes, but simplifies the overall design.
   It is necessary to specify the same [`Resource`](@extref EnergyModelsBase.Resource)s to allow for capacity usage in connected nodes.
 
 !!! tip "Constructor `GeoAvailability`"
@@ -147,7 +146,7 @@ The fields of a [`GeoAvailability`](@ref) node are given as:
     To this end, we provide a simplified constructor in which you only have to specify one vector using the function
 
     ```julia
-    GeoAvailability(id, 𝒫::Vector{<:Resource})
+    GeoAvailability(id, 𝒫::Array{<:Resource})
     ```
 
 !!! note "Naming"
@@ -167,7 +166,7 @@ with square brackets, while functions are represented as
 
 ``func\_example(index_1, index_2)``
 
-with parantheses.
+with parentheses.
 
 #### [Variables](@id area_mode-areas-availability-math-var)
 

@@ -13,13 +13,13 @@ The additional variables can be differentiated between `Area` variables and `Tra
 
 `Area`s create only a single additional variable:
 
-- ``\texttt{area\_exchange}[a, t, p_{ex}]``: Exchange of energy/mass from area ``a`` in operational period ``t`` for exchange resource ``p_\texttt{ex}``.
+- ``\texttt{area\_exchange}[a, t, p_{ex}]``: Exchange of energy/mass from area ``a`` in operational period ``t`` for exchange resource ``p_{ex}``.
 
-The area exchange is defined for all areas for resources that area can exchange with other areas.
-This also includes also potential `Transmission` corridors in which the model can invest in.
+The area exchange is defined for all areas for resources that the area can exchange with other areas.
+This also includes potential `Transmission` corridors in which the model can invest.
 The exchange resources are automatically deduced from the coupled `TransmissionMode`s.
 The area exchange is negative when exporting energy/mass and positive when importing.
-This implies that for ``\texttt{area\_exchange}[a, t, p_\texttt{ex}] > 0``, the area imports product ``p_\texttt{ex}``, and for ``\texttt{area\_exchange}[a, t, p_\texttt{ex}] < 0``, the area exports product ``p_\texttt{ex}``.
+This implies that for ``\texttt{area\_exchange}[a, t, p_{ex}] > 0``, the area imports product ``p_{ex}``, and for ``\texttt{area\_exchange}[a, t, p_{ex}] < 0``, the area exports product ``p_{ex}``.
 
 ## [`TransmissionMode`](@id man-opt_var-transmission_mode)
 
@@ -45,12 +45,16 @@ are the three flow variables.
 The loss is in practice not a flow variable, but can be considered as equivalent.
 
 `TransmissionMode`s can also have operational costs.
-We differentiate between variables and fixed operational costs (OPEX) as it is the case in `EnergyModelsBase`:
+We differentiate between variable and fixed operational costs (OPEX) as it is the case in `EnergyModelsBase`:
 
 - ``\texttt{trans\_opex\_var}[m, t_\texttt{inv}]``: Variable OPEX of transmission mode ``m`` in strategic period ``t_\texttt{inv}`` and
 - ``\texttt{trans\_opex\_fixed}[m, t_\texttt{inv}]``: Fixed OPEX of transmission mode ``m`` in strategic period ``t_\texttt{inv}``.
 
 The definitions of both fixed and variable operational cost are similar to the definitions for `Node`s in `EnergyModelsBase`.
+
+`TransmissionMode`s with emissions (if the function [`EMB.has_emissions`](@ref) returns `true`) have in addition the variable
+
+- ``\texttt{emissions\_trans}[m, t, p_{em}]``: Emissions of transmission mode ``m`` in operational period ``t`` of emission resource ``p_{em}``.
 
 Bidirectional flow requires the introduction of helper variables for proper calculation of both the loss and the variable OPEX.
 The following variables are hence created in addition, if bidirectional flow is allowed.
@@ -58,16 +62,16 @@ The following variables are hence created in addition, if bidirectional flow is 
 - ``\texttt{trans\_pos}[m, t]``: Flow of transmission mode ``m`` in operational period ``t`` in the **positive** direction,
 - ``\texttt{trans\_neg}[m, t]``: Flow of transmission mode ``m`` in operational period ``t`` in the **negative** direction.
 
-In addition, both ``\texttt{trans\_in}[m, t]`` and ``\texttt{trans\_out}[m, t]`` can in this situation be both positive or negative.
+In addition, both ``\texttt{trans\_in}[m, t]`` and ``\texttt{trans\_out}[m, t]`` can in this situation be either positive or negative.
 
 !!! note
     The direction of a `Transmission` corridor has an impact on whether the variables are positive or negative for export from a given `Area` as well as whether ``\texttt{trans\_in}[m, t]`` or ``\texttt{trans\_out}[m, t]`` corresponds to the inlet/outlet flow rate of a `TransmissionMode`.
 
-    If the energy/mass is transported **in the direction** of the `Transmission` corridor, then both variables are positive and ``\texttt{trans\_in}[m, t]`` corresponds to the **inlet** to the `TransmissionMode`.
+    If the energy/mass is transported **in the direction** of the `Transmission` corridor, then both variables are positive and ``\texttt{trans\_in}[m, t]`` corresponds to the **inlet** of the `TransmissionMode`.
 
-    If the energy/mass is transported  **opposite to the direction** of the `Transmission` corridor, then both variables are negative and ``\texttt{trans\_in}[m, t]`` corresponds to the **outlet** to the `TransmissionMode`.
+    If the energy/mass is transported **opposite to the direction** of the `Transmission` corridor, then both variables are negative and ``\texttt{trans\_in}[m, t]`` corresponds to the **outlet** of the `TransmissionMode`.
 
-### [[`PipeLinepackSimple`](@ref) <: `Pipeline` <: `TransmissionMode`](@id man-opt_var-transmission_mode-linepack)
+### [[`PipeLinepackSimple`](@ref) <: `PipeMode` <: `TransmissionMode`](@id man-opt_var-transmission_mode-linepack)
 
 `PipeLinepackSimple` adds one additional variable:
 

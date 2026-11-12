@@ -6,7 +6,7 @@ variables and coupling constraints.
 
 !!! warning
     While we allow resource variable introduction for [`Area`](@ref)s, we strongly advise against introducing new variables for an `Area`.
-    It is instead easier to access in the function [`EMB.constraints_couple_resource`](@ref) the relevant `Availability` node as outlined below.
+    It is instead easier to access the relevant `Availability` node in the function [`EMB.constraints_couple_resource`](@ref) as outlined below.
 
     This approach allows you to couple the local energy system with the transmission modes with respect to the extra variables.
 
@@ -47,7 +47,7 @@ end
 
 ### 2. Add resource-specific variables
 
-Implement `EMB.variables_flow_resource` for both [`Area`] and [`Node`] to introduce new variables.
+Implement `EMB.variables_flow_resource` for both [`TransmissionMode`](@ref)s and [`Area`](@ref)s to introduce new variables.
 
 ```julia
 function EMB.variables_flow_resource(
@@ -75,22 +75,36 @@ end
 
 function EMB.variables_flow_resource(
     m,
-    𝒩::Vector{<:Node},
+    𝒜::Vector{<:Area},
     𝒫::Vector{<:PotentialPower},
     𝒯,
     modeltype::EnergyModel,
 )
-    @variable(m, lower_limit(p) <= energy_potential_node_in[n ∈ 𝒩, 𝒯, p ∈ 𝒫] <= upper_limit(p))
-    @variable(m, lower_limit(p) <= energy_potential_node_out[n ∈ 𝒩, 𝒯, p ∈ 𝒫] <= upper_limit(p))
+    𝒩ᵃᵛ = [availability_node(a) for a ∈ 𝒜]
+    @variable(m, lower_limit(p) <= energy_potential_node_in[n ∈ 𝒩ᵃᵛ, 𝒯, p ∈ 𝒫] <= upper_limit(p))
+    @variable(m, lower_limit(p) <= energy_potential_node_out[n ∈ 𝒩ᵃᵛ, 𝒯, p ∈ 𝒫] <= upper_limit(p))
 end
 ```
 
 ### 3. Use the new variables in the function
 
-Apply the resource-specific variable in the function [`EMB.constraints_resource`](@ref).
+Apply the resource-specific variables in the function [`EMB.constraints_resource`](@ref) for both the [`Area`](@ref)s and the new transmission mode.
 You must be careful when defining the internal constraints due to potential changes in the variables.
 
 ```julia
+function EMB.constraints_resource(
+    m,
+    a::Area,
+    𝒯::TimeStructure,
+    𝒫::Vector{<:PotentialPower},
+    modeltype::EnergyModel,
+)
+    n = availability_node(a)
+    @constraint(m, [t ∈ 𝒯, p ∈ 𝒫],
+        m[:energy_potential_node_in][n, t, p] == m[:energy_potential_node_out][n, t, p]
+    )
+end
+
 function EMB.constraints_resource(
     m,
     tm::PotentialLossMode,
@@ -108,10 +122,10 @@ end
 ### 4. Couple variables between area and transmission mode
 
 Map area-level variables to transmission-level variables with
-`EMG.constraints_couple_resource`.
+[`EMB.constraints_couple_resource`](@ref).
 
 ```julia
-function EMG.constraints_couple_resource(
+function EMB.constraints_couple_resource(
     m,
     𝒜::Vector{<:Area},
     ℒᵗʳᵃⁿˢ::Vector{<:Transmission},
@@ -154,7 +168,7 @@ The same extension pattern is useful whenever transport quality matters, not onl
 - District heating networks: track temperature state (supply/return quality) and enforce
   temperature-dependent delivery constraints.
 - Natural gas networks: track pressure-related transport limits and represent gas mixtures
-  (e.g., hydrogen blending constraints across corridors).
+  (*e.g.*, hydrogen blending constraints across corridors).
 - Any carrier with quality degradation: track concentration, purity, or state-of-charge style
   attributes with resource-specific balance equations.
 

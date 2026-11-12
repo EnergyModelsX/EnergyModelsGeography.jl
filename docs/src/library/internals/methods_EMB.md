@@ -51,7 +51,7 @@ EMB.has_opex
 EMB.has_emissions
 ```
 
-## [Check methods](@id lib-int-fun-check)
+## [Check methods](@id lib-int-met_emb-check)
 
 ```@docs
 EMB.check_elements

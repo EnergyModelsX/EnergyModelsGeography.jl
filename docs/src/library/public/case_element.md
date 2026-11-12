@@ -27,7 +27,7 @@ case = Case(
 
 As *[outlined in the documentation](@extref EnergyModelsBase lib-pub-case-case)*, this corresponds to an energy system with [`Node`](@extref EnergyModelsBase.Node)s coupled by [`Link`](@extref EnergyModelsBase.Link)s with a given time structure `T` and resources `products`.
 
-Including areas and transmission corridors requires to declare the case as
+Including areas and transmission corridors requires declaring the case as
 
 ```julia
 case = Case(
@@ -39,9 +39,9 @@ case = Case(
 ```
 
 that is including the `areas` and `transmissions` vectors in the field `elements` and adding a new vector to the field `couplings` given by the functions to access `areas` and `transmissions` vectors in the field `elements`, `get_areas` and `get_transmissions` as described below.
-This extends the existing model with the constraints for the [`Area`](@ref)s [`Transmission`](@ref) corridors as well as the coupling between them.
+This extends the existing model with the constraints for the [`Area`](@ref)s and [`Transmission`](@ref) corridors as well as the coupling between them.
 
-## [Functions for accessing different information](@id lib-pub-links-fun_field)
+## [Functions for accessing different information](@id lib-pub-case-fun_field)
 
 ```@docs
 get_areas

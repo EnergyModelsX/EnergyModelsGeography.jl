@@ -1,12 +1,12 @@
 # [Transmission modes](@id area_mode-trans_mode)
 
-Transmission modes are introduced to model different approaches for transmission for resources.
+Transmission modes are introduced to model different approaches for the transmission of resources.
 These transmission modes are located within a transmission corridor.
-In general, transmission modes are designed to only transport a single [`Resource`](@extref EnergyModelsBase.Resource)
+In general, transmission modes are designed to only transport a single [`Resource`](@extref EnergyModelsBase.Resource).
 
 ```@contents
 Pages = [
-    "area_mode/mode.md",
+    "mode.md",
     ]
 Depth = 2
 ```
@@ -34,7 +34,7 @@ The fields of the types are given as:
   The field `id` is only used for providing a name to the transmission mode.
 - Transported resource fields:
   - `RefStatic` and `RefDynamic`
-    - **`resource::EMB.Resource`** :\
+    - **`resource::EMB.Resource`**:\
       The field `resource` corresponds to the transported [`Resource`](@extref EnergyModelsBase.Resource).
       The same resource is entering and leaving a transmission mode.
       Hence, pressure drop cannot be considered.
@@ -42,24 +42,23 @@ The fields of the types are given as:
     - **`inlet::EMB.Resource`** and **`outlet::EMB.Resource`**:\
       The implemented [`PipeMode`](@ref)s allow for a differentiation between the [`Resource`](@extref EnergyModelsBase.Resource) entering a transmission mode and the one leaving.
       This allows the incorporation of a pressure drop, albeit not through pressure drop equations but through a fixed pressure drop.
-    - **`consuming::EMB.Resource`** and  **`consumption_rate::TimeProfile`**:
+    - **`consuming::EMB.Resource`** and **`consumption_rate::TimeProfile`**:\
       [`PipeMode`](@ref)s introduce furthermore a consuming [`Resource`](@extref EnergyModelsBase.Resource).
       The `consuming` resource is required to transport the `inlet` resource.
       The proportionality is given by the value provided in the field `consumption_rate`.
     !!! note "New `PipeMode` types"
         Introducing new `PipeMode` types requires you to provide the same fields.
-        Alternatively, you have to provide new methods to the functions, `EMB.inputs`, `EMB.outputs`, and `consumption_rate`.
+        Alternatively, you have to provide new methods to the functions `EMB.inputs`, `EMB.outputs`, and `consumption_rate`.
 - **`trans_cap::TimeProfile`**:\
   The installed capacity corresponds to the nominal capacity of the transmission mode.
   It is the outlet capacity and not the inlet capacity, that is after the calculation of the loss in the transmission mode.\
-  If the node should contain investments through the application of [`EnergyModelsInvestments`](https://energymodelsx.github.io/EnergyModelsInvestments.jl/), it is important to note that you can only use `FixedProfile` or `StrategicProfile` for the capacity, but not `RepresentativeProfile` or `OperationalProfile`.
+  If the transmission mode should contain investments through the application of [`EnergyModelsInvestments`](https://energymodelsx.github.io/EnergyModelsInvestments.jl/), it is important to note that you can only use `FixedProfile` or `StrategicProfile` for the capacity, but not `RepresentativeProfile` or `OperationalProfile`.
   In addition, all values have to be non-negative.
 - **`trans_loss::TimeProfile`**:\
   The transmission loss is calculated as a ratio of the transported resource.
   It is an absolute ratio, *i.e.*, it is not dependent on the distance of the transmission corridor.
 - **`opex_var::TimeProfile`**:\
   The variable operating expenses are based on the capacity utilization through the variable [`:trans_out`](@ref man-opt_var-transmission_mode).
-  Hence, it is directly related to the specified `output` ratios.
   The variable operating expenses can be provided as `OperationalProfile` as well.
 - **`opex_fixed::TimeProfile`**:\
   The fixed operating expenses are relative to the installed capacity (through the field `trans_cap`) and the chosen duration of a strategic period as outlined on *[Utilize `TimeStruct`](@extref EnergyModelsBase how_to-utilize_TS)*.\
@@ -74,7 +73,7 @@ The fields of the types are given as:
 
 [`PipeLinepackSimple`](@ref) transmission modes also introduce an additional field:
 
-- **`energy_share:Float64`**:\
+- **`energy_share::Float64`**:\
   The energy share is a value corresponding to the amount of a resource that can be stored within a [`PipeLinepackSimple`](@ref) transmission mode.
   It is a relative ratio corresponding to the maximum amount of a [`Resource`](@extref EnergyModelsBase.Resource) that can be stored within a pipeline.
   If you have, *e.g.*, a hydrogen pipeline of 13 GW and have the potential to store in this pipeline 13 GWh through linepacking, then you have to provide a value of 1 GWh/GW.
@@ -98,7 +97,7 @@ with square brackets, while functions are represented as
 
 ``func\_example(index_1, index_2)``
 
-with parantheses.
+with parentheses.
 
 ### [Variables](@id area_mode-trans_mode-math-var)
 
@@ -129,11 +128,11 @@ It omits the direct inclusion of the vector of transmission modes.
 Instead, it is implicitly assumed that the constraints are valid ``\forall tm ∈ M`` for all [`TransmissionMode`](@ref) types if not stated differently.
 In addition, all constraints are valid ``\forall t \in T`` (that is in all operational periods) or ``\forall t_{inv} \in T^{Inv}`` (that is in all strategic periods).
 
-The following standard constraints are implemented for a [`TransmissionMode`](@ref) node.
+The following standard constraints are implemented for a [`TransmissionMode`](@ref).
 
 - `constraints_capacity`:
 
-  Unidirectional transport constrains the outlet flow to the provided capacity while simultaneously introduce lower bounds of 0 on both ``\texttt{trans\_out}`` and ``\texttt{trans\_in}``:
+  Unidirectional transport constrains the outlet flow to the provided capacity while simultaneously introducing lower bounds of 0 on both ``\texttt{trans\_out}`` and ``\texttt{trans\_in}``:
 
   ```math
   \texttt{trans\_out}[tm, t] \leq \texttt{trans\_cap}[tm, t]
@@ -166,7 +165,7 @@ The following standard constraints are implemented for a [`TransmissionMode`](@r
 
   !!! tip "Using investments"
       The function `constraints_capacity_installed` is also used in [`EnergyModelsInvestments`](https://energymodelsx.github.io/EnergyModelsInvestments.jl/) to incorporate the potential for investment.
-      Nodes with investments are then no longer constrained by the parameter capacity.
+      Transmission modes with investments are then no longer constrained by the parameter capacity.
 
 - `constraints_trans_loss`:
 
@@ -190,7 +189,7 @@ The following standard constraints are implemented for a [`TransmissionMode`](@r
   ```
 
   !!! todo "Loss calculations"
-      It looks to me that the loss calculations are not equivalent.
+      It seems to me that the loss calculations are not equivalent.
       We have to change that.
 
 - `constraints_trans_balance`:
@@ -212,7 +211,7 @@ The following standard constraints are implemented for a [`TransmissionMode`](@r
   \texttt{trans\_opex\_fixed}[tm, t_{inv}] = opex\_fixed(tm, t_{inv}) \times \texttt{trans\_cap}[tm, first(t_{inv})]
   ```
 
-  !!! tip "Why do we use `first()`"
+  !!! tip "Why do we use `first()`?"
       The variable ``\texttt{trans\_cap}`` is declared over all operational periods (see the *[variable section](@ref man-opt_var-transmission_mode)* for further explanations).
       Hence, we use the function ``first(t_{inv})`` to retrieve the installed capacity in the first operational period of a given strategic period ``t_{inv}`` in the function `constraints_opex_fixed`.
 
@@ -228,7 +227,7 @@ The following standard constraints are implemented for a [`TransmissionMode`](@r
   \end{aligned}
   ```
 
-  while bidirectional transport utilize again the variables ``\texttt{trans\_pos}[tm, t]`` and ``\texttt{trans\_neg}[tm, t]`` as introduced above:
+  while bidirectional transport utilizes again the variables ``\texttt{trans\_pos}[tm, t]`` and ``\texttt{trans\_neg}[tm, t]`` as introduced above:
 
   ```math
   \begin{aligned}
@@ -242,15 +241,15 @@ The following standard constraints are implemented for a [`TransmissionMode`](@r
       The function [``scale\_op\_sp(t_{inv}, t)``](@extref EnergyModelsBase.scale_op_sp) calculates the scaling factor between operational and strategic periods.
       It also takes into account potential operational scenarios and their probability as well as representative periods.
 
-- `constraints_emissions`:
+- `constraints_emission`:
 
-  Unidirectional transport calculates the emissions of the resourecs ``p_{em} \in emit\_resources(tm)`` as a fraction of the outlet flow:
+  Unidirectional transport calculates the emissions of the resources ``p_{em} \in emit\_resources(tm)`` as a fraction of the outlet flow:
 
   ```math
   \texttt{emissions\_trans}[tm, t, p_{em}] = emissions(tm, p_{em}, t) \times \texttt{trans\_out}[tm, t]
   ```
 
-  while bidirectional transport utilize again the variables ``\texttt{trans\_pos}[tm, t]`` and ``\texttt{trans\_neg}[tm, t]`` as introduced above:
+  while bidirectional transport utilizes again the variables ``\texttt{trans\_pos}[tm, t]`` and ``\texttt{trans\_neg}[tm, t]`` as introduced above:
 
   ```math
   \texttt{emissions\_trans}[tm, t, p_{em}] = emissions(tm, p_{em}, t) \times \left(\texttt{trans\_pos}[tm, t] + \texttt{trans\_neg}[tm, t]\right)
