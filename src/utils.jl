@@ -41,7 +41,7 @@ end
 
 Returns a vector of all nodes in area `a` connected through links `ℒ`. The approach is based
 on a breadth-first-search and provides all connected nodes, contrary to the function
-[getnodesinarea](@ref).
+[`getnodesinarea`](@ref).
 
 # Arguments
 - **`a::Area`** is area that should be evaluated
