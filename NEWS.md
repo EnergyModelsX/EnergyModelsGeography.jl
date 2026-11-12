@@ -1,6 +1,6 @@
 # Release notes
 
-## Unversioned
+## Version 0.12.1 (2026-11-12)
 
 ### Feature
 
@@ -9,6 +9,8 @@
 ### Minor updates
 
 * The examples are run in a separate process using only the environment of the `examples` folder, so that a missing dependency of an example fails the tests and the active environment of the test session is not changed.
+* Corrected stale docstrings.
+* Corrected typos in both docstrings and documentation.
 
 ## Version 0.12.0 (2026-04-16)
 
