@@ -11,7 +11,7 @@ Simple test case for testing unidirectional transport.
 function simple_geo_uni(mode::TransmissionMode)
     products = [Power, CO2]
 
-    # Creation of the source and sink module as well as the arrays used for nodes and links
+    # Creation of the source and sink nodes as well as the arrays used for nodes and links
     source = RefSource(
         "src",
         FixedProfile(50),
@@ -127,14 +127,14 @@ function simple_geo_bi(mode::TransmissionMode)
 end
 
 """
-    simple_geo_pipe(mode::PipeMode; cap = FixedProfile(50))
+    simple_geo_pipe(mode::PipeMode; cap = FixedProfile(30))
 
 Simple test case for testing unidirectional transport with pipeline modes.
 """
 function simple_geo_pipe(mode::PipeMode; cap = FixedProfile(30))
     products = [H2_hp, H2_lp, Power, CO2]
 
-    # Creation of the source and sink module as well as the arrays used for nodes and links
+    # Creation of the source and sink nodes as well as the arrays used for nodes and links
     h2_source = RefSource(
         "h2_src",
         cap,
@@ -192,9 +192,9 @@ function simple_geo_pipe(mode::PipeMode; cap = FixedProfile(30))
 end
 
 """
-    mode_subset(; n_stat=10, n_dyn = 10, n_pipe = 10)
+    mode_subset(; t=1, n_stat=10, n_dyn=10, n_pipe=10)
 
-Function for creating a set of nodes for filtering based on the string.
+Function for creating a set of transmission modes for filtering based on the string.
 """
 function mode_subset(; t=1, n_stat=10, n_dyn = 10, n_pipe = 10)
     static = [RefStatic(
@@ -285,7 +285,7 @@ end
     end
 
     @testset "PipeMode and PipeLinepackSimple" begin
-        # Tests for a RefStatPipeLinepackSimple as refernece for `PipeMode`
+        # Tests for a `PipeLinepackSimple` as reference for `PipeMode`
         mode = PipeLinepackSimple(
             "pipeline",
             H2_hp,                # Inlet
@@ -296,7 +296,7 @@ end
             FixedProfile(0.01),   # Loss
             FixedProfile(0.1),    # Opex var
             FixedProfile(1.0),    # Opex fixed
-            0.1,                  # Storage capacity
+            0.1,                  # Energy share
         )
         case, modeltype = simple_geo_uni(mode)
 
@@ -367,7 +367,7 @@ end
             @test all(value.(m[:trans_cap][tm, t]) ≈ capacity(tm, t) for t ∈ 𝒯)
 
             # Test that the loss is correctly calculated
-            # - constraints_trans_loss(m, tm::PipeMode, 𝒯::TimeStructure, modeltype::EnergyModel)
+            # - constraints_trans_loss(m, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EnergyModel)
             @test all(
                 value.(m[:trans_loss][tm, t]) ≈
                     value.(m[:trans_in][tm, t]) * loss(tm, t)
@@ -459,7 +459,7 @@ end
             @test all(value.(m[:trans_out][tm, t]) ≈ prof[t] for t ∈ 𝒯)
 
             # Test that the flow variables have the same sign
-            # - variables_flow(m, ℒᵗʳᵃⁿˢ::Vector{Transmission}, 𝒳ᵛᵉᶜ, 𝒯, modeltype::EnergyModel)
+            # - EMB.variables_flow(m, ℒᵗʳᵃⁿˢ::Vector{Transmission}, 𝒳ᵛᵉᶜ, 𝒫, 𝒯, modeltype::EnergyModel)
             @test all(
                 sign(value.(m[:trans_in][tm, t])) == sign(value.(m[:trans_out][tm, t]))
             for t ∈ 𝒯)
@@ -487,7 +487,7 @@ end
             @test all(value.(m[:trans_cap][tm, t]) ≈ capacity(tm, t) for t ∈ 𝒯)
 
             # Test that the loss is correctly calculated
-            # - constraints_trans_loss(m, tm::PipeMode, 𝒯::TimeStructure, modeltype::EnergyModel)
+            # - constraints_trans_loss(m, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EnergyModel)
             @test all(
                 value.(m[:trans_loss][tm, t]) ≈
                     value.(m[:trans_pos][tm, t] + m[:trans_neg][tm, t]) * loss(tm, t)
@@ -753,7 +753,7 @@ end
         FixedProfile(0.01),   # Loss
         OperationalProfile([0.1, 0, 0.2, 0.3]),    # Opex var
         FixedProfile(2.5),    # Opex fixed
-        0.5,                  # Storage capacity
+        0.5,                  # Energy share
     )
     case, modeltype = simple_geo_pipe(mode; cap = OperationalProfile([25, 5, 25, 15]))
     m = optimize(case, modeltype)

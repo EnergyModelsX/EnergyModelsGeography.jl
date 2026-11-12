@@ -14,13 +14,15 @@ CO2_200 = LiquidResource("CO2", 1, 200)
 
 
 """
-A test case representing a simple model of a CCS case, with a CO2 source with capture
-implemented, then using a PipeSimple for transportation to the offshore storage site.
+    small_graph_co2_1()
+
+A test case representing a simple model of a CCS case, with a CO2 source with capture, using
+a `PipeSimple` for transport to the offshore storage site.
 """
 function small_graph_co2_1()
     products = [Power, CO2, CO2_150, CO2_200]
 
-    # Creation of the source and sink module as well as the arrays used for nodes and links
+    # Creation of the source and sink nodes as well as the arrays used for nodes and links
     source = RefSource("-src", FixedProfile(25), FixedProfile(10),
         FixedProfile(5), Dict(CO2_150 => 1, Power => 1))
     el_sink = RefSink("-el-sink", FixedProfile(0),
@@ -96,19 +98,19 @@ inlet_resource = pipeline.inlet
 outlet_resource = pipeline.outlet
 
 @testset "Energy transferred" begin
-    # Test that energy is transferred
+    # Test that CO2 is transferred
     @test sum(value.(m[:trans_in])[pipeline, t] > 0 for t ∈ 𝒯) ==
             length(𝒯)
 
 end
 
 @testset "Resource exchange" begin
-    # Check that only CO2_150 is exported from the factory area and that only
-    # CO2_200 is imported into the storage area.
+    # Check that only CO2_150 and the consumed Power are exported from the factory area and
+    # that only CO2_200 is imported into the storage area.
     @test CO2_150 ∈ EMG.exchange_resources(ℒ, area_from)
     @test pipeline.consuming ∈ EMG.exchange_resources(ℒ, area_from)
     @test CO2_200 ∈ EMG.exchange_resources(ℒ, area_to)
-    # Both the transported and the consumed resource is exported from the area.
+    # Both the transported and the consumed resource are exported from the area.
     @test length(EMG.exchange_resources(ℒ, area_from)) == 2
     @test length(EMG.exchange_resources(ℒ, area_to)) == 1
 
@@ -131,11 +133,11 @@ end
 
 @testset "Consumed resource" begin
     # Test that the difference in Power at the availability node corresponds to the
-    # pipeline.Consumption_rate.
+    # `consumption_rate` of the pipeline.
     @test sum(value.(m[:flow_in][a1, t, Power]) * (1 - consumption_rate(pipeline, t))
                 == value.(m[:flow_out][a1, t, Power]) for t ∈ 𝒯) == length(𝒯)
 
-    # Test that the difference in Power in the availability node, is taken up in
+    # Test that the difference in Power in the availability node is taken up by
     # the variable :area_exchange.
     @test sum(value.(m[:flow_in][a1, t, Power])
                 - value.(m[:flow_out][a1, t, Power]) ≈
@@ -158,7 +160,7 @@ end
                 value.(m[:trans_out][pipeline, t])
                 for t in 𝒯, atol=TEST_ATOL) == length(𝒯)
 
-    # Test that the :area_exchange variables in CO2_150 has the proper loss when transported
+    # Test that the :area_exchange variables in CO2_150 have the proper loss when transported
     # to the other area as CO2_200. The exported resource should have a negative sign.
     @test sum(-(1 - loss(pipeline, t)) * value.(m[:area_exchange][area_from, t, CO2_150])
                 ≈

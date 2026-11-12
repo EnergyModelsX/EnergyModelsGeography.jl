@@ -5,7 +5,7 @@ CO2      = ResourceEmit("CO2",1.)
 function small_graph(source=nothing, sink=nothing)
     products = [Power, CO2]
 
-    # Creation of the source and sink module as well as the arrays used for nodes and links
+    # Creation of the source and sink nodes as well as the arrays used for nodes and links
     if isnothing(source)
         source = RefSource("-src", FixedProfile(25), FixedProfile(10),
             FixedProfile(5), Dict(Power => 1))
@@ -113,21 +113,21 @@ end
 
 
 # The PipeSimple should be equivalent to the RefStatic (and RefDynamic) if
-# * PipeSimple.Consumption_rate = 0
-# * PipeSimple.Inlet == PipelinMode.Outlet
-# This test uses the same tests as the transmission testscase above, but uses
+# * `PipeSimple.consumption_rate` = 0
+# * `PipeSimple.inlet` == `PipeSimple.outlet`
+# This test uses the same tests as the transmission testset above, but uses
 # PipeSimple as the TransmissionMode instead.
 @testset "Unidirectional pipeline transmission" begin
 
     case, modeltype = small_graph()
 
-    # Replace each TransmissionMode's with a PipeSimple with identical properties.
+    # Replace each TransmissionMode with a PipeSimple with identical properties.
     for transmission in get_transmissions(case)
         for (i, prev_tm) ∈ enumerate(modes(transmission))
             pipeline = PipeSimple(repr(prev_tm),
                                         inputs(prev_tm)[1],
                                         inputs(prev_tm)[1],
-                                        inputs(prev_tm)[1], # Doesn't matter when Consumption_rate = 0
+                                        inputs(prev_tm)[1], # Doesn't matter when `consumption_rate` = 0
                                         FixedProfile(0),
                                         capacity(prev_tm),
                                         loss(prev_tm),

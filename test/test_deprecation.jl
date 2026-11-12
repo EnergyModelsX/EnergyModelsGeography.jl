@@ -11,7 +11,7 @@
         Power = ResourceCarrier("Power", 0.0)
         products = [Power, CO2]
 
-        # Creation of the source and sink module as well as the arrays used for nodes and links
+        # Creation of the source and sink nodes as well as the arrays used for nodes and links
         source = RefSource(
             "-src",
             FixedProfile(50),
@@ -79,7 +79,7 @@
     # Receive the case descriptions
     case_new, case_old, modeltype = small_graph_dep()
 
-    # Create models based on both input and optimize it
+    # Create models based on both inputs and optimize them
     m_new = optimize(case_new, modeltype)
 
     m_old = EMG.create_model(case_old, modeltype)

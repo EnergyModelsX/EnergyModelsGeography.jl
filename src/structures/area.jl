@@ -41,7 +41,7 @@ coupled with multiple other areas and the total export capacity should be restri
 - **`node::Availability`** is the `Availability` node routing different resources within an
   area.
 - **`limit::Dict{<:EMB.Resource, <:TimeProfile}`** is the amount of a resource that can be
-  exchanged with other areas.
+  exported to other areas.
 """
 struct LimitedExchangeArea <: Area
     id
@@ -62,12 +62,12 @@ changed mass balance.
 
 # Fields
 - **`id`** is the name/identifier of the node.
-- **`inputs::Vector{<:Resource}`** are the input [`Resource`](@extref EnergyModelsBase.Resource)s.
-- **`output::Vector{<:Resource}`** are the output [`Resource`](@extref EnergyModelsBase.Resource)s.
+- **`input::Array{<:Resource}`** are the input [`Resource`](@extref EnergyModelsBase.Resource)s.
+- **`output::Array{<:Resource}`** are the output [`Resource`](@extref EnergyModelsBase.Resource)s.
 
 A constructor is provided so that only a single array can be provided with the fields:
 - **`id`** is the name/identifier of the node.
-- **`𝒫::Vector{<:Resource}`** are the [`Resource`](@extref EnergyModelsBase.Resource)s.
+- **`𝒫::Array{<:Resource}`** are the [`Resource`](@extref EnergyModelsBase.Resource)s.
 """
 struct GeoAvailability <: EMB.Availability
     id
@@ -103,8 +103,8 @@ limit_resources(a::LimitedExchangeArea) = collect(keys(a.limit))
     exchange_limit(a::LimitedExchangeArea, p::Resource)
     exchange_limit(a::LimitedExchangeArea, p::Resource, t)
 
-Returns the limits of the exchange resources in area `a` as dictionary, the value of
-resource `p` as `TimeProfile`, or the value of resource p in operational period `t`.
+Returns the limits of the exchange resources in area `a` as a dictionary, the value of
+resource `p` as `TimeProfile`, or the value of resource `p` in operational period `t`.
 
 If the resource `p` is not included, the function returns either a `FixedProfile(0)` or a
 value of 0.
@@ -118,7 +118,8 @@ exchange_limit(a::LimitedExchangeArea, p::Resource, t) =
 """
     trans_sub(ℒᵗʳᵃⁿˢ, a::Area)
 
-Return connected transmission corridors for a given area `a`.
+Return two vectors: the transmission corridors originating in area `a` and those ending in
+area `a`.
 """
 function trans_sub(ℒᵗʳᵃⁿˢ, a::Area)
     return [filter(x -> x.from == a, ℒᵗʳᵃⁿˢ),
@@ -129,9 +130,9 @@ end
     corr_from(from::Area, ℒᵗʳᵃⁿˢ)
     corr_from(from::String, ℒᵗʳᵃⁿˢ)
 
-Returns all transmission corridors in `ℒᵗʳᵃⁿˢ` that orginate in the [`Area`](@ref) `from`.
-If `from` is provided as `String`, it returns the corridors in which the name is equal to
-`from`
+Returns all transmission corridors in `ℒᵗʳᵃⁿˢ` that originate in the [`Area`](@ref) `from`.
+If `from` is provided as `String`, it returns the corridors in which the name of the `from`
+area is equal to `from`.
 """
 corr_from(from::Area, ℒᵗʳᵃⁿˢ) = filter(x -> x.from == from, ℒᵗʳᵃⁿˢ)
 corr_from(from::String, ℒᵗʳᵃⁿˢ) = filter(x -> name(x.from) == from, ℒᵗʳᵃⁿˢ)
@@ -141,8 +142,8 @@ corr_from(from::String, ℒᵗʳᵃⁿˢ) = filter(x -> name(x.from) == from, �
     corr_to(to::String, ℒᵗʳᵃⁿˢ)
 
 Returns all transmission corridors in `ℒᵗʳᵃⁿˢ` that end in the [`Area`](@ref) `to`.
-If `to` is provided as `String`, it returns the corridors in which the name is equal to
-`to`
+If `to` is provided as `String`, it returns the corridors in which the name of the `to`
+area is equal to `to`.
 """
 corr_to(to::Area, ℒᵗʳᵃⁿˢ) = filter(x -> x.to == to, ℒᵗʳᵃⁿˢ)
 corr_to(to::String, ℒᵗʳᵃⁿˢ) = filter(x -> name(x.to) == to, ℒᵗʳᵃⁿˢ)
@@ -150,10 +151,10 @@ corr_to(to::String, ℒᵗʳᵃⁿˢ) = filter(x -> name(x.to) == to, ℒᵗʳ�
 """
     corr_from_to(from::Union{Area,String}, to::Union{Area,String}, ℒᵗʳᵃⁿˢ)
 
-Returns the transmission corridor that orginate in the [`Area`](@ref) `from` and end in the
-[`Area`](@ref) `to`.
+Returns the transmission corridors that originate in the [`Area`](@ref) `from` and end in
+the [`Area`](@ref) `to`.
 
-The function accepts both inputs as `String` and `Area` as well as a combination of both
+The function accepts both inputs as `String` and `Area` as well as a combination of both.
 """
 function corr_from_to(from::Union{Area,String}, to::Union{Area,String}, ℒᵗʳᵃⁿˢ)
     ℒᶠʳᵒᵐ = corr_from(from, ℒᵗʳᵃⁿˢ)

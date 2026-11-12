@@ -66,7 +66,7 @@ include("utils.jl")
         include("test_investments.jl")
     end
 
-    @testset "Geography | examples" begin
+    @testset "Geography | Examples" begin
         include("test_examples.jl")
     end
 end

@@ -28,11 +28,11 @@ https://github.com/EnergyModelsX/EnergyModelsBase.jl/blob/main/examples/network.
 
 The example consists of two areas, a coal area with a coal power plant, a flat electricity
 demand, and a CO₂ storage site, and a natural gas area with a natural gas power plant with
-CCS and a variable electricity demand. The latter has lower deficit costs if not sufficient
+CCS and a variable electricity demand. The latter has lower deficit costs if insufficient
 electricity is delivered.
 
-There is initially no transmission capacity between both areas, neither for electricity, nor
-for CO₂. As a consequence, exchange of energy or mass requires investing into transmission
+There is initially no transmission capacity between the two areas, neither for electricity
+nor for CO₂. As a consequence, exchange of energy or mass requires investing in transmission
 capacity.
 """
 function generate_example_network_investment()
@@ -50,9 +50,9 @@ function generate_example_network_investment()
     op_number = 4   # There are in total 4 operational periods
     operational_periods = SimpleTimes(op_number, op_duration)
 
-    # Each operational period should correspond to a duration of 4 h while a duration if 1
+    # Each operational period should correspond to a duration of 4 h while a duration of 1
     # of a strategic period should correspond to a year.
-    # This implies, that a strategic period is 8760 times longer than an operational period,
+    # This implies that a strategic period is 8760 times longer than an operational period,
     # resulting in the values below as "/year".
     op_per_strat = 8760
 
@@ -65,7 +65,7 @@ function generate_example_network_investment()
         0.07,                                       # Discount rate in absolute value
     )
 
-    ## Create the first area: It consists of a coal sources, a coal power plant, an
+    ## Create the first area: It consists of a coal source, a coal power plant, an
     ## electricity demand with a fixed profile, and a CO₂ storage site
     # Create the nodes
     𝒩₁ = [
@@ -128,7 +128,7 @@ function generate_example_network_investment()
     # Create the area
     area_1 = RefArea(1, "Coal area", 6.62, 51.04, 𝒩₁[1])
 
-    ## Create the second area: It consists of a natural gas sources, a natrual gas power
+    ## Create the second area: It consists of a natural gas source, a natural gas power
     ## plant with CCS, and an electricity demand with a variable profile
     # Create the nodes
     𝒩₂ = [
@@ -136,7 +136,7 @@ function generate_example_network_investment()
         RefSource(
             "Reg_2-NG_source",          # Node id
             FixedProfile(200),          # Capacity in MW
-            FixedProfile(30),           # Variable OPEX in EUR/MW
+            FixedProfile(30),           # Variable OPEX in EUR/MWh
             FixedProfile(0),            # Fixed OPEX in EUR/MW/year
             Dict(ng => 1),              # Output from the Node, in this case, ng
         ),
@@ -188,8 +188,8 @@ function generate_example_network_investment()
         FixedProfile(10),       # Max installed capacity [MW]
         ContinuousInvestment(FixedProfile(0), FixedProfile(10)),
         # Line above: Investment mode with the following arguments:
-        # 1. argument: min added capactity per investment period [MW]
-        # 2. argument: max added capactity per investment period [MW]
+        # 1. argument: min added capacity per investment period [MW]
+        # 2. argument: max added capacity per investment period [MW]
     )
     power_line = RefStatic(
         "power_line",           # ID of the transmission mode
@@ -206,8 +206,8 @@ function generate_example_network_investment()
         FixedProfile(40),       # Max installed capacity [t/h]
         SemiContinuousInvestment(FixedProfile(5), FixedProfile(20)),
         # Line above: Investment mode with the following arguments:
-        # 1. argument: min added capactity per investment period [t/h]
-        # 2. argument: max added capactity per investment period [t/h]
+        # 1. argument: min added capacity per investment period [t/h]
+        # 2. argument: max added capacity per investment period [t/h]
     )
     co2_pipeline = PipeSimple(
         "co2_pipeline",         # ID of the transmission mode
@@ -251,7 +251,7 @@ m = run_model(case, model, optimizer)
 """
     process_investment_results(m, case)
 
-Function for processing the results to be represented in the a table afterwards.
+Function for processing the results to be represented in a table afterwards.
 """
 function process_investment_results(m, case)
     # Extract the transmission modes from the data
@@ -304,7 +304,7 @@ function process_investment_results(m, case)
         (t_inv = sp_2, val = maximum([value.(m[:trans_in])[co2_pipe, t] for t ∈ sp_2]))
     ]
 
-    # Set up the individual named tuples as a single named tuple
+    # Set up the individual named tuples as a vector of named tuples
     table = [(
             t_inv = repr(con_1.t_inv),
             power_line_add = round(con_2.val; digits=1),

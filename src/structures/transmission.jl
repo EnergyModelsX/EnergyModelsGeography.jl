@@ -1,5 +1,5 @@
 """
-    Transmission <: AbstractElement
+    struct Transmission <: AbstractElement
 
 A geographic corridor between two [`Area`](@ref)s where [`TransmissionMode`](@ref)s are used
 to transport resources.
@@ -7,7 +7,7 @@ to transport resources.
 # Fields
 - **`from::Area`** is the area resources are transported from.
 - **`to::Area`** is the area resources are transported to.
-- **`modes::Vector{<:Transmission}`** are the transmission modes that are available.
+- **`modes::Vector{<:TransmissionMode}`** are the transmission modes that are available.
 """
 struct Transmission <: AbstractElement
     from::Area
@@ -33,11 +33,11 @@ function modes(ℒᵗʳᵃⁿˢ::Vector{<:Transmission})
 end
 
 """
-    modes_sub(l::Transmission, mode_type::TransmissionMode)
-    modes_sub(ℒᵗʳᵃⁿˢ::Vector{<:Transmission}, mode_type::TransmissionMode)
+    modes_sub(l::Transmission, mode_type::Type{<:TransmissionMode})
+    modes_sub(ℒᵗʳᵃⁿˢ::Vector{<:Transmission}, mode_type::Type{<:TransmissionMode})
 
 Returns an array containing all [`TransmissionMode`](@ref)s of type `mode_type` in
-[`Transmission`])@ref) corridor `l` or for a vector of transmission corridors `ℒᵗʳᵃⁿˢ`.
+[`Transmission`](@ref) corridor `l` or for a vector of transmission corridors `ℒᵗʳᵃⁿˢ`.
 """
 modes_sub(l::Transmission, mode_type::Type{<:TransmissionMode}) =
     filter(tm -> isa(tm, mode_type), modes(l))
@@ -48,7 +48,7 @@ modes_sub(ℒᵗʳᵃⁿˢ::Vector{<:Transmission}, mode_type::Type{<:Transmissi
     modes_sub(ℒᵗʳᵃⁿˢ::Vector{<:Transmission}, p::Resource)
 
 Returns an array containing all [`TransmissionMode`](@ref)s that transport the resource `p`
-in [`Transmission`])@ref) corridor `l` or in a vector of transmission corridors `ℒᵗʳᵃⁿˢ`.
+in [`Transmission`](@ref) corridor `l` or in a vector of transmission corridors `ℒᵗʳᵃⁿˢ`.
 """
 modes_sub(l::Transmission, p::Resource) =
     filter(tm -> map_trans_resource(tm) == p, modes(l))
@@ -57,13 +57,13 @@ modes_sub(ℒᵗʳᵃⁿˢ::Vector{<:Transmission}, p::Resource) =
 
 """
     modes_sub(l::Transmission, str::String)
-    modes_sub(l::Transmission, string_array::Array{String})
+    modes_sub(l::Transmission, str_arr::Array{String})
     modes_sub(ℒᵗʳᵃⁿˢ::Vector{<:Transmission}, str::String)
-    modes_sub(ℒᵗʳᵃⁿˢ::Vector{<:Transmission}, string_array::Array{String})
+    modes_sub(ℒᵗʳᵃⁿˢ::Vector{<:Transmission}, str_arr::Array{String})
 
-Returns an array containing all [`TransmissionMode`](@ref)s of [`Transmission`])@ref)
+Returns an array containing all [`TransmissionMode`](@ref)s of [`Transmission`](@ref)
 corridor `l` or in a vector of transmission corridors `ℒᵗʳᵃⁿˢ` that include in the name the
-String `str` or any of values in the String array `str_arr`.
+String `str` or any of the values in the String array `str_arr`.
 """
 modes_sub(l::Transmission, str::String) = modes_sub(modes(l), str)
 modes_sub(l::Transmission, str_arr::Array{String}) = modes_sub(modes(l), str_arr)

@@ -4,12 +4,15 @@ Power = ResourceCarrier("Power", 0.0)
 
 
 """
-A test case representing a simple model of a linepack case in which only a sink and a source are existing.
+    small_graph_linepack()
+
+A test case representing a simple model of a linepack case in which only a source and a sink
+exist.
 """
 function small_graph_linepack()
     products = [Power, H2, CO2]
 
-    # Creation of the source and sink module as well as the arrays used for nodes and links
+    # Creation of the source and sink nodes as well as the arrays used for nodes and links
     source = RefSource(
         "-src",
         FixedProfile(25),
@@ -44,7 +47,7 @@ function small_graph_linepack()
         FixedProfile(0.05),   # Loss
         FixedProfile(0.05),   # Opex var
         FixedProfile(0.05),   # Opex fixed
-        0.1,                  # Storage capacity
+        0.1,                  # Energy share
         )
 
     transmissions = [Transmission(areas[1], areas[2], [pipeline])]
@@ -73,11 +76,6 @@ case, modeltype = small_graph_linepack()
 m = optimize(case, modeltype)
 general_tests(m)
 
-"""
-TODO:
-- check that transport is above zero.
-- why doesnt it work if we remove the el_sink node?
-"""
 𝒯 = get_time_struct(case)
 𝒫 = get_products(case)
 𝒩 = get_nodes(case)
@@ -106,7 +104,7 @@ end
 
 @testset "Energy stored in linepack" begin
 
-    # Check that not more energy is stored than available in a pipeline
+    # Check that no more energy is stored than is available in the pipeline
     @test sum(value.(m[:linepack_stor_level][pipeline, t])
         <=
         energy_share(pipeline) * value.(m[:trans_cap][pipeline, t]) for t ∈ 𝒯) == length(𝒯)

@@ -2,12 +2,13 @@
     simple_geo_area(mode_fun::Function)
 
 Simple test case for testing areas and the calculations of the couplings between an area
-and a transmission corridor
+and a transmission corridor.
 """
 function simple_geo_area(mode_fun::Function)
     products = [H2_hp, H2_lp, Power, CO2]
 
-    # Creation of the source and sink module as well as the arrays used for nodes and links
+    # Creation of the transmission modes, the source and sink nodes, and the arrays used for
+    # nodes and links
     mode_a = mode_fun("mode_trd")
     mode_b = mode_fun("mode_bgo")
     demand = outputs(mode_a)[1]
@@ -60,7 +61,7 @@ function simple_geo_area(mode_fun::Function)
         Direct(24, nodes[7], nodes[8], Linear()),
     ]
 
-    # Creation of the two areas and potential transmission lines
+    # Creation of the three areas and potential transmission lines
     areas = [
         RefArea(1, "Oslo", 10.751, 59.921, nodes[1]),
         RefArea(2, "Trondheim", 10.398, 63.4366, nodes[5]),

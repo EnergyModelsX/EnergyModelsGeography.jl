@@ -20,7 +20,7 @@ function bidirectional_case()
                                 CO2
     )
 
-    # Definition of the invidivual nodes
+    # Definition of the individual nodes
     demand = [40, 40]
     nodes = [
             EMG.GeoAvailability(1, products),
@@ -55,7 +55,7 @@ function bidirectional_case()
     areas = [RefArea(1, "Oslo", 10.751, 59.921, nodes[1]),
              RefArea(2, "Bergen", 5.334, 60.389, nodes[5])]
 
-    # Definition of the power lines
+    # Definition of the power line
     transmission_line = RefStatic(
         "Transline",
         Power,
@@ -86,7 +86,7 @@ m = optimize(case, modeltype)
 # Run of the generalized tests
 general_tests(m)
 
-# Reassigning the case data
+# Extraction of the case data
 𝒯   = get_time_struct(case)
 l   = get_transmissions(case)[1]
 tm  = modes(l)[1]

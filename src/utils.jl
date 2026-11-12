@@ -5,7 +5,7 @@
 Return a vector with all the nodes connected to the central availability node of an area.
 
 # Arguments
-- **`a::Area`**. \n
+- **`a::Area`** is the area that should be evaluated.
 - **`links`** is a vector of all links in the model.
 """
 function getnodesinarea(a::Area, links)
@@ -39,17 +39,17 @@ end
 """
     nodes_in_area(a::Area, ℒ::Vector{<:Link}; n_nodes=1000)
 
-Returns a vector of all nodes in area `a` connected through links `ℒ`. The approach is based
-on a breadth-first-search and provides all connected nodes, contrary to the function
-[`getnodesinarea`](@ref).
+Returns a vector of all nodes in area `a` connected through links `ℒ` and a vector of the
+corresponding links. The approach is based on a breadth-first-search and provides all
+connected nodes, contrary to the function [`getnodesinarea`](@ref).
 
 # Arguments
-- **`a::Area`** is area that should be evaluated
+- **`a::Area`** is the area that should be evaluated.
 - **`ℒ::Vector{<:Link}`** is a vector of links that should be evaluated.
 
 # Keyword arguments
-- **`n_nodes=1000`** the number of nodes added after which the loop is broken. It must be
-  at least equal to the number of nodes in the area `a`.
+- **`n_nodes=1000`** is the maximum number of loop iterations (processed nodes) after which
+  the loop is broken. It must be at least equal to the number of nodes in the area `a`.
 """
 function nodes_in_area(a::Area, ℒ::Vector{<:Link}; n_nodes=1000)
     av = availability_node(a)
@@ -69,7 +69,7 @@ function nodes_in_area(a::Area, ℒ::Vector{<:Link}; n_nodes=1000)
         # Remove the current node from the queue
         deleteat!(queue, 1)
 
-        # Update the stack overflow protection
+        # Update the infinite-loop protection
         k += 1
         if k > n_nodes
             break
@@ -79,7 +79,7 @@ function nodes_in_area(a::Area, ℒ::Vector{<:Link}; n_nodes=1000)
 end
 
 """
-    connected_nodes(n::EMB.Node, ℒ::Vector{<:Link}, nodes::Vector{EMB.Node})
+    connected_nodes(n::EMB.Node, ℒ::Vector{<:Link}, nodes::Vector{<:EMB.Node})
 
 Returns a vector of all unique nodes connected to node `n` through links `ℒ`.
 The corresponding links are also returned.
@@ -87,7 +87,7 @@ The corresponding links are also returned.
 # Arguments
 - **`n::EMB.Node`** is the node from which the connections are evaluated.
 - **`ℒ::Vector{<:Link}`** is a vector of links that should be evaluated.
-- **`nodes::Vector{EMB.Node}`** is a vector of nodes that should not be included.
+- **`nodes::Vector{<:EMB.Node}`** is a vector of nodes that should not be included.
 """
 function connected_nodes(n::EMB.Node, ℒ::Vector{<:Link}, nodes::Vector{<:EMB.Node})
     con_nodes = []

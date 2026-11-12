@@ -26,7 +26,7 @@ https://github.com/EnergyModelsX/EnergyModelsBase.jl/blob/main/examples/network.
 
 The example consists of two areas, a coal area with a coal power plant, a flat electricity
 demand, and a CO₂ storage site, and a natural gas area with a natural gas power plant with
-CCS and a variable electricity demand. The latter has lower deficit costs if not sufficient
+CCS and a variable electricity demand. The latter has lower deficit costs if insufficient
 electricity is delivered.
 """
 function generate_example_network()
@@ -58,7 +58,7 @@ function generate_example_network()
         co2,                                        # CO₂ instance
     )
 
-    ## Create the first area: It consists of a coal sources, a coal power plant, an
+    ## Create the first area: It consists of a coal source, a coal power plant, an
     ## electricity demand with a fixed profile, and a CO₂ storage site
     # Create the nodes
     𝒩₁ = [
@@ -121,7 +121,7 @@ function generate_example_network()
     # Create the area
     area_1 = RefArea(1, "Coal area", 6.62, 51.04, 𝒩₁[1])
 
-    ## Create the second area: It consists of a natural gas sources, a natrual gas power
+    ## Create the second area: It consists of a natural gas source, a natural gas power
     ## plant with CCS, and an electricity demand with a variable profile
     # Create the nodes
     𝒩₂ = [
@@ -129,7 +129,7 @@ function generate_example_network()
         RefSource(
             "Reg_2-NG_source",          # Node id
             FixedProfile(100),          # Capacity in MW
-            FixedProfile(30),           # Variable OPEX in EUR/MW
+            FixedProfile(30),           # Variable OPEX in EUR/MWh
             FixedProfile(0),            # Fixed OPEX in EUR/MW/16h
             Dict(ng => 1),              # Output from the Node, in this case, ng
         ),
@@ -226,7 +226,7 @@ m = run_model(case, model, optimizer)
 """
     process_network_results(m, case)
 
-Function for processing the results to be represented in the a table afterwards.
+Function for processing the results to be represented in a table afterwards.
 """
 function process_network_results(m, case)
     # Extract the nodes and transmission modes from the data
@@ -283,7 +283,7 @@ function process_network_results(m, case)
         by = x -> x.t,
     )
 
-    # Set up the individual named tuples as a single named tuple
+    # Set up the individual named tuples as a vector of named tuples
     table = [(
             t = repr(con_1.t),
             power_line_in = round(con_1.val; digits=1),
@@ -311,7 +311,7 @@ table = process_network_results(m, case)
     "power plant already in one of the other operational periods in strategic period 1\n" *
     "as well as increased usage of the NG power plant in strategic period 2, including\n" *
     "increased power transmission to area 1. Due to the higher deficit penalty, the\n" *
-    "deficit is occuring in area 2.\n\n" *
+    "deficit is occurring in area 2.\n\n" *
     "The total electricity generation is higher than the total demand due to the demand\n" *
     "for transporting and storing the CO₂ as well as the transmission losses."
 )

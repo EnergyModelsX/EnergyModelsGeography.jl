@@ -27,15 +27,15 @@ end
 """
     simple_case_new_mode(mode, products)
 
-Test function for the transfer of a single resource using a `mode`. Te vector products must
+Test case for the transfer of a single resource using a `mode`. The vector `products` must
 contain exactly 2 resources, one `ResourceEmit` and one `ResourceCarrier`.
 """
 function simple_case_new_mode(mode, products)
-    # Extracting of the resources
+    # Extraction of the resources
     Power = filter(!EMB.is_resource_emit, products)[1]
     CO2 = filter(EMB.is_resource_emit, products)[1]
 
-    # Creation of the source and sink module as well as the arrays used for nodes and links
+    # Creation of the source and sink nodes as well as the arrays used for nodes and links
     source = RefSource(
         "-src",
         FixedProfile(50),

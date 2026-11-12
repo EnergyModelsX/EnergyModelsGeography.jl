@@ -6,13 +6,14 @@
         modeltype::AbstractInvestmentModel,
     )
 
-Create a JuMP expression indexed over the investment periods `𝒯ᴵⁿᵛ` for the capital expenditures
-contribution of the [`TransmissionMode`](@ref)s within the [`Transmission`](@ref) corridors.
-They are not discounted and do not take the duration of the investment periods into account.
+Create a JuMP expression indexed over the investment periods `𝒯ᴵⁿᵛ` for the capital
+expenditures contribution of the [`TransmissionMode`](@ref)s within the
+[`Transmission`](@ref) corridors. They are not discounted and do not take the duration of
+the investment periods into account.
 
-The expression includes the sum of the capital expenditures for all [`TransmissionMode`](@ref)s
-within the [`Transmission`](@ref) corridors whose method of the function
-[`has_investment`](@extref EnergyModelsInvestments.has_investment) returns true.
+The expression includes the sum of the capital expenditures for all
+[`TransmissionMode`](@ref)s within the [`Transmission`](@ref) corridors whose method of the
+function [`has_investment`](@extref EnergyModelsInvestments.has_investment) returns true.
 """
 function EMB.objective_invest(
     m,
@@ -35,12 +36,15 @@ end
 Create variables for the capital costs for the investments in transmission modes.
 
 Additional variables for investment in capacity:
-* `:trans_cap_capex` - CAPEX costs for increases in the capacity of a transmission mode
-* `:trans_cap_current` - installed capacity for storage in each strategic period
+* `:trans_cap_capex` - CAPEX for increases in the capacity of a transmission mode
+* `:trans_cap_current` - installed capacity of the transmission mode in each strategic
+  period
 * `:trans_cap_add` - added capacity
 * `:trans_cap_rem` - removed capacity
-* `:trans_cap_invest_b` - binary variable whether investments in capacity are happening
-* `:trans_cap_remove_b` - binary variable whether investments in capacity are removed
+* `:trans_cap_invest_b` - auxiliary variable used in some investment modes for the
+  additions in capacity
+* `:trans_cap_remove_b` - auxiliary variable used in some investment modes for the
+  removal of capacity
 """
 function EMB.variables_ext_data(
     m,
@@ -74,7 +78,7 @@ When the modeltype is an investment model, the function introduces the related c
 for the capacity expansion. The investment mode and lifetime mode are used for adding
 constraints.
 
-The default function only accepts nodes with
+The default function only accepts transmission modes with
 [`SingleInvData`](@extref EnergyModelsBase.SingleInvData). If you have several capacities
 for investments, you have to dispatch specifically on the function.
 """

@@ -35,7 +35,7 @@
     t_opex_var = FixedProfile(0.0)
     t_opex_fixed = FixedProfile(0.0)
 
-    # increase opex var, but not enough to change the results
+    # Reference mode without OPEX
     case.elements[4][1].modes[1] = RefStatic("Transline", Power, t_cap, t_loss, t_opex_var, t_opex_fixed, 2)
 
     # Create and solve the model
@@ -50,7 +50,7 @@
 
     # TEST 1: Low trans opex does not change results
 
-    # Cange transmission mode parameters
+    # Change transmission mode parameters
     t_opex_var = FixedProfile((fuel_opex_diff - marginal_diff) * gen_fuel_coeff)
     case.elements[4][1].modes[1] = RefStatic("Transline", Power, t_cap, t_loss, t_opex_var, t_opex_fixed, 2)
 
@@ -58,7 +58,7 @@
 
     # TEST 2: Opex restricts flow in both periods
 
-    # increase opex var, so high that transmission in not profitable
+    # increase opex var, so high that transmission is not profitable
     t_opex_var = FixedProfile((fuel_opex_diff + marginal_diff) * gen_fuel_coeff)
     case.elements[4][1].modes[1] = RefStatic("Transline", Power, t_cap, t_loss, t_opex_var, t_opex_fixed, 2)
 
@@ -66,7 +66,7 @@
 
     # TEST 3: fixed opex does not change flow, but does change the objective value
 
-    # Cange transmission mode parameters
+    # Change transmission mode parameters
     t_opex_var = FixedProfile(0.0) # no opex var
     t_opex_fixed = FixedProfile(1e3) # high opex fixed
     case.elements[4][1].modes[1] = RefStatic("Transline", Power, t_cap, t_loss, t_opex_var, t_opex_fixed, 2)
@@ -78,7 +78,7 @@
 
     # TEST 4: Repeat TEST 1 with unidirectional transmission mode
 
-    # Cange transmission mode parameters
+    # Change transmission mode parameters
     t_opex_var = FixedProfile((fuel_opex_diff - marginal_diff) * gen_fuel_coeff)
     case.elements[4][1].modes[1] = RefStatic("Transline", Power, t_cap, t_loss, t_opex_var, t_opex_fixed, 1)
 
@@ -86,7 +86,7 @@
 
     # TEST 5: Repeat TEST 2 with unidirectional transmission mode
 
-    # increase opex var, so high that transmission in not profitable
+    # increase opex var, so high that transmission is not profitable
     t_opex_var = FixedProfile((fuel_opex_diff + marginal_diff) * gen_fuel_coeff)
     case.elements[4][1].modes[1] = RefStatic("Transline", Power, t_cap, t_loss, t_opex_var, t_opex_fixed, 1)
 

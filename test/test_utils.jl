@@ -1,5 +1,5 @@
 @testset "Filter nodes by area" begin
-    # This test uses the data from `test_geo_bidirectional.jl.`
+    # This test uses the data from `test_geo_bidirectional.jl`.
     case, m = bidirectional_case()
     areas = get_areas(case)
     nodes = get_nodes(case)
@@ -45,7 +45,7 @@ end
 
     # Using a new, large test set
     function reg(n_nodes::Int, id::String)
-        # Number of random links
+        # Number of random links per node
         n_links = 5
 
         # Define the different resources and their emission intensity in tCO2/MWh
@@ -53,14 +53,14 @@ end
         Power = ResourceCarrier("Power", 0.0)
         products = [NG, Power]
 
-        # Define random nodes
+        # Define the nodes
         av = GeoAvailability("a_" * id * "_0" , products)
         nodes = EMB.Node[
             RefNetworkNode(
                 "a_" * id * "_" * string(k),
                 FixedProfile(25),
                 FixedProfile(5.5),          # Variable OPEX in EUR/MWh
-                FixedProfile(0),            # Fixed OPEX in EUR/MW/8h
+                FixedProfile(0),            # Fixed OPEX in EUR/MW
                 Dict(NG => 2),              # Input to the node with input ratio
                 Dict(Power => 1),           # Output from the node with output ratio
             ) for k ∈ 1:n_nodes

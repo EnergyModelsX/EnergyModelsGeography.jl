@@ -30,7 +30,7 @@ function simple_case_emissions(
     NG = ResourceEmit("NG", 1.0)
     products = [Power, CO2, NG]
 
-    # Creation of the source and sink module as well as the arrays used for nodes and links
+    # Creation of the source and sink nodes as well as the arrays used for nodes and links
     src_a = RefSource(
         "src_a",
         FixedProfile(100),
@@ -116,7 +116,7 @@ end
     CO2, NG = get_products(case)[[2,3]]
     𝒯 = get_time_struct(case)
 
-    # Test that the variable for NG is fixed to 0 and the one for CO2 not
+    # Test that the variable for NG is fixed to 0 and the one for CO2 is not
     @test all(is_fixed(m[:emissions_trans][em_mode, t, NG]) for t ∈ 𝒯)
     @test !any(is_fixed(m[:emissions_trans][em_mode, t, CO2]) for t ∈ 𝒯)
 end
@@ -136,7 +136,7 @@ end
             value(m[:trans_out][em_mode, t]) * 0.5
     for t ∈ 𝒯)
     opers = collect(𝒯)[1:4]
-    emit = OperationalProfile([20, 25, 30, 35])*.5  # Given through the transported capacity
+    emit = OperationalProfile([20, 25, 30, 35])*.5  # Given through the transported volume (sink demand)
     @test all(
         value.((m[:emissions_trans][em_mode, t, CO2])) ≈ emit[t]
     for t ∈ opers)
@@ -165,7 +165,7 @@ end
             (value(m[:trans_pos][em_mode, t]) + value(m[:trans_neg][em_mode, t])) * 0.5
     for t ∈ 𝒯)
     opers = collect(𝒯)[1:4]
-    emit = OperationalProfile([20, 25, 30, 35])*.5  # Given through the transported capacity
+    emit = OperationalProfile([20, 25, 30, 35])*.5  # Given through the transported volume (sink demand)
     @test all(
         value.((m[:emissions_trans][em_mode, t, CO2])) ≈ emit[t]
     for t ∈ opers)

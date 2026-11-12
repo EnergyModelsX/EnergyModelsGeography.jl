@@ -1,7 +1,7 @@
 
 """
     EMB.check_elements(log_by_element, 𝒜::Vector{<:Area}, 𝒳ᵛᵉᶜ, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
-    EMB.check_elements(log_by_element, ℒᵗʳᵃⁿˢ::Vector{<:Tranmission}, 𝒳ᵛᵉᶜ, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
+    EMB.check_elements(log_by_element, ℒᵗʳᵃⁿˢ::Vector{<:Transmission}, 𝒳ᵛᵉᶜ, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
 
 !!! note "Area methods"
     All areas are checked through the functions
@@ -13,7 +13,8 @@
     - that the node returned by the function [`availability_node`](@ref) is within the Node
       vector,
     - that the availability node is a [`GeoAvailability`](@ref) node, and
-    - the exchange resources are within the resources of the [`GeoAvailability`](@ref) node.
+    - that the exchange resources are within the resources of the
+      [`GeoAvailability`](@ref) node.
 
 !!! note "Transmission methods"
     All transmission corridors are checked through the functions
@@ -21,13 +22,13 @@
     - [`check_time_structure`](@extref EnergyModelsBase.check_time_structure) to identify
       time profiles at the highest level that are not equivalent to the provided timestructure.
 
-    The individual transmission modes of a corridorare checked through the functions
+    The individual transmission modes of a corridor are checked through the functions
     - [`check_mode`](@ref) to identify problematic input and
     - [`check_time_structure`](@extref EnergyModelsBase.check_time_structure) to identify
       time profiles at the highest level that are not equivalent to the provided timestructure.
 
-    In addition, all transmission corridors are directly checked to have in the fields
-    `:from` and `:to` nodes that are present in the Area vector as extracted through the
+    In addition, all transmission corridors are directly checked that the areas in the
+    fields `:from` and `:to` are present in the Area vector as extracted through the
     function [`get_areas`](@ref).
 """
 function EMB.check_elements(
@@ -61,15 +62,15 @@ function EMB.check_elements(
         for p ∈ exchange_resources(ℒᵗʳᵃⁿˢ, a)
             @assert_or_log(
                 p ∈ inputs(av) && p ∈ outputs(av),
-                "The exchange resource `$(p)`` is not included in inputs or outputs resources of " *
-                "the `GeoAvailability` node resulting an error in model construction."
+                "The exchange resource `$(p)` is not included in inputs or outputs resources of " *
+                "the `GeoAvailability` node resulting in an error in model construction."
             )
         end
 
         # Check the area and the time structure
         check_area(a, 𝒯, modeltype, check_timeprofiles)
         check_timeprofiles && EMB.check_time_structure(a, 𝒯)
-        # Put all log messages that emerged during the check, in a dictionary with the node as key.
+        # Put all log messages that emerged during the check, in a dictionary with the area as key.
         log_by_element[a] = EMB.logs
     end
 end
@@ -104,7 +105,7 @@ function EMB.check_elements(
         check_transmission(l, 𝒯, modeltype, check_timeprofiles)
         check_timeprofiles && EMB.check_time_structure(l, 𝒯)
 
-        # Check all individual trasmission modes
+        # Check all individual transmission modes
         ℳ = modes(l)
         for tm ∈ ℳ
             check_mode(tm, 𝒯, modeltype, check_timeprofiles)
@@ -120,7 +121,7 @@ end
 """
     check_area(a::Area, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
 
-Check that the fields of an `Area` corresponds to required structure.
+Check that the fields of an `Area` correspond to the required structure.
 """
 function check_area(a::Area, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
 end
@@ -128,7 +129,7 @@ end
 """
     check_transmission(l::Transmission, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
 
-Check that the fields of a `Transmission` corridor corresponds to required structure.
+Check that the fields of a `Transmission` corridor correspond to the required structure.
 """
 function check_transmission(l::Transmission, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
 end
@@ -140,12 +141,12 @@ end
     check_mode(tm::PipeSimple, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
     check_mode(tm::PipeLinepackSimple, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
 
-Check that the fields of a `TransmissionMode` corresponds to required structure.
+Check that the fields of a `TransmissionMode` correspond to the required structure.
 
 ## Checks [`RefDynamic`](@ref) and [`RefStatic`](@ref)
 - The field `trans_cap` is required to be non-negative.
 - The field `trans_loss` is required to be in the range ``[0, 1]``.
-- The field `fixed_opex` is required to be non-negative and accessible through a
+- The field `opex_fixed` is required to be non-negative and accessible through a
   `StrategicPeriod` as outlined in the function
   [`check_fixed_opex`](@extref EnergyModelsBase.check_fixed_opex).
 - The field `directions` must be 1 or 2.
@@ -173,7 +174,7 @@ function check_mode(
     )
     @assert_or_log(
         all(loss(tm, t) ≤ 1 for t ∈ 𝒯),
-        repr(tm) * ": The field `trans_loss` must be less or equal to 1."
+        repr(tm) * ": The field `trans_loss` must be less than or equal to 1."
     )
     @assert_or_log(
         all(loss(tm, t) ≥ 0 for t ∈ 𝒯),
@@ -205,13 +206,13 @@ end
     check_mode_default(tm::PipeMode, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
 
 Subroutine that can be utilized in other packages for incorporating the standard tests for
-a [`PipeMode`](@ref) node.
+a [`PipeMode`](@ref).
 
 ## Checks
 - The field `consumption_rate` is required to be non-negative.
 - The field `trans_cap` is required to be non-negative.
 - The field `trans_loss` is required to be in the range ``[0, 1]``.
-- The field `fixed_opex` is required to be non-negative and accessible through a
+- The field `opex_fixed` is required to be non-negative and accessible through a
   `StrategicPeriod` as outlined in the function
   [`check_fixed_opex`](@extref EnergyModelsBase.check_fixed_opex).
 """
@@ -228,7 +229,7 @@ function check_mode_default(tm::PipeMode, 𝒯, modeltype::EnergyModel, check_ti
     )
     @assert_or_log(
         all(loss(tm, t) ≤ 1 for t ∈ 𝒯),
-        repr(tm) * ": The field `trans_loss` must be less or equal to 1."
+        repr(tm) * ": The field `trans_loss` must be less than or equal to 1."
     )
     @assert_or_log(
         all(loss(tm, t) ≥ 0 for t ∈ 𝒯),
