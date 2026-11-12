@@ -1,9 +1,9 @@
 # [Constraint functions](@id man-con)
 
-The package provides standard constraint functions that can be use for new developed `TransmissionMode`s.
+The package provides standard constraint functions that can be used for newly developed `TransmissionMode`s.
 The general approach is similar to `EnergyModelsBase`.
-Bidirectional transport requires at the time being the introduciton of an *if*-loop.
-In later implementation, it is planned to also use dispatch for this analysis as well.
+Bidirectional transport requires at the time being the introduction of an *if*-loop.
+In a later implementation, we plan to use dispatch for this as well.
 
 For resource-specific extensions of area-transmission coupling, see the Section on *[Extend Resource functionality](@ref how_to-res_funct)*.
 This extension is called from the default implementation of `EMB.constraints_couple` for each resource-type segment.
@@ -14,9 +14,9 @@ This extension is called from the default implementation of `EMB.constraints_cou
 constraints_capacity(m, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EnergyModel)
 ```
 
-correponds to the constraints on the capacity usage of a transmission mode ``tm``.
+corresponds to the constraints on the capacity usage of a transmission mode ``tm``.
 It is implemented for both the `TransmissionMode` and `PipeMode` abstract types as well as `PipeLinepackSimple` concrete type.
-The key difference between the former two is related that `PipeMode` does not allows for bidirectional transport.
+The key difference between the former two is that `PipeMode` does not allow for bidirectional transport.
 `PipeLinepackSimple` includes in addition the maximum storage capacity for a pipeline when considering linepacking.
 The implementation is still preliminary and based on a simplified potential for energy storage in a pipeline.
 
@@ -26,45 +26,45 @@ Within this function, the function
 constraints_capacity_installed(m, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EnergyModel)
 ```
 
-is called to limit the variable ``\texttt{trans\_cap\_inst}`` of transmission mode ``tm``.
-This functions is also used to subsequently dispatch on model type for the introduction of investments.
+is called to limit the variable ``\texttt{trans\_cap}`` of transmission mode ``tm``.
+This function is also used to subsequently dispatch on model type for the introduction of investments.
 
 !!! warning
-    As the function `constraints_capacity_installed` is used for including investments for tranmission modes, it is important that it is also called when creating a new mode.
+    As the function `constraints_capacity_installed` is used for including investments for transmission modes, it is important that it is also called when creating a new mode.
     It is not possible to only add a function for
     ```julia
-    constraints_capacity_installed(m, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EnergyModel)
+    constraints_capacity_installed(m, tm::NewTransmissionMode, 𝒯::TimeStructure, modeltype::EnergyModel)
     ```
     without adding a function for
     ```julia
-    constraints_capacity_installed(m, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EMB.AbstractInvestmentModel)
+    constraints_capacity_installed(m, tm::NewTransmissionMode, 𝒯::TimeStructure, modeltype::EMB.AbstractInvestmentModel)
     ```
     as this can lead to a method ambiguity error.
 
 ## [Transmission loss functions](@id man-con-trans_loss)
 
 ```julia
-constraints_trans_loss(m, tm::TransmissionMode, 𝒯ᴵⁿᵛ, modeltype::EnergyModel)
+constraints_trans_loss(m, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EnergyModel)
 ```
 
-correponds to the constraints on the energy balance of a transmission mode ``tm``.
+corresponds to the constraints on the transmission loss of a transmission mode ``tm``.
 It is implemented for both the `TransmissionMode` and `PipeMode` abstract types.
-The key difference between the two is related that `PipeMode` does not allows for bidirectional transport.
+The key difference between the two is that `PipeMode` does not allow for bidirectional transport.
 The loss is calculated for the provided `TransmissionMode`s as relative loss of the transported energy.
 
 ## [Balance functions](@id man-con-balance)
 
 ```julia
-constraints_trans_balance(m, tm::TransmissionMode, 𝒯ᴵⁿᵛ, modeltype::EnergyModel)
+constraints_trans_balance(m, tm::TransmissionMode, 𝒯::TimeStructure, modeltype::EnergyModel)
 ```
 
-correponds to the constraints on the energy balance of a transmission mode ``tm``.
-It is implemented for both the `TransmissionMode` and `PipeLinepackSimple` abstract types.
+corresponds to the constraints on the energy balance of a transmission mode ``tm``.
+It is implemented for the abstract type `TransmissionMode` and the concrete type `PipeLinepackSimple`.
 The standard approach only relies on the conservation of mass/energy, while storage is not included.
-`PipeLinePackSimple` also includes the overall mass balance for the energy storage within the pipeline.
+`PipeLinepackSimple` also includes the overall mass balance for the energy storage within the pipeline.
 
 !!! note
-    `PipeLinePackSimple` does not support representative periods correctly.
+    `PipeLinepackSimple` does not support representative periods correctly.
     In practice, seasonal energy storage through linepacking is unrealistic due to the small volume.
     The implementation is working with the assumption that the initial level in a representative period is equal to the final level in the last representative period of a strategic period.
     This implies that it does not account correctly for the remaining level at the end of a representative period.

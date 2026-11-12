@@ -204,7 +204,7 @@ end
     m = optimize(case, modeltype)
     general_tests(m)
 
-    # Exctract the case data
+    # Extract the case data
     pp, co2 = get_products(case)
     𝒯 = get_time_struct(case)
     n_t = length(𝒯)
@@ -215,7 +215,7 @@ end
     tm = modes(ℒᵗʳᵃⁿˢ)[1]
 
     # Variable testing (calling of the correct function)
-    # - EMB.variables_flow
+    # - EMB.variables_flow_resource
     # Check that the variables are created
     @test haskey(m, :energy_potential_trans_in)
     @test haskey(m, :energy_potential_trans_out)
@@ -234,7 +234,7 @@ end
     @test all(value(m[:energy_potential_trans_out][tm, t, pp]) ≥ lower_limit(pp) for t ∈ 𝒯)
     @test all(value(m[:energy_potential_trans_out][tm, t, pp]) ≤ upper_limit(pp) for t ∈ 𝒯)
 
-    # Test that the resource constraints arre correctly enforced
+    # Test that the resource constraints are correctly enforced
     # - EMB.constraints_resource
     @test all(value(m[:trans_in][tm, t]) ≈ value(m[:trans_out][tm, t]) for t ∈ 𝒯)
     @test all(value(m[:energy_potential_trans_in][tm, t, pp]) < value(m[:trans_in][tm, t]) for t ∈ 𝒯)

@@ -44,7 +44,7 @@ makedocs(
             "Philosophy" => "manual/philosophy.md",
             "Optimization variables" => "manual/optimization-variables.md",
             "Constraint functions" => "manual/constraint-functions.md",
-            "Example" => "manual/simple-example.md",
+            "Examples" => "manual/simple-example.md",
             "Investment options"=>"manual/investments.md",
             "Release notes" => "manual/NEWS.md",
         ],

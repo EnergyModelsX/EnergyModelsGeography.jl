@@ -24,8 +24,8 @@
     @test isempty(setdiff(vcat(collect(values(ℳ))...), modes(ℒᵗʳᵃⁿˢ)))
 
     # Check that it is possible to extract the individual types
-    # - modes_sub(l::Transmission, mode_type::TransmissionMode)
-    # - modes_sub(ℒᵗʳᵃⁿˢ::Vector{<:Transmission}, mode_type::TransmissionMode)
+    # - modes_sub(l::Transmission, mode_type::Type{<:TransmissionMode})
+    # - modes_sub(ℒᵗʳᵃⁿˢ::Vector{<:Transmission}, mode_type::Type{<:TransmissionMode})
     for k ∈ range(1,n_trans)
         @test isempty(setdiff(modes_sub(ℒᵗʳᵃⁿˢ[k], RefStatic), ℳ[k][1:n_stat[k]]))
         @test isempty(setdiff(ℳ[k][1:n_stat[k]], modes_sub(ℒᵗʳᵃⁿˢ[k], RefStatic)))

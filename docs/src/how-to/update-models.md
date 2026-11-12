@@ -1,9 +1,9 @@
 # [Update your model to the latest versions](@id how_to-update)
 
 `EnergyModelsGeography` is still in a pre-release version.
-Hence, there are frequently breaking changes occuring, although we plan to keep backwards compatibility.
-This document is designed to provide users with information regarding how they have to adjust their models to keep compatibility to the latest changes.
-We will as well implement information regarding the adjustment of extension packages, although this is more difficult due to the vast majority of potential changes.
+Hence, there are frequently breaking changes occurring, although we plan to keep backwards compatibility.
+This document is designed to provide users with information regarding how they have to adjust their models to keep compatibility with the latest changes.
+We will also provide information regarding the adjustment of extension packages, although this is more difficult due to the large number of potential changes.
 
 ## [Adjustments from 0.10.x](@id how_to-update-10)
 
@@ -11,7 +11,7 @@ We will as well implement information regarding the adjustment of extension pack
 
 Starting from version 0.11.0, we introduced a new input format to the function `create_model`.
 The original case dictionary is replaced with a new type, [`Case`](@extref EnergyModelsBase.Case).
-Backwards-compatible methods are available to use with the original dictionary, however these are deprecated and we advise to switch to the new type:
+Backwards-compatible methods are available to use with the original dictionary; however, these are deprecated and we advise to switch to the new type:
 
 ```julia
 # Old structure:
@@ -38,7 +38,7 @@ Furthermore, we reworked the design for inclusion of emission and OPEX variables
 ### [Modes with emissions](@id how_to-update-10-emissions)
 
 It is now necessary to provide a new method to the function [`EnergyModelsBase.has_emissions`](@ref) if you plan to include [`TransmissionMode`](@ref)s with emissions instead of a separate function declared within `EnergyModelsGeography`.
-In addition, the function `emission` was renamed to [`emissions`](@ref EnergyModelsGeography.emissions) and, if not called with a `TimePeriod` as input argument, returns a `TimeProfile` instead of a Real.
+In addition, the function `emission` was renamed to [`emissions`](@ref EnergyModelsGeography.emissions) and, if not called with a `TimePeriod` as input argument, returns a `TimeProfile` instead of a `Real`.
 
 ## [Adjustments from 0.9.x to 0.11.x](@id how_to-update-09)
 
@@ -60,20 +60,18 @@ We consider it to be more consistent with the framework philosophy to remove tha
 
 !!! danger "New subtypes for `PipeMode`"
     It is still possible for the user to provide new [`PipeMode`](@ref)s that provide bidirectional transport.
-    In this case, it is necessary to provide new methods for [`constraints_capacity`](@ref man-con-cap) and [`constraints_trans_loss`](@ref man-con-trans_loss).
-    Otherwise, warnings will be provided and unidirectional transport used.
-
-    The variable OPEX calculation is wrong if you receive the warnings.
+    In this case, it is necessary to provide new methods for [`is_bidirectional`](@ref EnergyModelsGeography.is_bidirectional), [`constraints_capacity`](@ref man-con-cap), and [`constraints_trans_loss`](@ref man-con-trans_loss).
+    Otherwise, the new `PipeMode` is treated as unidirectional without any warning.
 
 The translations below describe the keyword constructor.
 You only have to remove the entry to the field of directions.
 
 !!! warning "Removal of constructors"
-    The legacy constructors for calls of the composite types of version 0.9 where removed in version 0.12.
-    This implies that you must adjust existing models to the lastest version if you have not done this yet.
+    The legacy constructors for calls of the composite types of version 0.9 were removed in version 0.12.
+    This implies that you must adjust existing models to the latest version if you have not done this yet.
 
     `Data` was furthermore replaced with `ExtensionData` in [`EnergyModelsBase` v0.9.1](https://github.com/EnergyModelsX/EnergyModelsBase.jl/releases/tag/v0.9.1).
-    This means that you must also replace the field information to `Vector{<:ExtensionData}` and a potential vector that is added to `ExtensionData[]`.
+    This means that you must also replace `Vector{Data}` with `Vector{<:ExtensionData}` and `Data[]` with `ExtensionData[]`.
 
 ### [`PipeSimple`](@ref)
 
@@ -94,7 +92,7 @@ PipeSimple(;
 )
 
 # This translates to the following new version
- PipeSimple(
+PipeSimple(
     id,
     inlet,
     outlet,
@@ -147,7 +145,7 @@ PipeLinepackSimple(
 
 ### [`GeoAvailability`](@ref)
 
-`GeoAvailability` nodes do not require any longer the data for `input` and `output`, as they utilize a constructor, if only a single array is given.
+`GeoAvailability` nodes no longer require the data for `input` and `output`, as they utilize a constructor, if only a single array is given.
 
 ```julia
 # The previous nodal description was given by:
@@ -167,4 +165,4 @@ GeoAvailability(id, collect(keys(input)))
 !!! warning "Removal of constructor"
     The legacy constructor for calls of the composite types of version 0.7 was removed in version 0.12.
 
-    This implies that you must adjust existing models to the lastest version if you have not done this yet.
+    This implies that you must adjust existing models to the latest version if you have not done this yet.

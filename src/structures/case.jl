@@ -2,7 +2,7 @@
     get_areas(case::Case)
     get_areas(𝒳::Vector{Vector})
 
-Returns the vector of areas of the Case `case` or the vector of elements vectors 𝒳.
+Returns the vector of areas of the Case `case` or the vector of element vectors `𝒳`.
 """
 get_areas(case::Case) = filter(el -> isa(el, Vector{<:Area}), get_elements_vec(case))[1]
 get_areas(𝒳::Vector{Vector}) =
@@ -12,8 +12,8 @@ get_areas(𝒳::Vector{Vector}) =
     get_transmissions(case::Case)
     get_transmissions(𝒳::Vector{Vector})
 
-Returns the vector of transmission corridors of the Case `case` or the vector of elements
-vectors 𝒳.
+Returns the vector of transmission corridors of the Case `case` or the vector of element
+vectors `𝒳`.
 """
 get_transmissions(case::Case) =
     filter(el -> isa(el, Vector{<:Transmission}), get_elements_vec(case))[1]

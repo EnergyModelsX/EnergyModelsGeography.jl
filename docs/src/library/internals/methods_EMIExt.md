@@ -1,4 +1,4 @@
-# [Internals - EnergyModelsInvestment extension](@id lib-int-EMIext)
+# [Internals - EnergyModelsInvestments extension](@id lib-int-EMIext)
 
 ## [Index](@id lib-int-EMIext-idx)
 
@@ -30,7 +30,7 @@ EMB.variables_ext_data(m, _::Type{SingleInvData}, ℳᴵⁿᵛ::Vector{<:Transmi
 
 ## [EnergyModelsInvestments](@id lib-int-EMIext-EMI)
 
-### [Methods](@id lib-int-EMIext-met)
+### [Methods](@id lib-int-EMIext-EMI-met)
 
 ```@docs
 EMI.get_var_inst

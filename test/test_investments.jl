@@ -7,14 +7,14 @@ Power = ResourceCarrier("Power", 0.0)
 products = [Power, CO2]
 
 """
-    small_graph_geo()
+    small_graph_geo(; source = nothing, sink = nothing, inv_data = nothing)
 
 Creates a simple geography test case with the potential for investments in transmission
-    infrastructure if provided with transmission investments through the argument `inv_data`.
+infrastructure if provided with transmission investments through the argument `inv_data`.
 """
 function small_graph_geo(; source = nothing, sink = nothing, inv_data = nothing)
 
-    # Creation of the source and sink module as well as the arrays used for nodes and links
+    # Creation of the source and sink nodes as well as the arrays used for nodes and links
     if isnothing(source)
         source = RefSource(
             "-src",
@@ -138,7 +138,7 @@ end
     tm = modes(tr_osl_trd)[1]
     inv_data = EMI.investment_data(tm, :cap)
 
-    # Test identifying that the there is no deficit
+    # Test identifying that there is no deficit
     @test sum(value.(m[:sink_deficit][sink, t]) == 0 for t ∈ 𝒯) == length(𝒯)
 
     # Test showing that the investments are as expected
@@ -190,7 +190,7 @@ end
     tm = modes(tr_osl_trd)[1]
     inv_data = EMI.investment_data(tm, :cap)
 
-    # Test identifying that the there is no deficit
+    # Test identifying that there is no deficit
     @test sum(value.(m[:sink_deficit][sink, t]) == 0 for t ∈ 𝒯) == length(𝒯)
 
     # Test showing that the investments are as expected
@@ -233,7 +233,7 @@ end
         end
     end
 
-    # Test that the variable cap_invest_b is a binary
+    # Test that the variable `trans_cap_invest_b` is binary
     @test sum(is_binary(m[:trans_cap_invest_b][tm, t_inv]) for t_inv ∈ 𝒯ᴵⁿᵛ) == length(𝒯ᴵⁿᵛ)
 end
 
@@ -265,7 +265,7 @@ end
     inv_data = EMI.investment_data(tm, :cap)
     inv_mode = EMI.investment_mode(inv_data)
 
-    # Test identifying that the there is no deficit
+    # Test identifying that there is no deficit
     @test sum(value.(m[:sink_deficit][sink, t]) == 0 for t ∈ 𝒯) == length(𝒯)
 
     # Test showing that the investments are as expected
@@ -314,7 +314,7 @@ end
         ) == length(𝒯ᴵⁿᵛ)
     end
 
-    # Test that the variable cap_invest_b is a binary
+    # Test that the variable `trans_cap_invest_b` is binary
     @test sum(is_binary(m[:trans_cap_invest_b][tm, t_inv]) for t_inv ∈ 𝒯ᴵⁿᵛ) == length(𝒯ᴵⁿᵛ)
 end
 
@@ -342,7 +342,7 @@ end
     tm = modes(tr_osl_trd)[1]
     inv_data = EMI.investment_data(tm, :cap)
 
-    # Test identifying that the there is no deficit
+    # Test identifying that there is no deficit
     @test sum(value.(m[:sink_deficit][sink, t]) == 0 for t ∈ 𝒯) == length(𝒯)
 
     # Test showing that the investments are as expected
@@ -359,7 +359,7 @@ end
         end
     end
 
-    # Test that the variable cap_invest_b is a binary
+    # Test that the variable `trans_cap_invest_b` is an integer
     @test sum(is_integer(m[:trans_cap_invest_b][tm, t_inv]) for t_inv ∈ 𝒯ᴵⁿᵛ) ==
           length(𝒯ᴵⁿᵛ)
 end

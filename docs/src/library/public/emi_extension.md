@@ -1,8 +1,8 @@
-# [`EnergymodelsInvestments` extensions](@id lib-pub-emi_ext)
+# [`EnergyModelsInvestments` extensions](@id lib-pub-emi_ext)
 
 `EnergyModelsGeography` requires significantly less direct interaction with `EnergyModelsInvestments` compared to `EnergyModelsBase`.
-In practice, we only provide a legacy constructor.
-All other functionality is handled within the internal functions.
+In practice, the extension does not provide any public types or functions.
+All functionality is handled within the internal functions.
 
 ## [Investment data](@id lib-pub-emi_ext-inv_data)
 
@@ -15,5 +15,5 @@ Transmission mode investments utilize the same investment data type ([`SingleInv
 We provided a legacy constructor, `TransInvData`, that uses the same input as in version 0.5.x.
 This legacy constructor was removed starting in version 0.12.
 
-This implies you must adjust your model if you still utilize the for version.
+This implies you must adjust your model if you still utilize the former version.
 The adjustment is explained in the section *[Update your model to the latest version of EnergyModelsInvestments](@extref EnergyModelsInvestments how_to-update-05)*.

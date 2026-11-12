@@ -2,7 +2,11 @@
 Main module for `EnergyModelsGeography.jl`.
 
 # Exports:
- - `Area`, `RefArea`, `GeoAvailability`, `Transmission`, `RefStatic`, `RefDynamic`, `PipeMode`, `PipeSimple`, `PipeLinepackSimple`.
+ - `Area`, `RefArea`, `LimitedExchangeArea`, `GeoAvailability`, `Transmission`,
+   `TransmissionMode`, `RefStatic`, `RefDynamic`, `PipeMode`, `PipeSimple`, and
+   `PipeLinepackSimple`.
+ - Functions for accessing the case elements, utility functions, and functions for
+   extracting the fields of `Area`s, `Transmission`s, and `TransmissionMode`s.
 """
 module EnergyModelsGeography
 
@@ -28,7 +32,7 @@ include("utils.jl")
 # Export the functions for the case type
 export get_areas, get_transmissions
 
-# Export the invidiual types and composite types
+# Export the individual types and composite types
 export Area, RefArea, LimitedExchangeArea
 export GeoAvailability
 export Transmission, TransmissionMode
@@ -41,7 +45,7 @@ export getnodesinarea, nodes_in_area
 # Export commonly used functions for extracting fields in `Area`s
 export name, availability_node, limit_resources, exchange_limit, exchange_resources
 
-# Export commonly used functions for exctracting fields in `Transmission`s
+# Export commonly used functions for extracting fields in `Transmission`s
 export modes, mode_sub, modes_sub, corr_from, corr_to, corr_from_to
 
 # Export commonly used functions for extracting fields in `TransmissionMode`s

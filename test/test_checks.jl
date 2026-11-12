@@ -6,11 +6,11 @@ Power = ResourceCarrier("Power", 0.0)
 CO2 = ResourceEmit("CO2", 1.0)
 NG = ResourceEmit("NG", 0.2)
 
-# Function for setting up the system for testing Area checks
+# Function for setting up the system for testing the checks
 function simple_graph_check()
     products = [Power, CO2]
 
-    # Creation of the source and sink module as well as the arrays used for nodes and links
+    # Creation of the source and sink nodes as well as the arrays used for nodes and links
     source = RefSource(
         "src",
         FixedProfile(25),
@@ -75,7 +75,7 @@ end
 @testset "Checks - Areas" begin
     @testset "Core structure" begin
         # Test that the availability node is correctly checked
-        # - check_elements(log_by_element, 𝒜::Vector{<:Area}}, 𝒳, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
+        # - check_elements(log_by_element, 𝒜::Vector{<:Area}, 𝒳ᵛᵉᶜ, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
 
         # Test that the Availability node is in the node vector
         case, model, trans_line = simple_graph_check()
@@ -93,7 +93,7 @@ end
         case.elements[4][1] = Transmission(case.elements[3][1], case.elements[3][2], [trans_line])
         @test_throws AssertionError create_model(case, model)
 
-        # Test that the availability node includes as product the exchange resources
+        # Test that the availability node includes the exchange resources as products
         case, model, trans_line = simple_graph_check()
         av = GeoAvailability("test", Resource[𝒫[2]])
         case.elements[1][1] = av
@@ -107,7 +107,7 @@ end
 @testset "Checks - Transmission" begin
     @testset "Core structure" begin
         # Test that the from and to fields are correctly checked
-        # - check_elements(log_by_element, ℒᵗʳᵃⁿˢ::Vector{<:Tranmission}}, 𝒳, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
+        # - check_elements(log_by_element, ℒᵗʳᵃⁿˢ::Vector{<:Transmission}, 𝒳ᵛᵉᶜ, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
         case, model, trans_line = simple_graph_check()
         area = RefArea(1, "TestArea", 10.751, 59.921, case.elements[1][1])
         case.elements[4][1] = Transmission(case.elements[3][1], area, [trans_line])
@@ -120,7 +120,7 @@ end
 @testset "Checks - TransmissionMode" begin
     @testset "`RefStatic` and `RefDynamic`" begin
         # Function for checking
-        # -check_mode(tm::Union{RefDynamic, RefStatic}, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
+        # - check_mode(tm::Union{RefDynamic, RefStatic}, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
         function check_mode(;
             Type = RefStatic,
             resource = Power,
@@ -151,12 +151,12 @@ end
         # Test that there is an error with wrong fixed opex
         @test_throws AssertionError check_mode(opex_fixed=StrategicProfile([2,5]))
 
-        # Test that the function is also calle for `RefDynamic`
+        # Test that the function is also called for `RefDynamic`
         @test_throws AssertionError check_mode(Type=RefDynamic, trans_cap=FixedProfile(-10))
     end
     @testset "`PipeSimple`" begin
         # Function for checking
-        # -check_mode(tm::PipeSimple, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
+        # - check_mode(tm::PipeSimple, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
         function check_mode(;
             resource = Power,
             consumption_rate = FixedProfile(0.1),
@@ -197,7 +197,7 @@ end
     end
     @testset "`PipeLinepackSimple`" begin
         # Function for checking
-        # -check_mode(tm::PipeLinepackSimple, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
+        # - check_mode(tm::PipeLinepackSimple, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
         function check_mode(;
             resource = Power,
             trans_cap = FixedProfile(10),

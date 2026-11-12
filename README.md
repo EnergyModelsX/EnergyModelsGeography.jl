@@ -2,7 +2,7 @@
 
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.06619/status.svg)](https://doi.org/10.21105/joss.06619)
 [![Build Status](https://github.com/EnergyModelsX/EnergyModelsGeography.jl/workflows/CI/badge.svg)](https://github.com/EnergyModelsX/EnergyModelsGeography.jl/actions?query=workflow%3ACI)
-[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://energymodelsx.github.io/EnergyModelsGeography.jl//stable)
+[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://energymodelsx.github.io/EnergyModelsGeography.jl/stable/)
 [![In Development](https://img.shields.io/badge/docs-dev-blue.svg)](https://energymodelsx.github.io/EnergyModelsGeography.jl/dev/)
 
 `EnergyModelsGeography` is a package to add a geographic representation to [`EnergyModelsBase`](https://github.com/EnergyModelsX/EnergyModelsBase.jl).
@@ -11,8 +11,8 @@
 ## Usage
 
 The usage of the package is best illustrated through the commented [`examples`](examples).
-The current example shows how to add geographical information to an energy system model built using `EnergyModelsBase`.
-It is extending the [network](https://github.com/EnergyModelsX/EnergyModelsBase.jl/blob/main/examples/network.jl) example of `EnergyModelsBase` to 7 areas.
+The examples show how to add geographical information to an energy system model built using `EnergyModelsBase`.
+They extend the [network](https://github.com/EnergyModelsX/EnergyModelsBase.jl/blob/main/examples/network.jl) example of `EnergyModelsBase` to two areas.
 
 ## Cite
 
@@ -50,4 +50,4 @@ For earlier work, see our [paper in Applied Energy](https://www.sciencedirect.co
 
 ## Project Funding
 
-The development of `EnergyModelsGeography` was funded by the Norwegian Research Council in the project [Clean Export](https://www.sintef.no/en/projects/2020/cleanexport/), project number [308811](https://prosjektbanken.forskningsradet.no/project/FORISS/308811)
+The development of `EnergyModelsGeography` was funded by the Norwegian Research Council in the project [Clean Export](https://www.sintef.no/en/projects/2020/cleanexport/), project number [308811](https://prosjektbanken.forskningsradet.no/project/FORISS/308811).
