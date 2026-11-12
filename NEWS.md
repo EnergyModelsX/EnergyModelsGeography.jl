@@ -1,5 +1,11 @@
 # Release notes
 
+## Unversioned
+
+### Minor updates
+
+* The examples are run in a separate process using only the environment of the `examples` folder, so that a missing dependency of an example fails the tests and the active environment of the test session is not changed.
+
 ## Version 0.12.0 (2026-04-16)
 
 ### Breaking changes
@@ -8,8 +14,8 @@
   * Breaking change required as early retirement is now allowed.
   * Changed the function call arguments for [`add_investment_constraints`](https://github.com/EnergyModelsX/EnergyModelsInvestments.jl/blob/0c84eb4fabdf6f3c188812a3555b40f2681e916b/src/model.jl#L1).
   * Adjustment can change model behavior and results.
-* Removed legacy constructors for `TransInvData` (you can see how to update existing models in *[the documentation of `EnergyModelsInvestments`](https://energymodelsx.github.io/EnergyModelsInvestments.jl/stable/how-to/update-models/#how_to-update-05-inv_data)).
-* Removed legacy constructors for `GeoAvailability`, `PipeSimple`, and `PipeLinepackSimple` (you can see how to update existing models in *[the documentation of `EnergyModelsGeography`](https://energymodelsx.github.io/EnergyModelsGeography.jl/stable/how-to/update-models/#how_to-update-09))
+* Removed legacy constructors for `TransInvData` (you can see how to update existing models in *[the documentation of `EnergyModelsInvestments`](https://energymodelsx.github.io/EnergyModelsInvestments.jl/stable/how-to/update-models/#how_to-update-05-inv_data)*).
+* Removed legacy constructors for `GeoAvailability`, `PipeSimple`, and `PipeLinepackSimple` (you can see how to update existing models in *[the documentation of `EnergyModelsGeography`](https://energymodelsx.github.io/EnergyModelsGeography.jl/stable/how-to/update-models/#how_to-update-09)*).
 
 ### Minor updates
 
