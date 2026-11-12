@@ -8,7 +8,8 @@
     )
     log_file = joinpath(mktempdir(), "run_examples.log")
     passed = open(log_file, "w") do io
-        success(pipeline(cmd; stdout = io, stderr = io))
+        # `Base.` is required as the tests define a global variable `pipeline`
+        success(Base.pipeline(cmd; stdout = io, stderr = io))
     end
 
     # Print the output of the examples if they failed
