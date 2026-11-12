@@ -2,6 +2,10 @@
 
 ## Unversioned
 
+### Feature
+
+* `create_transmission_mode` calls `EMB.constraints_ext_data` for all `mode_data(tm)`, allowing constraints for new `ExtensionData` types of `TransmissionMode`s.
+
 ### Minor updates
 
 * The examples are run in a separate process using only the environment of the `examples` folder, so that a missing dependency of an example fails the tests and the active environment of the test session is not changed.

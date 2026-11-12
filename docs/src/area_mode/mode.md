@@ -67,7 +67,8 @@ The fields of the types are given as:
   In addition, all values have to be non-negative.
 - **`data::Vector{<:ExtensionData}`**:\
   An entry for providing additional data to the model.
-  In the current version, it is only used for providing additional investment data when [`EnergyModelsInvestments`](https://energymodelsx.github.io/EnergyModelsInvestments.jl/) is used.
+  It is used for providing additional investment data when [`EnergyModelsInvestments`](https://energymodelsx.github.io/EnergyModelsInvestments.jl/) is used.
+  New `ExtensionData` types can add constraints through the function `constraints_ext_data` (see *[Extension data functions](@ref man-con-ext_data)*).
   !!! note
       The field `data` is not required as we include a constructor when the value is excluded.
 
@@ -254,3 +255,6 @@ The following standard constraints are implemented for a [`TransmissionMode`](@r
   ```math
   \texttt{emissions\_trans}[tm, t, p_{em}] = emissions(tm, p_{em}, t) \times \left(\texttt{trans\_pos}[tm, t] + \texttt{trans\_neg}[tm, t]\right)
   ```
+
+- `constraints_ext_data`:\
+  This function is only called for specified data of the transmission modes, see above.

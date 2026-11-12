@@ -86,3 +86,15 @@ constraints_opex_var(m, tm::TransmissionMode, 𝒯ᴵⁿᵛ, modeltype::EnergyMo
 corresponds to the constraints calculating the variable operational costs of a transmission mode `tm`.
 There is currently only a single implemented version.
 It can however be extended, if desirable.
+
+## [Extension data functions](@id man-con-ext_data)
+
+[`create_transmission_mode`](@ref EnergyModelsGeography.create_transmission_mode) iterates through the data of a transmission mode and calls for each entry
+
+```julia
+EMB.constraints_ext_data(m, tm::TransmissionMode, 𝒯, modeltype::EnergyModel, data::ExtensionData)
+```
+
+similar to the approach for nodes in *[`EnergyModelsBase`](@extref EnergyModelsBase man-data_fun)*.
+The fallback method does not add any constraints.
+New `ExtensionData` types for transmission modes can add constraints by dispatching on the type of `data`.

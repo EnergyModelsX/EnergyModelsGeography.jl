@@ -591,6 +591,62 @@ end
     end
 end
 
+# Extension data for testing the function `constraints_ext_data` for transmission modes
+struct TransOutLimitData <: ExtensionData
+    cap::Float64
+end
+struct DummyModeData <: ExtensionData end
+function EMB.constraints_ext_data(
+    m,
+    tm::TransmissionMode,
+    𝒯,
+    modeltype::EnergyModel,
+    data::TransOutLimitData,
+)
+    @constraint(m, [t ∈ 𝒯], m[:trans_out][tm, t] ≤ data.cap)
+end
+
+@testset "ExtensionData constraints" begin
+    function ext_data_mode(data)
+        return RefStatic(
+            "mode",
+            Power,
+            FixedProfile(50),
+            FixedProfile(0.01),
+            FixedProfile(0.1),
+            FixedProfile(2),
+            1,
+            data,
+        )
+    end
+
+    # Reference case without data
+    case, modeltype = simple_geo_uni(ext_data_mode(ExtensionData[]))
+    m_ref = optimize(case, modeltype)
+    general_tests(m_ref)
+
+    # Test that the fallback does not add constraints
+    # - EMB.constraints_ext_data(m, tm::TransmissionMode, 𝒯, modeltype::EnergyModel, data::ExtensionData)
+    case, modeltype = simple_geo_uni(ext_data_mode([DummyModeData()]))
+    m = optimize(case, modeltype)
+    general_tests(m)
+    @test objective_value(m) ≈ objective_value(m_ref)
+    @test num_constraints(m; count_variable_in_set_constraints = true) ==
+          num_constraints(m_ref; count_variable_in_set_constraints = true)
+
+    # Test that the constraints of new data types are added
+    case, modeltype = simple_geo_uni(ext_data_mode([TransOutLimitData(10.0)]))
+    m = optimize(case, modeltype)
+    general_tests(m)
+    tm = modes(get_transmissions(case))[1]
+    𝒯 = get_time_struct(case)
+    prof = OperationalProfile([10.0, 10.0, 5.0, 10.0])
+    @test all(value.(m[:trans_out][tm, t]) ≈ prof[t] for t ∈ 𝒯)
+    @test objective_value(m) < objective_value(m_ref)
+    @test num_constraints(m; count_variable_in_set_constraints = true) ==
+          num_constraints(m_ref; count_variable_in_set_constraints = true) + length(𝒯)
+end
+
 # Testset for PipeSimple
 @testset "PipeSimple" begin
     mode = PipeSimple(
