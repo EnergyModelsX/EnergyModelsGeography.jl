@@ -16,6 +16,7 @@ EMB.constraints_elements
 EMB.constraints_resource
 EMB.constraints_couple
 EMB.constraints_couple_resource
+EMB.constraints_ext_data(m, tm::TransmissionMode, 𝒯, modeltype::EnergyModel, data::ExtensionData)
 ```
 
 ## [Variable methods](@id lib-int-met_emb-var)

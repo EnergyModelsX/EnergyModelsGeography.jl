@@ -1,6 +1,10 @@
 # Release notes
 
-## Unversioned
+## Version 0.12.1 (2026-11-12)
+
+### Feature
+
+* `create_transmission_mode` calls `EMB.constraints_ext_data` for all `mode_data(tm)`, allowing constraints for new `ExtensionData` types of `TransmissionMode`s.
 
 ### Minor updates
 

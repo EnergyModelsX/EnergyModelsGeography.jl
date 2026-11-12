@@ -590,8 +590,13 @@ Serves as a fallback option for unspecified subtypes of `TransmissionMode`.
 - [`constraints_trans_loss`](@ref),
 - [`constraints_capacity`](@ref),
 - [`constraints_emission`](@ref),
-- [`constraints_opex_fixed`](@ref), and
-- [`constraints_opex_var`](@ref).
+- [`constraints_opex_fixed`](@ref),
+- [`constraints_opex_var`](@ref), and
+- [`constraints_ext_data`](@extref EnergyModelsBase.constraints_ext_data) for all
+  `mode_data(tm)`.
+
+New methods for subtypes of `TransmissionMode` should also iterate through `mode_data(tm)`
+and call `constraints_ext_data`.
 """
 function create_transmission_mode(m, tm::TransmissionMode, 𝒯, modeltype::EnergyModel)
 
@@ -615,5 +620,10 @@ function create_transmission_mode(m, tm::TransmissionMode, 𝒯, modeltype::Ener
     if has_opex(tm)
         constraints_opex_fixed(m, tm, 𝒯ᴵⁿᵛ, modeltype)
         constraints_opex_var(m, tm, 𝒯ᴵⁿᵛ, modeltype)
+    end
+
+    # Iterate through all data and set up the constraints corresponding to the data
+    for data ∈ mode_data(tm)
+        constraints_ext_data(m, tm, 𝒯, modeltype, data)
     end
 end
